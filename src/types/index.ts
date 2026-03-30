@@ -4,7 +4,7 @@ export interface Task {
   completed: boolean
   priority: 'high' | 'medium' | 'low'
   categoryId: string | null
-  dueDate: string | null // ISO date string
+  dueDate: string | null // ISO datetime string (e.g., "2026-03-30T14:30:00")
   createdAt: string // ISO datetime
   updatedAt: string // ISO datetime
   order: number

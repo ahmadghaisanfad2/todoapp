@@ -1,12 +1,12 @@
 import { useState, useMemo } from 'react'
-import { isBefore, parseISO, startOfDay } from 'date-fns'
+import { isBefore, parseISO } from 'date-fns'
 import { useTaskStore } from '@/store/taskStore'
 import { useSettingsStore } from '@/store/settingsStore'
 import type { Task } from '@/types'
 
 export function isTaskOverdue(task: Task): boolean {
   if (task.completed || !task.dueDate) return false
-  return isBefore(parseISO(task.dueDate), startOfDay(new Date()))
+  return isBefore(parseISO(task.dueDate), new Date())
 }
 
 const priorityOrder: Record<Task['priority'], number> = { high: 0, medium: 1, low: 2 }

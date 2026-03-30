@@ -1,7 +1,33 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { persist, createJSONStorage } from 'zustand/middleware'
 import type { Category } from '@/types'
-import { generateId } from '@/lib/uuid'
+import { generateId } from '@/lib/utils'
+import { STORAGE_KEYS } from '@/lib/constants'
+
+const safeStorage = {
+  getItem: (name: string): string | null => {
+    try {
+      return localStorage.getItem(name)
+    } catch {
+      console.warn(`[categoryStore] Failed to read from localStorage: ${name}`)
+      return null
+    }
+  },
+  setItem: (name: string, value: string): void => {
+    try {
+      localStorage.setItem(name, value)
+    } catch (e) {
+      console.error(`[categoryStore] Failed to write to localStorage: ${name}`, e)
+    }
+  },
+  removeItem: (name: string): void => {
+    try {
+      localStorage.removeItem(name)
+    } catch {
+      console.warn(`[categoryStore] Failed to remove from localStorage: ${name}`)
+    }
+  },
+}
 
 interface CategoryStore {
   categories: Category[]
@@ -36,6 +62,6 @@ export const useCategoryStore = create<CategoryStore>()(
           categories: state.categories.filter((c) => c.id !== id),
         })),
     }),
-    { name: 'todoflow-categories' }
+    { name: STORAGE_KEYS.CATEGORIES, storage: createJSONStorage(() => safeStorage) }
   )
 )

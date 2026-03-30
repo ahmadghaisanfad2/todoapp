@@ -60,7 +60,7 @@ export function TaskCard({ task, onEdit, onToggle, onDelete }: TaskCardProps) {
               )}
             >
               {overdue && !task.completed ? '⚠ Overdue · ' : ''}
-              {format(parseISO(task.dueDate), 'MMM d')}
+              {format(parseISO(task.dueDate), 'MMM d · h:mm a')}
             </span>
           )}
         </div>

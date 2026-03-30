@@ -11,7 +11,7 @@ import { useTasks } from '@/hooks/useTasks'
 import { useSettingsStore } from '@/store/settingsStore'
 import type { Task } from '@/types'
 
-export default function App() {
+export function App() {
   const { activeTasks, completedTasks, searchQuery, setSearchQuery, toggleTask, deleteTask } = useTasks()
   const [taskFormOpen, setTaskFormOpen] = useState(false)
   const [editingTask, setEditingTask] = useState<Task | undefined>()

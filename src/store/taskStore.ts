@@ -1,7 +1,33 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { persist, createJSONStorage } from 'zustand/middleware'
 import type { Task } from '@/types'
-import { generateId } from '@/lib/uuid'
+import { generateId } from '@/lib/utils'
+import { STORAGE_KEYS } from '@/lib/constants'
+
+const safeStorage = {
+  getItem: (name: string): string | null => {
+    try {
+      return localStorage.getItem(name)
+    } catch {
+      console.warn(`[taskStore] Failed to read from localStorage: ${name}`)
+      return null
+    }
+  },
+  setItem: (name: string, value: string): void => {
+    try {
+      localStorage.setItem(name, value)
+    } catch (e) {
+      console.error(`[taskStore] Failed to write to localStorage: ${name}`, e)
+    }
+  },
+  removeItem: (name: string): void => {
+    try {
+      localStorage.removeItem(name)
+    } catch {
+      console.warn(`[taskStore] Failed to remove from localStorage: ${name}`)
+    }
+  },
+}
 
 interface TaskStore {
   tasks: Task[]
@@ -47,6 +73,6 @@ export const useTaskStore = create<TaskStore>()(
           ),
         })),
     }),
-    { name: 'todoflow-tasks' }
+    { name: STORAGE_KEYS.TASKS, storage: createJSONStorage(() => safeStorage) }
   )
 )

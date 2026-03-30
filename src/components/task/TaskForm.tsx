@@ -52,7 +52,7 @@ export function TaskForm({ open, onOpenChange, task }: TaskFormProps) {
       title: title.trim(),
       priority,
       categoryId: categoryId === 'none' ? null : categoryId,
-      dueDate: dueDate ? format(dueDate, 'yyyy-MM-dd') : null,
+      dueDate: dueDate ? format(dueDate, "yyyy-MM-dd'T'HH:mm:ss") : null,
       completed: task?.completed ?? false,
     }
     if (task) {
@@ -125,33 +125,55 @@ export function TaskForm({ open, onOpenChange, task }: TaskFormProps) {
           )}
 
           <div className="flex flex-col gap-2">
-            <Label>Due Date</Label>
-            <Popover open={calOpen} onOpenChange={setCalOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn('justify-start text-left font-normal', !dueDate && 'text-muted-foreground')}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {dueDate ? format(dueDate, 'PPP') : 'Pick a date'}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={dueDate}
-                  onSelect={(d) => { setDueDate(d); setCalOpen(false) }}
-                  initialFocus
+            <Label>Due Date & Time</Label>
+            <div className="flex gap-2">
+              <Popover open={calOpen} onOpenChange={setCalOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn('justify-start text-left font-normal flex-1', !dueDate && 'text-muted-foreground')}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dueDate ? format(dueDate, 'PPP') : 'Pick date'}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-2" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={dueDate}
+                    onSelect={(d) => {
+                      if (d) {
+                        const newDate = dueDate ? new Date(dueDate) : new Date()
+                        newDate.setFullYear(d.getFullYear(), d.getMonth(), d.getDate())
+                        setDueDate(newDate)
+                      }
+                      setCalOpen(false)
+                    }}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+              {dueDate && (
+                <Input
+                  type="time"
+                  className="w-28"
+                  value={format(dueDate, 'HH:mm')}
+                  onChange={(e) => {
+                    const [hours, minutes] = e.target.value.split(':').map(Number)
+                    const newDate = new Date(dueDate)
+                    newDate.setHours(hours, minutes, 0, 0)
+                    setDueDate(newDate)
+                  }}
                 />
-              </PopoverContent>
-            </Popover>
+              )}
+            </div>
             {dueDate && (
               <button
                 type="button"
                 className="mt-1 inline-flex items-center gap-1 text-left text-xs font-medium text-muted-foreground underline underline-offset-2 hover:text-destructive"
                 onClick={() => setDueDate(undefined)}
               >
-                Clear date
+                Clear date & time
               </button>
             )}
           </div>
