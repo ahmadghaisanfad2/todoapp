@@ -65,11 +65,11 @@ export function TaskForm({ open, onOpenChange, task }: TaskFormProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-sm">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{task ? 'Edit Task' : 'Add Task'}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           <div className="flex flex-col gap-2">
             <Label htmlFor="task-title">Title</Label>
             <Input
@@ -91,7 +91,7 @@ export function TaskForm({ open, onOpenChange, task }: TaskFormProps) {
                   data-selected={priority === p.value}
                   onClick={() => setPriority(p.value)}
                   className={cn(
-                    'flex-1 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors',
+                    'flex-1 rounded-md border px-4 py-2.5 text-sm font-medium transition-colors',
                     p.className,
                     priority === p.value ? 'ring-2 ring-ring ring-offset-1' : 'opacity-60 hover:opacity-100'
                   )}
@@ -148,7 +148,7 @@ export function TaskForm({ open, onOpenChange, task }: TaskFormProps) {
             {dueDate && (
               <button
                 type="button"
-                className="text-left text-xs text-muted-foreground hover:text-destructive"
+                className="mt-1 inline-flex items-center gap-1 text-left text-xs font-medium text-muted-foreground underline underline-offset-2 hover:text-destructive"
                 onClick={() => setDueDate(undefined)}
               >
                 Clear date

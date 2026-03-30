@@ -37,7 +37,7 @@ export function CategoryForm({ open, onOpenChange, category, onSave }: CategoryF
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-sm">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{category ? 'Edit Category' : 'Add Category'}</DialogTitle>
         </DialogHeader>
@@ -61,7 +61,7 @@ export function CategoryForm({ open, onOpenChange, category, onSave }: CategoryF
                   type="button"
                   onClick={() => setColor(c)}
                   className={cn(
-                    'h-8 w-8 rounded-full transition-transform hover:scale-110',
+                    'h-10 w-10 rounded-full transition-transform hover:scale-110',
                     color === c && 'ring-2 ring-offset-2 ring-ring scale-110'
                   )}
                   style={{ backgroundColor: c }}
