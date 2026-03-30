@@ -24,7 +24,7 @@ export function TaskCard({ task, onEdit, onToggle, onDelete }: TaskCardProps) {
   return (
     <div
       className={cn(
-        'flex items-start gap-3 rounded-lg border bg-card px-3 py-3 shadow-sm transition-colors',
+        'flex items-start gap-3 rounded-lg border bg-card px-4 py-3.5 shadow-sm transition-colors',
         task.completed && 'opacity-60',
         overdue && !task.completed && 'border-red-300 dark:border-red-800'
       )}
@@ -69,7 +69,7 @@ export function TaskCard({ task, onEdit, onToggle, onDelete }: TaskCardProps) {
         <PriorityBadge priority={task.priority} />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-7 w-7">
+            <Button variant="ghost" size="icon" className="h-9 w-9">
               <MoreVertical className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>

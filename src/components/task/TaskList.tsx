@@ -1,22 +1,32 @@
 import { useState } from 'react'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
-import { EmptyState } from '@/components/common/EmptyState'
+import { EmptyState, SearchX } from '@/components/common/EmptyState'
 import { TaskCard } from './TaskCard'
 import type { Task } from '@/types'
 
 interface TaskListProps {
   activeTasks: Task[]
   completedTasks: Task[]
+  hasActiveFilters?: boolean
   onEdit: (task: Task) => void
   onToggle: (id: string) => void
   onDelete: (id: string) => void
 }
 
-export function TaskList({ activeTasks, completedTasks, onEdit, onToggle, onDelete }: TaskListProps) {
+export function TaskList({ activeTasks, completedTasks, hasActiveFilters = false, onEdit, onToggle, onDelete }: TaskListProps) {
   const [completedExpanded, setCompletedExpanded] = useState(false)
 
   if (activeTasks.length === 0 && completedTasks.length === 0) {
+    if (hasActiveFilters) {
+      return (
+        <EmptyState
+          icon={SearchX}
+          message="No matching tasks"
+          description="Try adjusting your filters or search query."
+        />
+      )
+    }
     return <EmptyState />
   }
 
@@ -29,7 +39,7 @@ export function TaskList({ activeTasks, completedTasks, onEdit, onToggle, onDele
         />
       ) : (
         <>
-          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          <p className="pb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Active · {activeTasks.length}
           </p>
           {activeTasks.map((task) => (
@@ -40,15 +50,15 @@ export function TaskList({ activeTasks, completedTasks, onEdit, onToggle, onDele
 
       {completedTasks.length > 0 && (
         <>
-          <Separator className="my-2" />
+          <Separator className="my-3" />
           <button
-            className="flex items-center gap-1 text-xs font-medium uppercase tracking-wide text-muted-foreground hover:text-foreground"
+            className="flex items-center gap-1.5 pb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground"
             onClick={() => setCompletedExpanded((v) => !v)}
           >
             {completedExpanded ? (
-              <ChevronDown className="h-3.5 w-3.5" />
+              <ChevronDown className="h-4 w-4" />
             ) : (
-              <ChevronRight className="h-3.5 w-3.5" />
+              <ChevronRight className="h-4 w-4" />
             )}
             Completed · {completedTasks.length}
           </button>

@@ -8,6 +8,7 @@ import { TaskForm } from '@/components/task/TaskForm'
 import { CategorySheet } from '@/components/category/CategorySheet'
 import { Button } from '@/components/ui/button'
 import { useTasks } from '@/hooks/useTasks'
+import { useSettingsStore } from '@/store/settingsStore'
 import type { Task } from '@/types'
 
 export default function App() {
@@ -15,6 +16,12 @@ export default function App() {
   const [taskFormOpen, setTaskFormOpen] = useState(false)
   const [editingTask, setEditingTask] = useState<Task | undefined>()
   const [categorySheetOpen, setCategorySheetOpen] = useState(false)
+
+  const filterStatus = useSettingsStore((s) => s.filterStatus)
+  const filterPriority = useSettingsStore((s) => s.filterPriority)
+  const filterCategoryId = useSettingsStore((s) => s.filterCategoryId)
+
+  const hasActiveFilters = filterStatus !== 'all' || filterPriority !== 'all' || filterCategoryId !== null || searchQuery.trim().length > 0
 
   const handleEditTask = (task: Task) => {
     setEditingTask(task)
@@ -34,6 +41,7 @@ export default function App() {
         <TaskList
           activeTasks={activeTasks}
           completedTasks={completedTasks}
+          hasActiveFilters={hasActiveFilters}
           onEdit={handleEditTask}
           onToggle={toggleTask}
           onDelete={deleteTask}
@@ -43,6 +51,7 @@ export default function App() {
       <Button
         size="icon"
         className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg"
+        style={{ bottom: 'max(1.5rem, env(safe-area-inset-bottom, 1.5rem))' }}
         onClick={() => { setEditingTask(undefined); setTaskFormOpen(true) }}
         aria-label="Add task"
       >
