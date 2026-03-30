@@ -1,6 +1,7 @@
-import { Search } from 'lucide-react'
+import { Search, X } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Button } from '@/components/ui/button'
 import { useSettingsStore } from '@/store/settingsStore'
 import { useCategories } from '@/hooks/useCategories'
 
@@ -18,8 +19,17 @@ export function TaskFilter({ searchQuery, onSearchChange }: TaskFilterProps) {
   const setFilterCategoryId = useSettingsStore((s) => s.setFilterCategoryId)
   const setFilterPriority = useSettingsStore((s) => s.setFilterPriority)
   const setSortBy = useSettingsStore((s) => s.setSortBy)
+  const resetFilters = useSettingsStore((s) => s.resetFilters)
 
   const { categories } = useCategories()
+
+  const hasActiveFilters = filterStatus !== 'all' || filterPriority !== 'all' || filterCategoryId !== null
+  const hasActiveSearch = searchQuery.trim().length > 0
+
+  const handleReset = () => {
+    resetFilters()
+    onSearchChange('')
+  }
 
   return (
     <div className="flex flex-col gap-3 py-3">
@@ -32,9 +42,9 @@ export function TaskFilter({ searchQuery, onSearchChange }: TaskFilterProps) {
           className="pl-9"
         />
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <Select value={filterStatus} onValueChange={(v) => setFilterStatus(v as typeof filterStatus)}>
-          <SelectTrigger className="h-8 w-[110px] text-xs">
+          <SelectTrigger className="h-10 w-[120px] text-sm">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -45,7 +55,7 @@ export function TaskFilter({ searchQuery, onSearchChange }: TaskFilterProps) {
         </Select>
 
         <Select value={filterPriority} onValueChange={(v) => setFilterPriority(v as typeof filterPriority)}>
-          <SelectTrigger className="h-8 w-[110px] text-xs">
+          <SelectTrigger className="h-10 w-[120px] text-sm">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -61,7 +71,7 @@ export function TaskFilter({ searchQuery, onSearchChange }: TaskFilterProps) {
             value={filterCategoryId ?? 'all'}
             onValueChange={(v) => setFilterCategoryId(v === 'all' ? null : v)}
           >
-            <SelectTrigger className="h-8 w-[130px] text-xs">
+            <SelectTrigger className="h-10 w-[140px] text-sm">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -76,7 +86,7 @@ export function TaskFilter({ searchQuery, onSearchChange }: TaskFilterProps) {
         )}
 
         <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
-          <SelectTrigger className="h-8 w-[120px] text-xs">
+          <SelectTrigger className="h-10 w-[130px] text-sm">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -85,6 +95,18 @@ export function TaskFilter({ searchQuery, onSearchChange }: TaskFilterProps) {
             <SelectItem value="priority">Priority</SelectItem>
           </SelectContent>
         </Select>
+
+        {(hasActiveFilters || hasActiveSearch) && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleReset}
+            className="h-10 gap-1 text-sm text-muted-foreground hover:text-foreground"
+          >
+            <X className="h-3.5 w-3.5" />
+            Clear filters
+          </Button>
+        )}
       </div>
     </div>
   )
