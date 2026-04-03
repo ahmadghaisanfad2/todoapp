@@ -1,4 +1,4 @@
-# AGENTS.md — TodoFlow
+# AGENTS.md — Wazheefa
 
 Guidelines for AI coding agents working in this repository.
 
@@ -24,7 +24,9 @@ src/
 ├── types/index.ts                 # All shared interfaces and type aliases
 ├── lib/
 │   ├── utils.ts                   # cn() — Tailwind class merge utility
-│   └── uuid.ts                    # generateId() via crypto.randomUUID()
+│   ├── uuid.ts                    # generateId() via crypto.randomUUID()
+│   ├── constants.ts               # Storage keys and app colors
+│   └── migrate.ts                 # One-time localStorage migration (todoflow → wazheefa)
 ├── store/                         # Zustand stores (persisted to localStorage)
 │   ├── taskStore.ts
 │   ├── categoryStore.ts
@@ -35,10 +37,10 @@ src/
 │   └── useTheme.ts
 ├── components/
 │   ├── ui/                        # shadcn/ui primitives — DO NOT edit manually
-│   ├── common/                    # Shared components (EmptyState, PriorityBadge, ThemeProvider)
-│   ├── layout/                    # Header, Layout
-│   ├── task/                      # TaskCard, TaskFilter, TaskForm, TaskList
-│   └── category/                  # CategorySheet, CategoryForm
+│   ├── common/                     # Shared components (EmptyState, PriorityBadge, ThemeProvider)
+│   ├── layout/                     # Header, Layout
+│   ├── task/                       # TaskCard, TaskFilter, TaskForm, TaskList
+│   └── category/                   # CategorySheet, CategoryForm
 ```
 
 ## Path Aliases
@@ -65,7 +67,7 @@ import type { Task } from '@/types'
 2. Third-party libraries (`date-fns`, `lucide-react`, `zustand`)
 3. Local UI components (`@/components/ui/...`)
 4. Local app components and hooks (`@/components/...`, `@/hooks/...`, `@/store/...`)
-5. Utilities (`@/lib/utils`, `@/lib/uuid`)
+5. Utilities (`@/lib/utils`, `@/lib/uuid`, `@/lib/constants`, `@/lib/migrate`)
 6. Type-only imports last or inline with `import type`
 
 ```typescript
@@ -111,7 +113,7 @@ interface TaskStore {
 export const useTaskStore = create<TaskStore>()(
   persist(
     (set) => ({ /* state + actions */ }),
-    { name: 'todoflow-tasks' }
+    { name: 'wazheefa-tasks' }
   )
 )
 ```
@@ -176,7 +178,7 @@ All shared types live in `src/types/index.ts`. Keep domain types there. Componen
 
 ## PWA
 
-Configured in `vite.config.ts` via `VitePWA`. Auto-updates service worker. Workbox caches `**/*.{js,css,html,ico,png,svg}`. Manifest defines app name, theme color (#3B82F6), and icons.
+Configured in `vite.config.ts` via `VitePWA`. Auto-updates service worker. Workbox caches `**/*.{js,css,html,ico,png,svg}`. Manifest defines app name, theme color (#2563EB), and icons.
 
 ## Do NOT
 

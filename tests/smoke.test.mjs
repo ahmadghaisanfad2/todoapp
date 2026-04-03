@@ -6,10 +6,10 @@ export default async function smokeTest({ page, test, assert, BASE_URL }) {
   await page.goto(BASE_URL)
   await page.waitForLoadState('networkidle')
 
-  test('header shows TodoFlow title', async () => {
-    const title = page.locator('h1', { hasText: 'TodoFlow' })
+  test('header shows Wazheefa title', async () => {
+    const title = page.locator('h1', { hasText: 'Wazheefa' })
     await title.waitFor({ state: 'visible', timeout: 5000 })
-    assert.ok(await title.isVisible(), 'TodoFlow title should be visible')
+    assert.ok(await title.isVisible(), 'Wazheefa title should be visible')
   })
 
   test('search input is visible', async () => {

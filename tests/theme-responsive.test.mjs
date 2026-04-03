@@ -8,7 +8,7 @@ export default async function themeResponsiveTests({ page, test, assert, BASE_UR
   await page.waitForLoadState('networkidle')
 
   await page.evaluate(() => {
-    localStorage.removeItem('todoflow-settings')
+    localStorage.removeItem('wazheefa-settings')
   })
   await page.reload()
   await page.waitForLoadState('networkidle')
@@ -53,7 +53,7 @@ export default async function themeResponsiveTests({ page, test, assert, BASE_UR
     await page.waitForTimeout(500)
 
     // Core elements should still be visible
-    const title = page.locator('h1', { hasText: 'TodoFlow' })
+    const title = page.locator('h1', { hasText: 'Wazheefa' })
     assert.ok(await title.isVisible(), 'Title should be visible on mobile')
 
     const search = page.locator('input[placeholder="Search tasks..."]')

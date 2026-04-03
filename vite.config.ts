@@ -12,10 +12,10 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
       manifest: {
-        name: 'TodoFlow',
-        short_name: 'TodoFlow',
+        name: 'Wazheefa',
+        short_name: 'Wazheefa',
         description: 'Simple. Clean. Get things done.',
-        theme_color: '#3B82F6',
+        theme_color: '#2563EB',
         background_color: '#FAFAFA',
         display: 'standalone',
         scope: '/',

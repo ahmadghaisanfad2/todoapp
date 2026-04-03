@@ -3,17 +3,21 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TodoFlow</title>
-    <meta name="theme-color" content="#3B82F6" />
+    <title>Wazheefa — Simple. Clean. Get things done.</title>
+    <meta name="description" content="Wazheefa is a fast, local-first task manager. Add tasks, set priorities, organize by category, and stay on top of your work — no signup, no cloud, no friction." />
+    <meta name="theme-color" content="#2563EB" />
+    <meta property="og:title" content="Wazheefa — Simple. Clean. Get things done." />
+    <meta property="og:description" content="Fast, local-first task management. No signup. No cloud. Just open and go." />
+    <meta property="og:type" content="website" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="TodoFlow" />
+    <meta name="apple-mobile-web-app-title" content="Wazheefa" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <script>
       (function(){
         try {
-          var stored = localStorage.getItem('todoflow-settings');
+          var stored = localStorage.getItem('wazheefa-settings');
           var settings = stored ? JSON.parse(stored) : null;
           var theme = settings && settings.state && settings.state.theme ? settings.state.theme : 'system';
           if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {

@@ -1,5 +1,5 @@
 /**
- * Playwright Test Runner for TodoFlow
+ * Playwright Test Runner for Wazheefa
  *
  * Uses `playwright` (core) directly — no @playwright/test dependency required.
  * Each test file exports a default async function that receives { page, browser, context }.
@@ -60,7 +60,7 @@ async function main() {
     process.exit(0)
   }
 
-  console.log(`\n🧪 TodoFlow Test Runner`)
+  console.log(`\n🧪 Wazheefa Test Runner`)
   console.log(`   Base URL: ${BASE_URL}`)
   console.log(`   Tests: ${testFiles.length} file(s)\n`)
 

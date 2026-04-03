@@ -4,6 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button'
 import { useSettingsStore } from '@/store/settingsStore'
 import { useCategories } from '@/hooks/useCategories'
+import { cn } from '@/lib/utils'
 
 interface TaskFilterProps {
   searchQuery: string
@@ -32,19 +33,28 @@ export function TaskFilter({ searchQuery, onSearchChange }: TaskFilterProps) {
   }
 
   return (
-    <div className="flex flex-col gap-3 py-3">
+    <div className="flex flex-col gap-3">
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder="Search tasks..."
-          className="pl-9"
+          className="pl-10 h-10 rounded-xl border-input bg-card shadow-sm"
         />
+        {searchQuery && (
+          <button
+            onClick={() => onSearchChange('')}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Clear search"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
       </div>
       <div className="flex flex-wrap items-center gap-2">
         <Select value={filterStatus} onValueChange={(v) => setFilterStatus(v as typeof filterStatus)}>
-          <SelectTrigger className="h-10 w-[120px] text-sm">
+          <SelectTrigger className="h-9 w-[130px] rounded-lg text-sm bg-card border-input shadow-sm">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -55,7 +65,7 @@ export function TaskFilter({ searchQuery, onSearchChange }: TaskFilterProps) {
         </Select>
 
         <Select value={filterPriority} onValueChange={(v) => setFilterPriority(v as typeof filterPriority)}>
-          <SelectTrigger className="h-10 w-[120px] text-sm">
+          <SelectTrigger className="h-9 w-[130px] rounded-lg text-sm bg-card border-input shadow-sm">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -71,7 +81,7 @@ export function TaskFilter({ searchQuery, onSearchChange }: TaskFilterProps) {
             value={filterCategoryId ?? 'all'}
             onValueChange={(v) => setFilterCategoryId(v === 'all' ? null : v)}
           >
-            <SelectTrigger className="h-10 w-[140px] text-sm">
+            <SelectTrigger className="h-9 w-[150px] rounded-lg text-sm bg-card border-input shadow-sm">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -86,7 +96,7 @@ export function TaskFilter({ searchQuery, onSearchChange }: TaskFilterProps) {
         )}
 
         <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
-          <SelectTrigger className="h-10 w-[130px] text-sm">
+          <SelectTrigger className="h-9 w-[140px] rounded-lg text-sm bg-card border-input shadow-sm">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -101,10 +111,12 @@ export function TaskFilter({ searchQuery, onSearchChange }: TaskFilterProps) {
             variant="ghost"
             size="sm"
             onClick={handleReset}
-            className="h-10 gap-1 text-sm text-muted-foreground hover:text-foreground"
+            className={cn(
+              'h-9 gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg px-3'
+            )}
           >
             <X className="h-3.5 w-3.5" />
-            Clear filters
+            Clear
           </Button>
         )}
       </div>

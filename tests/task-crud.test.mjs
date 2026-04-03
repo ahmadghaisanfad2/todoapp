@@ -8,9 +8,9 @@ export default async function taskCrudTests({ page, test, assert, BASE_URL }) {
 
   // Clear any localStorage state for clean run
   await page.evaluate(() => {
-    localStorage.removeItem('todoflow-tasks')
-    localStorage.removeItem('todoflow-settings')
-    localStorage.removeItem('todoflow-categories')
+    localStorage.removeItem('wazheefa-tasks')
+    localStorage.removeItem('wazheefa-settings')
+    localStorage.removeItem('wazheefa-categories')
   })
   await page.reload()
   await page.waitForLoadState('networkidle')
