@@ -9,22 +9,25 @@ npm run dev        # Start dev server (Vite, http://localhost:5173)
 npm run build      # Type-check (tsc -b) then production build (vite build)
 npm run lint       # ESLint across all .ts/.tsx files
 npm run preview    # Preview production build locally
+npm run test       # Run the Node-based UI regression suite
+npm run test:smoke # Run the smoke subset of the regression suite
 npx tsc --noEmit   # Type-check only (no emit)
 ```
 
-No test runner is configured. Playwright is a devDependency for manual QA only.
+The test runner is a Node-based harness in `tests/run.mjs`. Playwright is used by that harness for UI regression coverage and manual QA.
 
 ## Project Structure
 
 ```
 src/
-├── App.tsx                        # Root component (default export)
 ├── index.css                      # Tailwind + CSS custom properties (light/dark themes)
-├── main.tsx                       # React 19 bootstrap (StrictMode, createRoot)
+├── main.tsx                       # React 19 bootstrap + minimal pathname router (`/` and `/app`)
+├── pages/
+│   ├── LandingPage.tsx            # Marketing landing page (`/`)
+│   └── AppPage.tsx                # Main task app (`/app`)
 ├── types/index.ts                 # All shared interfaces and type aliases
 ├── lib/
 │   ├── utils.ts                   # cn() — Tailwind class merge utility
-│   ├── uuid.ts                    # generateId() via crypto.randomUUID()
 │   ├── constants.ts               # Storage keys and app colors
 │   └── migrate.ts                 # One-time localStorage migration (todoflow → wazheefa)
 ├── store/                         # Zustand stores (persisted to localStorage)
@@ -39,6 +42,7 @@ src/
 │   ├── ui/                        # shadcn/ui primitives — DO NOT edit manually
 │   ├── common/                     # Shared components (EmptyState, PriorityBadge, ThemeProvider)
 │   ├── layout/                     # Header, Layout
+│   ├── landing/                    # Landing page sections (Hero, Features, Showcase, CTA, etc.)
 │   ├── task/                       # TaskCard, TaskFilter, TaskForm, TaskList
 │   └── category/                   # CategorySheet, CategoryForm
 ```
@@ -83,7 +87,6 @@ import type { Task, Priority } from '@/types'
 ## Component Conventions
 
 - **Named exports** for all components: `export function TaskCard() {}`
-- **Exception**: `App.tsx` uses `export default function App()`
 - **Props**: Define a `[Component]Props` interface directly above the component
 - **Function declarations**, not arrow functions, for components
 - File names: **PascalCase** for components (`TaskCard.tsx`), **camelCase** for everything else (`taskStore.ts`, `useTasks.ts`)
@@ -139,6 +142,7 @@ const addTask = useTaskStore((s) => s.addTask)
 - **`cn()` utility** for conditional classes: `cn('base-class', condition && 'conditional-class')`
 - CSS custom properties for theming in `index.css` (HSL values for light/dark)
 - Dark mode: class-based (`.dark` on `<html>`)
+- Landing page motion is implemented with CSS keyframes/utilities in `index.css`; keep transitions subtle and lightweight
 - Use `text-muted-foreground`, `bg-card`, `border`, etc. — semantic color tokens, not raw colors
 
 ```typescript
@@ -179,6 +183,13 @@ All shared types live in `src/types/index.ts`. Keep domain types there. Componen
 ## PWA
 
 Configured in `vite.config.ts` via `VitePWA`. Auto-updates service worker. Workbox caches `**/*.{js,css,html,ico,png,svg}`. Manifest defines app name, theme color (#2563EB), and icons.
+
+## Routing
+
+- The app uses a minimal pathname-based router in `src/main.tsx`
+- `/` renders the marketing landing page
+- `/app` renders the main task application
+- Keep new navigation changes lightweight unless there is a clear need to introduce a routing library
 
 ## Do NOT
 
