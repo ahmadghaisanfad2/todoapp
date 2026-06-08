@@ -3,8 +3,9 @@
  */
 export default async function smokeTest({ page, test, assert, BASE_URL }) {
   await page.setViewportSize({ width: 1280, height: 800 })
-  await page.goto(BASE_URL)
+  await page.goto(BASE_URL + '/app')
   await page.waitForLoadState('networkidle')
+  await page.waitForSelector('h1', { timeout: 10000 })
 
   test('header shows Wazheefa title', async () => {
     const title = page.locator('h1', { hasText: 'Wazheefa' })

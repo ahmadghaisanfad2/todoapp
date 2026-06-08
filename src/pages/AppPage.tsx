@@ -1,15 +1,18 @@
 import { useState, useEffect, useRef } from 'react'
-import { Plus, ArrowLeft } from 'lucide-react'
+import { Plus, ArrowLeft, ClipboardList, BookOpen } from 'lucide-react'
 import { Layout } from '@/components/layout/Layout'
 import { Header } from '@/components/layout/Header'
 import { TaskFilter } from '@/components/task/TaskFilter'
 import { TaskList } from '@/components/task/TaskList'
 import { TaskForm } from '@/components/task/TaskForm'
 import { CategorySheet } from '@/components/category/CategorySheet'
+import { HafalanTab } from '@/components/hafalan/HafalanTab'
 import { Button } from '@/components/ui/button'
 import { useTasks } from '@/hooks/useTasks'
 import { useSettingsStore } from '@/store/settingsStore'
 import type { Task } from '@/types'
+
+type AppTab = 'tasks' | 'hafalan'
 
 interface AppPageProps {
   onNavigateHome: () => void
@@ -17,6 +20,7 @@ interface AppPageProps {
 
 export function AppPage({ onNavigateHome }: AppPageProps) {
   const { activeTasks, completedTasks, searchQuery, setSearchQuery, toggleTask, deleteTask } = useTasks()
+  const [activeTab, setActiveTab] = useState<AppTab>('tasks')
   const [taskFormOpen, setTaskFormOpen] = useState(false)
   const [editingTask, setEditingTask] = useState<Task | undefined>()
   const [categorySheetOpen, setCategorySheetOpen] = useState(false)
@@ -81,32 +85,75 @@ export function AppPage({ onNavigateHome }: AppPageProps) {
         </div>
       )}
 
-      <Layout>
-        <Header onCategoryOpen={() => setCategorySheetOpen(true)} onAddTask={handleAddTask} />
-        <main className="pt-6">
-          <TaskFilter searchQuery={searchQuery} onSearchChange={setSearchQuery} />
-          <div className="mt-4">
-            <TaskList
-              activeTasks={activeTasks}
-              completedTasks={completedTasks}
-              hasActiveFilters={hasActiveFilters}
-              onEdit={handleEditTask}
-              onToggle={toggleTask}
-              onDelete={deleteTask}
-            />
-          </div>
-        </main>
-      </Layout>
+      <div className="mx-auto max-w-5xl px-4 pt-2">
+        <div className="flex gap-1 rounded-lg bg-muted p-1">
+          <button
+            onClick={() => {
+              setActiveTab('tasks')
+              setTaskFormOpen(false)
+              setCategorySheetOpen(false)
+            }}
+            className={`flex flex-1 items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+              activeTab === 'tasks'
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <ClipboardList className="h-4 w-4" />
+            Tugas
+          </button>
+          <button
+            onClick={() => {
+              setActiveTab('hafalan')
+              setTaskFormOpen(false)
+              setCategorySheetOpen(false)
+            }}
+            className={`flex flex-1 items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+              activeTab === 'hafalan'
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <BookOpen className="h-4 w-4" />
+            Hafalan
+          </button>
+        </div>
+      </div>
 
-      <Button
-        size="icon"
-        className="fixed bottom-6 right-6 h-12 w-12 rounded-full shadow-lg shadow-black/10 sm:hidden"
-        style={{ bottom: 'max(1.5rem, env(safe-area-inset-bottom, 1.5rem))' }}
-        onClick={handleAddTask}
-        aria-label="Tambah tugas"
-      >
-        <Plus className="h-5 w-5" />
-      </Button>
+      {activeTab === 'tasks' ? (
+        <Layout>
+          <Header onCategoryOpen={() => setCategorySheetOpen(true)} onAddTask={handleAddTask} />
+          <main className="pt-6">
+            <TaskFilter searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+            <div className="mt-4">
+              <TaskList
+                activeTasks={activeTasks}
+                completedTasks={completedTasks}
+                hasActiveFilters={hasActiveFilters}
+                onEdit={handleEditTask}
+                onToggle={toggleTask}
+                onDelete={deleteTask}
+              />
+            </div>
+          </main>
+        </Layout>
+      ) : (
+        <div className="mx-auto max-w-5xl px-4 py-6">
+          <HafalanTab />
+        </div>
+      )}
+
+      {activeTab === 'tasks' && (
+        <Button
+          size="icon"
+          className="fixed bottom-6 right-6 h-12 w-12 rounded-full shadow-lg shadow-black/10 sm:hidden"
+          style={{ bottom: 'max(1.5rem, env(safe-area-inset-bottom, 1.5rem))' }}
+          onClick={handleAddTask}
+          aria-label="Tambah tugas"
+        >
+          <Plus className="h-5 w-5" />
+        </Button>
+      )}
 
       <TaskForm
         key={editingTask?.id ?? 'new'}

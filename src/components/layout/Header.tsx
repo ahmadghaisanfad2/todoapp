@@ -35,10 +35,10 @@ export function Header({ onCategoryOpen, onAddTask }: HeaderProps) {
             size="sm"
             onClick={onAddTask}
             className="hidden sm:inline-flex gap-1.5 text-sm font-medium"
-            aria-label="New task"
+            aria-label="Add task"
           >
             <Plus className="h-4 w-4" />
-            New task
+            Add task
           </Button>
           <Button
             variant="ghost"

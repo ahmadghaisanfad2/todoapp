@@ -14,7 +14,7 @@ const testimonials = [
     color: 'violet',
   },
   {
-    quote: "Sebagai freelancer dengan banyak projetc, saya butuh sesuatu yang simpel tapi bisa diatur. Prioritas dan jatuh tempo di sini cukup untuk tidak membuat saya kalap.",
+    quote: "Sebagai freelancer dengan banyak proyek, saya butuh sesuatu yang simpel tapi bisa diatur. Prioritas dan jatuh tempo di sini cukup untuk tidak membuat saya kalap.",
     name: 'Farhan K.',
     role: 'Freelance Designer',
     avatar: 'FK',

@@ -54,7 +54,7 @@ export function TaskFilter({ searchQuery, onSearchChange }: TaskFilterProps) {
       </div>
       <div className="flex flex-wrap items-center gap-2">
         <Select value={filterStatus} onValueChange={(v) => setFilterStatus(v as typeof filterStatus)}>
-          <SelectTrigger className="h-9 w-[130px] rounded-lg text-sm bg-card border-input shadow-sm">
+          <SelectTrigger className="h-10 w-[130px] rounded-lg text-sm bg-card border-input shadow-sm">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -65,7 +65,7 @@ export function TaskFilter({ searchQuery, onSearchChange }: TaskFilterProps) {
         </Select>
 
         <Select value={filterPriority} onValueChange={(v) => setFilterPriority(v as typeof filterPriority)}>
-          <SelectTrigger className="h-9 w-[130px] rounded-lg text-sm bg-card border-input shadow-sm">
+          <SelectTrigger className="h-10 w-[130px] rounded-lg text-sm bg-card border-input shadow-sm">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -81,7 +81,7 @@ export function TaskFilter({ searchQuery, onSearchChange }: TaskFilterProps) {
             value={filterCategoryId ?? 'all'}
             onValueChange={(v) => setFilterCategoryId(v === 'all' ? null : v)}
           >
-            <SelectTrigger className="h-9 w-[150px] rounded-lg text-sm bg-card border-input shadow-sm">
+            <SelectTrigger className="h-10 w-[150px] rounded-lg text-sm bg-card border-input shadow-sm">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -96,7 +96,7 @@ export function TaskFilter({ searchQuery, onSearchChange }: TaskFilterProps) {
         )}
 
         <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
-          <SelectTrigger className="h-9 w-[140px] rounded-lg text-sm bg-card border-input shadow-sm">
+          <SelectTrigger className="h-10 w-[140px] rounded-lg text-sm bg-card border-input shadow-sm">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -112,11 +112,11 @@ export function TaskFilter({ searchQuery, onSearchChange }: TaskFilterProps) {
             size="sm"
             onClick={handleReset}
             className={cn(
-              'h-9 gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg px-3'
+              'h-10 gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg px-3'
             )}
           >
             <X className="h-3.5 w-3.5" />
-            Clear
+Clear filters
           </Button>
         )}
       </div>

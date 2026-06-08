@@ -3,7 +3,7 @@
  */
 export default async function taskCrudTests({ page, test, assert, BASE_URL }) {
   await page.setViewportSize({ width: 1280, height: 800 })
-  await page.goto(BASE_URL)
+  await page.goto(BASE_URL + '/app')
   await page.waitForLoadState('networkidle')
 
   // Clear any localStorage state for clean run

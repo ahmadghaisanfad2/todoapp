@@ -29,3 +29,5 @@ export type Priority = Task['priority']
 export type Theme = AppSettings['theme']
 export type SortBy = AppSettings['sortBy']
 export type FilterStatus = AppSettings['filterStatus']
+
+export type { HafalanTask, Santri, HafalanLog, LogType, HafalanStatus } from './hafalan'

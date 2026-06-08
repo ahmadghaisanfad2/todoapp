@@ -32,7 +32,7 @@ export function CategoryForm({ open, onOpenChange, category, onSave }: CategoryF
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-sm rounded-2xl">
         <DialogHeader className="pb-1">
-          <DialogTitle className="text-lg font-semibold">{category ? 'Edit category' : 'New category'}</DialogTitle>
+          <DialogTitle className="text-lg font-semibold">{category ? 'Edit category' : 'Add category'}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="flex flex-col gap-5 pt-2">
           <div className="flex flex-col gap-2">
