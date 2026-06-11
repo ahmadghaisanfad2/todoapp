@@ -78,7 +78,7 @@ export const useTaskStore = create<TaskStore>()(
         set((state) => ({
           tasks: state.tasks.map((t) =>
             t.id === id
-              ? { ...t, status, order, updatedAt: new Date().toISOString() }
+              ? { ...t, status, order, completed: status === 'done', updatedAt: new Date().toISOString() }
               : t
           ),
         })),

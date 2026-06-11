@@ -68,7 +68,7 @@ export function useYouTubePlayer() {
         width: '1',
         videoId: currentTrack.videoId,
         playerVars: {
-          autoplay: 1,
+          autoplay: 0,
           controls: 0,
           disablekb: 1,
           fs: 0,
@@ -80,8 +80,7 @@ export function useYouTubePlayer() {
           onReady: () => {
             if (playerRef.current) {
               playerRef.current.setVolume(volume)
-              playerRef.current.playVideo()
-              setIsPlaying(true)
+              setIsPlaying(false)
               startPolling()
             }
           },

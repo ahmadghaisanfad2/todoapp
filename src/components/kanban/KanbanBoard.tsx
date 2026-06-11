@@ -10,7 +10,6 @@ import {
   useSensors,
   type DragStartEvent,
   type DragEndEvent,
-  type DragOverEvent,
 } from '@dnd-kit/core'
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { KanbanColumnComponent } from './KanbanColumn'
@@ -56,28 +55,6 @@ export function KanbanBoard({ onEditTask, onAddTask }: KanbanBoardProps) {
     if (task) setActiveTask(task)
   }
 
-  const handleDragOver = (event: DragOverEvent) => {
-    const { active, over } = event
-    if (!over) return
-
-    const activeId = active.id as string
-    const overId = over.id as string
-
-    const activeItem = tasks.find((t) => t.id === activeId)
-    if (!activeItem) return
-
-    const overColumn = columns.find((col) => col.id === overId)
-    const overTask = tasks.find((t) => t.id === overId)
-
-    if (overColumn) {
-      if (activeItem.status !== overColumn.id) {
-        moveTask(activeId, overColumn.id, getTasksByColumn(overColumn.id).length)
-      }
-    } else if (overTask && activeItem.status !== overTask.status) {
-      moveTask(activeId, overTask.status, overTask.order)
-    }
-  }
-
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
     setActiveTask(null)
@@ -90,12 +67,23 @@ export function KanbanBoard({ onEditTask, onAddTask }: KanbanBoardProps) {
     if (activeId === overId) return
 
     const activeItem = tasks.find((t) => t.id === activeId)
+    if (!activeItem) return
+
+    const overColumn = columns.find((col) => col.id === overId)
     const overTask = tasks.find((t) => t.id === overId)
 
-    if (activeItem && overTask && activeItem.status === overTask.status) {
-      const columnTasks = getTasksByColumn(activeItem.status)
-      const overIndex = columnTasks.findIndex((t) => t.id === overId)
-      moveTask(activeId, activeItem.status, overIndex)
+    if (overColumn) {
+      if (activeItem.status !== overColumn.id) {
+        moveTask(activeId, overColumn.id, getTasksByColumn(overColumn.id).length)
+      }
+    } else if (overTask) {
+      if (activeItem.status !== overTask.status) {
+        moveTask(activeId, overTask.status, overTask.order)
+      } else {
+        const columnTasks = getTasksByColumn(activeItem.status)
+        const overIndex = columnTasks.findIndex((t) => t.id === overId)
+        moveTask(activeId, activeItem.status, overIndex)
+      }
     }
   }
 
@@ -122,7 +110,6 @@ export function KanbanBoard({ onEditTask, onAddTask }: KanbanBoardProps) {
       sensors={sensors}
       collisionDetection={closestCorners}
       onDragStart={handleDragStart}
-      onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
       <div className="flex gap-4 overflow-x-auto pb-4" style={{ minHeight: 'calc(100dvh - 200px)' }}>
