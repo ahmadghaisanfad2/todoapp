@@ -42,10 +42,10 @@ export function LandingHero({ onNavigateApp }: LandingHeroProps) {
             </div>
 
             <div className="animate-hero-fade-2">
-              <h1 className="font-brand max-w-[16ch] text-[2.75rem] leading-[1.1] tracking-tight text-foreground sm:text-5xl md:text-6xl xl:text-[4.5rem]" style={{ fontWeight: 500 }}>
-                Fokus pada yang penting,
+              <h1 className="font-brand max-w-[16ch] text-[2.75rem] leading-[1.1] tracking-tight text-foreground sm:text-5xl md:text-6xl xl:text-[4.5rem]" style={{ fontWeight: 800 }}>
+                <span className="text-primary">Fokus</span> pada yang penting,
               </h1>
-              <p className="font-brand mt-1 max-w-[16ch] text-[2.75rem] leading-[1.1] tracking-tight text-primary sm:text-5xl md:text-6xl xl:text-[4.5rem]" style={{ fontWeight: 400 }}>
+              <p className="font-brand mt-1 max-w-[16ch] text-[2.75rem] leading-[1.1] tracking-tight text-muted-foreground/80 sm:text-5xl md:text-6xl xl:text-[4.5rem]" style={{ fontWeight: 300 }}>
                 selesaikan dengan tenang.
               </p>
               <div className="mt-4 h-px w-16 bg-gradient-to-r from-primary/60 to-transparent" />
@@ -81,7 +81,7 @@ export function LandingHero({ onNavigateApp }: LandingHeroProps) {
                 <div className="h-3 w-3 rounded-full bg-[#FF5F57]" />
                 <div className="h-3 w-3 rounded-full bg-[#FEBC2E]" />
                 <div className="h-3 w-3 rounded-full bg-[#28C840]" />
-                <span className="ml-2 font-brand text-xs text-muted-foreground" style={{ fontWeight: 400 }}>Wazheefa</span>
+                <span className="ml-2 font-brand text-xs text-muted-foreground" style={{ fontWeight: 600 }}>Wazheefa</span>
               </div>
 
               {/* Task list */}
