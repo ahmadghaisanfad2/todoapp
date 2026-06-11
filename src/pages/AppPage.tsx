@@ -10,6 +10,7 @@ import { HafalanTab } from '@/components/hafalan/HafalanTab'
 import { Button } from '@/components/ui/button'
 import { useTasks } from '@/hooks/useTasks'
 import { useSettingsStore } from '@/store/settingsStore'
+import { TimerWidget } from '@/components/timer/TimerWidget'
 import type { Task } from '@/types'
 
 type AppTab = 'tasks' | 'hafalan'
@@ -166,6 +167,8 @@ export function AppPage({ onNavigateHome }: AppPageProps) {
         open={categorySheetOpen}
         onOpenChange={setCategorySheetOpen}
       />
+
+      <TimerWidget />
     </div>
   )
 }
