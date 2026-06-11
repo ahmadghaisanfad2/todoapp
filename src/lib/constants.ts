@@ -2,9 +2,6 @@ export const STORAGE_KEYS = {
   TASKS: 'wazheefa-tasks',
   CATEGORIES: 'wazheefa-categories',
   SETTINGS: 'wazheefa-settings',
-  HAFALAN_TASKS: 'wazheefa-hafalan-tasks',
-  SANTRI: 'wazheefa-santri',
-  HAFALAN_LOGS: 'wazheefa-hafalan-logs',
   KANBAN: 'wazheefa-kanban',
 } as const
 
