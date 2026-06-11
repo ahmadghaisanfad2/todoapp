@@ -21,8 +21,7 @@ export function LandingHero({ onNavigateApp }: LandingHeroProps) {
           src={heroDark}
           alt=""
           aria-hidden="true"
-          hidden
-          className="h-full w-full object-cover object-center dark:block"
+          className="hidden h-full w-full object-cover object-center dark:block"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-background/60 to-background dark:from-background/40 dark:via-background/65 dark:to-background" />
       </div>

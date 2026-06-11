@@ -1,6 +1,32 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { persist, createJSONStorage } from 'zustand/middleware'
 import { LOFI_PRESETS } from '@/lib/musicPresets'
+import { STORAGE_KEYS } from '@/lib/constants'
+
+const safeStorage = {
+  getItem: (name: string): string | null => {
+    try {
+      return localStorage.getItem(name)
+    } catch {
+      console.warn(`[musicStore] Failed to read from localStorage: ${name}`)
+      return null
+    }
+  },
+  setItem: (name: string, value: string): void => {
+    try {
+      localStorage.setItem(name, value)
+    } catch (e) {
+      console.error(`[musicStore] Failed to write to localStorage: ${name}`, e)
+    }
+  },
+  removeItem: (name: string): void => {
+    try {
+      localStorage.removeItem(name)
+    } catch {
+      console.warn(`[musicStore] Failed to remove from localStorage: ${name}`)
+    }
+  },
+}
 
 interface MusicTrack {
   videoId: string
@@ -61,13 +87,14 @@ export const useMusicStore = create<MusicStore>()(
       history: [],
       playlists: [],
       setTrack: (track) => {
-        const { playlist } = get()
+        const { playlist, history } = get()
         const exists = playlist.some(t => t.videoId === track.videoId)
-        get().addToHistory(track)
+        const filtered = history.filter(t => t.videoId !== track.videoId)
+        const newHistory = [track, ...filtered].slice(0, 50)
         if (!exists) {
-          set({ currentTrack: track, isPlaying: true, isPlayerOpen: true, playlist: [...playlist, track] })
+          set({ currentTrack: track, isPlaying: true, isPlayerOpen: true, playlist: [...playlist, track], history: newHistory })
         } else {
-          set({ currentTrack: track, isPlaying: true, isPlayerOpen: true })
+          set({ currentTrack: track, isPlaying: true, isPlayerOpen: true, history: newHistory })
         }
       },
       setIsPlaying: (playing) => set({ isPlaying: playing }),
@@ -80,7 +107,7 @@ export const useMusicStore = create<MusicStore>()(
         repeatMode: s.repeatMode === 'off' ? 'all' : s.repeatMode === 'all' ? 'one' : 'off',
       })),
       nextTrack: () => {
-        const { currentTrack, playlist, isShuffle, repeatMode } = get()
+        const { currentTrack, playlist, history, isShuffle, repeatMode } = get()
         if (!currentTrack || playlist.length === 0) return
         const currentIndex = playlist.findIndex(t => t.videoId === currentTrack.videoId)
         if (currentIndex === -1) return
@@ -100,10 +127,12 @@ export const useMusicStore = create<MusicStore>()(
             else { set({ isPlaying: false }); return }
           }
         }
-        set({ currentTrack: playlist[nextIndex], isPlaying: true })
+        const nextTrackItem = playlist[nextIndex]
+        const filtered = history.filter(t => t.videoId !== nextTrackItem.videoId)
+        set({ currentTrack: nextTrackItem, isPlaying: true, history: [nextTrackItem, ...filtered].slice(0, 50) })
       },
       prevTrack: () => {
-        const { currentTrack, playlist, isShuffle } = get()
+        const { currentTrack, playlist, history, isShuffle } = get()
         if (!currentTrack || playlist.length === 0) return
         const currentIndex = playlist.findIndex(t => t.videoId === currentTrack.videoId)
         if (currentIndex === -1) return
@@ -116,7 +145,9 @@ export const useMusicStore = create<MusicStore>()(
           prevIndex = currentIndex - 1
           if (prevIndex < 0) prevIndex = playlist.length - 1
         }
-        set({ currentTrack: playlist[prevIndex], isPlaying: true })
+        const prevTrackItem = playlist[prevIndex]
+        const filtered = history.filter(t => t.videoId !== prevTrackItem.videoId)
+        set({ currentTrack: prevTrackItem, isPlaying: true, history: [prevTrackItem, ...filtered].slice(0, 50) })
       },
       addToPlaylist: (track) => {
         const { playlist } = get()
@@ -159,14 +190,21 @@ export const useMusicStore = create<MusicStore>()(
         }))
       },
       playPlaylist: (playlistId) => {
-        const { playlists } = get()
+        const { playlists, history } = get()
         const playlist = playlists.find(p => p.id === playlistId)
         if (!playlist || playlist.tracks.length === 0) return
-        get().addToHistory(playlist.tracks[0])
-        set({ currentTrack: playlist.tracks[0], isPlaying: true, isPlayerOpen: true })
+        const firstTrack = playlist.tracks[0]
+        const filtered = history.filter(t => t.videoId !== firstTrack.videoId)
+        set({
+          currentTrack: firstTrack,
+          playlist: playlist.tracks,
+          isPlaying: true,
+          isPlayerOpen: true,
+          history: [firstTrack, ...filtered].slice(0, 50),
+        })
       },
     }),
-    { name: 'wazheefa-music' }
+    { name: STORAGE_KEYS.MUSIC, storage: createJSONStorage(() => safeStorage) }
   )
 )
 

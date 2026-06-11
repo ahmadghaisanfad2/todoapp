@@ -9,27 +9,28 @@ import { cn } from '@/lib/utils'
 export function TimerWidget() {
   const [isExpanded, setIsExpanded] = useState(false)
   const [showHint, setShowHint] = useState(() => {
-    return !localStorage.getItem('wazheefa-timer-hint-seen')
+    try { return !localStorage.getItem('wazheefa-timer-hint-seen') }
+    catch { return true }
   })
   const timer = useTimer()
   const widgetRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!isExpanded) return
-    const handleClickOutside = (e: MouseEvent) => {
+    const handleClickOutside = (e: PointerEvent) => {
       if (widgetRef.current && !widgetRef.current.contains(e.target as Node)) {
         setIsExpanded(false)
       }
     }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
+    document.addEventListener('pointerdown', handleClickOutside)
+    return () => document.removeEventListener('pointerdown', handleClickOutside)
   }, [isExpanded])
 
   useEffect(() => {
     if (!showHint) return
     const t = setTimeout(() => {
       setShowHint(false)
-      localStorage.setItem('wazheefa-timer-hint-seen', 'true')
+      try { localStorage.setItem('wazheefa-timer-hint-seen', 'true') } catch { /* ignore */ }
     }, 5000)
     return () => clearTimeout(t)
   }, [showHint])
@@ -85,7 +86,7 @@ export function TimerWidget() {
               setIsExpanded(true)
               if (showHint) {
                 setShowHint(false)
-                localStorage.setItem('wazheefa-timer-hint-seen', 'true')
+                try { localStorage.setItem('wazheefa-timer-hint-seen', 'true') } catch { /* ignore */ }
               }
             }}
             className={cn(

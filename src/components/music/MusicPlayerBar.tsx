@@ -17,11 +17,18 @@ function formatTime(seconds: number): string {
 }
 
 export function MusicPlayerBar({ onOpenSearch }: MusicPlayerBarProps) {
-  const { 
-    currentTrack, isPlaying, volume, isPlayerOpen, 
-    isShuffle, repeatMode,
-    setVolume, togglePlayer, toggleShuffle, cycleRepeat, nextTrack, prevTrack 
-  } = useMusicStore()
+  const currentTrack = useMusicStore((s) => s.currentTrack)
+  const isPlaying = useMusicStore((s) => s.isPlaying)
+  const volume = useMusicStore((s) => s.volume)
+  const isPlayerOpen = useMusicStore((s) => s.isPlayerOpen)
+  const isShuffle = useMusicStore((s) => s.isShuffle)
+  const repeatMode = useMusicStore((s) => s.repeatMode)
+  const setVolume = useMusicStore((s) => s.setVolume)
+  const togglePlayer = useMusicStore((s) => s.togglePlayer)
+  const toggleShuffle = useMusicStore((s) => s.toggleShuffle)
+  const cycleRepeat = useMusicStore((s) => s.cycleRepeat)
+  const nextTrack = useMusicStore((s) => s.nextTrack)
+  const prevTrack = useMusicStore((s) => s.prevTrack)
   const { containerRef, togglePlayPause, seekTo, currentTime, duration } = useYouTubePlayer()
   const [isDragging, setIsDragging] = useState(false)
   const [dragTime, setDragTime] = useState(0)

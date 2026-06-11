@@ -3,6 +3,7 @@ export const STORAGE_KEYS = {
   CATEGORIES: 'wazheefa-categories',
   SETTINGS: 'wazheefa-settings',
   KANBAN: 'wazheefa-kanban',
+  MUSIC: 'wazheefa-music',
 } as const
 
 export const DEFAULT_COLUMNS = [

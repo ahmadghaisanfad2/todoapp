@@ -39,7 +39,10 @@ function getYouTubeAPI(): YouTubeWindowAPI | undefined {
 export function useYouTubePlayer() {
   const containerRef = useRef<HTMLDivElement>(null)
   const playerRef = useRef<YouTubePlayerInstance | null>(null)
-  const { currentTrack, isPlaying, volume, setIsPlaying } = useMusicStore()
+  const currentTrack = useMusicStore((s) => s.currentTrack)
+  const isPlaying = useMusicStore((s) => s.isPlaying)
+  const volume = useMusicStore((s) => s.volume)
+  const setIsPlaying = useMusicStore((s) => s.setIsPlaying)
   const [playerState, setPlayerState] = useState<YouTubePlayerState>({
     currentTime: 0,
     duration: 0,

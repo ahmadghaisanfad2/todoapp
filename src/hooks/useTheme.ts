@@ -1,18 +1,20 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useSettingsStore } from '@/store/settingsStore'
+
+function computeResolved(theme: 'light' | 'dark' | 'system'): 'light' | 'dark' {
+  if (theme === 'dark') return 'dark'
+  if (theme === 'light') return 'light'
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
 
 export function useTheme() {
   const theme = useSettingsStore((s) => s.theme)
   const setTheme = useSettingsStore((s) => s.setTheme)
-
-  const getResolvedTheme = (): 'light' | 'dark' => {
-    if (theme === 'dark') return 'dark'
-    if (theme === 'light') return 'light'
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-  }
+  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>(() => computeResolved(theme))
 
   useEffect(() => {
     const applyTheme = (resolved: 'light' | 'dark') => {
+      setResolvedTheme(resolved)
       if (resolved === 'dark') {
         document.documentElement.classList.add('dark')
       } else {
@@ -33,5 +35,5 @@ export function useTheme() {
     return () => mq.removeEventListener('change', handler)
   }, [theme])
 
-  return { theme, setTheme, resolvedTheme: getResolvedTheme() }
+  return { theme, setTheme, resolvedTheme }
 }
