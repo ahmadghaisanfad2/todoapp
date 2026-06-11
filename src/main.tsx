@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import { runMigration } from '@/lib/migrate'
+import { runMigration, migrateTaskStatus } from '@/lib/migrate'
 import { AppPage } from '@/pages/AppPage'
 import { LandingPage } from '@/pages/LandingPage'
 
 runMigration()
+migrateTaskStatus()
 
 export function Router() {
   const [path, setPath] = useState(window.location.pathname)

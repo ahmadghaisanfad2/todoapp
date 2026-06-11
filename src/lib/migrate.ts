@@ -16,3 +16,29 @@ export function runMigration() {
     // Ignore migration errors — non-fatal
   }
 }
+
+export function migrateTaskStatus() {
+  try {
+    const stored = localStorage.getItem('wazheefa-tasks')
+    if (!stored) return
+
+    const data = JSON.parse(stored)
+    if (!data.state?.tasks) return
+
+    let needsUpdate = false
+    const migrated = data.state.tasks.map((task: Record<string, unknown>) => {
+      if (!task.status) {
+        needsUpdate = true
+        return { ...task, status: task.completed ? 'done' : 'todo' }
+      }
+      return task
+    })
+
+    if (needsUpdate) {
+      data.state.tasks = migrated
+      localStorage.setItem('wazheefa-tasks', JSON.stringify(data))
+    }
+  } catch {
+    console.warn('[migrate] Failed to migrate task status')
+  }
+}
