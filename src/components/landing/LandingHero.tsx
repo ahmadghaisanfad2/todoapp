@@ -1,106 +1,132 @@
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, CheckCircle2, Columns3, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 interface LandingHeroProps {
   onNavigateApp: () => void
 }
 
+const HIGHLIGHTS = [
+  'Papan Kanban, timer, dan player dalam satu flow',
+  'Geser tugas antar kolom untuk kelola alur kerja',
+  'Semua data tetap di browser Anda',
+]
+
+const KANBAN_COLUMNS = [
+  {
+    title: 'To Do',
+    dotColor: 'bg-white/40',
+    tasks: ['Finalize launch copy', 'Review pricing notes'],
+  },
+  {
+    title: 'Aktif',
+    dotColor: 'bg-sky-400',
+    tasks: ['Rekonsiliasi feedback'],
+  },
+  {
+    title: 'Selesai',
+    dotColor: 'bg-emerald-400',
+    tasks: ['Setup analytics'],
+  },
+]
+
 export function LandingHero({ onNavigateApp }: LandingHeroProps) {
   return (
-    <section className="relative min-h-[100dvh] flex items-center overflow-hidden">
-      <div className="relative z-10 mx-auto max-w-6xl px-6 py-24 md:py-32 w-full">
-        <div className="grid lg:grid-cols-2 gap-16 lg:gap-20 items-center">
-          {/* Left: Copy */}
+    <section className="relative isolate overflow-hidden bg-slate-950 text-white">
+      <div className="absolute inset-0">
+        <img
+          src="/landing-hero-bg.svg"
+          alt=""
+          aria-hidden="true"
+          className="h-full w-full object-cover object-center opacity-95"
+        />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.1),transparent_32%),linear-gradient(180deg,rgba(2,6,23,0.04)_0%,rgba(2,6,23,0.5)_48%,rgba(2,6,23,0.94)_100%)]" />
+        <div className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-slate-950 via-slate-950/88 to-transparent" />
+      </div>
+
+      <div className="relative z-10 mx-auto flex min-h-[calc(100dvh-4.5rem)] max-w-7xl items-center px-6 py-16 md:py-20">
+        <div className="grid w-full items-center gap-14 lg:grid-cols-[minmax(0,1.04fr)_minmax(0,0.96fr)] lg:gap-10 xl:gap-16">
           <div className="flex flex-col gap-8">
             <div className="animate-hero-fade-1">
-              <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-1.5 text-xs font-mono font-medium text-muted-foreground">
-                <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                Local-first task manager
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/8 px-4 py-2 text-[11px] font-medium uppercase tracking-[0.24em] text-white/74 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-xl">
+                <Sparkles className="h-3.5 w-3.5 text-emerald-300" />
+                Flow-state productivity
               </span>
             </div>
 
-            <h1 className="animate-hero-fade-2 font-sans text-5xl md:text-6xl lg:text-[4.25rem] font-bold tracking-tight text-foreground leading-[1.05]">
-              Fokus, nikmati<br />
-              <span className="text-muted-foreground">prosesnya.</span>
-            </h1>
+            <div className="space-y-5">
+              <h1 className="animate-hero-fade-2 max-w-[11ch] font-sans text-5xl font-semibold leading-[0.96] tracking-[-0.06em] text-white sm:text-6xl md:text-7xl xl:text-[5.6rem]">
+                Fokus lebih tenang, kerja lebih dalam.
+              </h1>
+              <p className="animate-hero-fade-3 max-w-[34rem] text-base leading-7 text-white/68 sm:text-lg sm:leading-8">
+                Wazheefa menyatukan papan Kanban, timer fokus, dan musik YouTube dalam satu workspace yang terasa halus, ringan, dan siap dipakai kapan saja.
+              </p>
+            </div>
 
-            <p className="animate-hero-fade-3 text-lg md:text-xl text-muted-foreground leading-relaxed max-w-[46ch]">
-              Catat tugas, nyalakan timer, putar musik favorit dari YouTube, dan biarkan dirimu fokus dalam alur yang nyaman.
-            </p>
-
-            <div className="animate-hero-fade-4 flex flex-wrap items-center gap-5 pt-1">
+            <div className="animate-hero-fade-4 flex flex-wrap items-center gap-4">
               <Button
                 onClick={onNavigateApp}
                 size="lg"
-                className="h-13 rounded-xl bg-foreground px-8 text-sm font-semibold font-mono text-background shadow-none transition-all duration-200 hover:opacity-90 active:scale-[0.98]"
+                className="h-12 rounded-full bg-white px-6 text-sm font-semibold text-slate-950 shadow-[0_18px_48px_rgba(255,255,255,0.16)] transition-transform duration-200 hover:scale-[1.02] hover:bg-white/95 active:scale-[0.99]"
               >
-                Mulai Sekarang
+                Buka workspace
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
-              <p className="text-sm font-mono text-muted-foreground">
-                Gratis. Tidak perlu daftar.
-              </p>
+              <div className="rounded-full border border-white/12 bg-white/8 px-4 py-2 text-sm text-white/62 backdrop-blur-xl">
+                Gratis. Tidak perlu akun. Langsung jalan.
+              </div>
+            </div>
+
+            <div className="grid gap-3 sm:max-w-xl sm:grid-cols-3">
+              {HIGHLIGHTS.map((item) => (
+                <div
+                  key={item}
+                  className="rounded-2xl border border-white/10 bg-white/6 px-4 py-4 text-sm leading-6 text-white/74 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-xl"
+                >
+                  <CheckCircle2 className="mb-3 h-4 w-4 text-emerald-300" />
+                  {item}
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Right: App Preview Card */}
-          <div className="relative hidden lg:block animate-hero-fade-3">
-            <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-              {/* Window chrome */}
-              <div className="flex items-center gap-2 mb-5">
-                <div className="h-3 w-3 rounded-full bg-muted" />
-                <div className="h-3 w-3 rounded-full bg-muted" />
-                <div className="h-3 w-3 rounded-full bg-muted" />
-                <span className="ml-3 text-xs font-mono text-muted-foreground">Wazheefa</span>
-              </div>
-
-              {/* Task list mock */}
-              <div className="space-y-3">
-                {[
-                  { title: 'Review sprint backlog', tag: 'Design', tagColor: 'bg-primary/10 text-primary', done: false },
-                  { title: 'Kirim proposal ke klien', tag: 'Klien', tagColor: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400', done: false },
-                  { title: 'Update changelog v2.1', tag: 'Dev', tagColor: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400', done: true },
-                  { title: 'Riset musik lo-fi untuk fokus', tag: 'Vibes', tagColor: 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400', done: false },
-                ].map((t, i) => (
-                  <div key={i} className={`flex items-center gap-3 rounded-lg border border-border/60 px-4 py-3 ${t.done ? 'opacity-50' : ''}`}>
-                    <div className={`h-4 w-4 rounded border shrink-0 flex items-center justify-center ${t.done ? 'bg-primary border-primary' : 'border-border'}`}>
-                      {t.done && (
-                        <svg width="8" height="8" viewBox="0 0 10 10" fill="none" className="text-primary-foreground">
-                          <path d="M2 5l2 2 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                      )}
+          <div className="animate-hero-fade-3 lg:justify-self-end">
+            <div className="animate-hero-panel-breathe relative mx-auto max-w-[34rem] rounded-[2rem] border border-white/12 bg-white/8 p-4 shadow-[0_30px_120px_rgba(4,10,25,0.55)] backdrop-blur-2xl">
+              <div className="absolute inset-x-10 -top-px h-px bg-gradient-to-r from-transparent via-white/45 to-transparent" />
+              <div className="rounded-[1.65rem] border border-white/10 bg-slate-950/72 p-4 sm:p-5">
+                <div className="mb-5 flex items-center justify-between gap-4 rounded-[1.3rem] border border-white/8 bg-white/5 px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <Columns3 className="h-4 w-4 text-emerald-300" />
+                    <div>
+                      <p className="text-[11px] uppercase tracking-[0.24em] text-white/42">Workflow</p>
+                      <p className="mt-0.5 text-sm font-medium text-white">Papan Kanban</p>
                     </div>
-                    <span className={`text-sm font-sans flex-1 ${t.done ? 'line-through text-muted-foreground' : 'text-foreground'}`}>{t.title}</span>
-                    <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${t.tagColor}`}>{t.tag}</span>
                   </div>
-                ))}
+                  <div className="rounded-full border border-emerald-400/25 bg-emerald-400/12 px-3 py-1 text-[11px] font-medium text-emerald-200">
+                    Aktif
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-3">
+                  {KANBAN_COLUMNS.map((col) => (
+                    <div key={col.title} className="rounded-[1rem] border border-white/8 bg-white/4 p-3">
+                      <div className="mb-3 flex items-center gap-1.5">
+                        <div className={`h-1.5 w-1.5 rounded-full ${col.dotColor}`} />
+                        <span className="text-[10px] font-medium uppercase tracking-wider text-white/50">{col.title}</span>
+                      </div>
+                      <div className="space-y-2">
+                        {col.tasks.map((task) => (
+                          <div key={task} className="rounded-lg border border-white/7 bg-slate-950/55 px-2.5 py-2">
+                            <span className="text-[11px] text-white/74 leading-snug">{task}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              {/* Timer + Music bar */}
-              <div className="mt-5 flex items-center gap-3 rounded-xl border border-border/60 px-4 py-3">
-                <div className="flex items-center gap-2">
-                  <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-primary">
-                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
-                      <path d="M12 6v6l4 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                    </svg>
-                  </div>
-                  <span className="text-sm font-mono text-foreground font-semibold">25:00</span>
-                </div>
-                <div className="h-4 w-px bg-border" />
-                <div className="flex items-center gap-2 flex-1">
-                  <div className="h-8 w-8 rounded-lg bg-rose-50 dark:bg-rose-950/30 flex items-center justify-center">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-rose-500">
-                      <path d="M9 18V5l12-2v13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                      <circle cx="6" cy="18" r="3" stroke="currentColor" strokeWidth="2" />
-                      <circle cx="18" cy="16" r="3" stroke="currentColor" strokeWidth="2" />
-                    </svg>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-sans text-foreground truncate">Lofi Hip Hop Radio</p>
-                    <p className="text-[10px] font-mono text-muted-foreground">YouTube</p>
-                  </div>
-                </div>
+              <div className="absolute -right-4 top-8 hidden rounded-2xl border border-white/12 bg-white/10 px-4 py-3 text-sm text-white/70 shadow-[0_20px_60px_rgba(2,6,23,0.4)] backdrop-blur-xl xl:block">
+                Geser. Atur. Selesaikan.
               </div>
             </div>
           </div>
