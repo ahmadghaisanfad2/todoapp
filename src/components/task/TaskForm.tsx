@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { format, parseISO } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
@@ -10,6 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar'
 import { cn } from '@/lib/utils'
 import { useTaskStore } from '@/store/taskStore'
+import { useKanbanStore } from '@/store/kanbanStore'
 import { useCategories } from '@/hooks/useCategories'
 import type { Task, Priority } from '@/types'
 
@@ -28,13 +29,31 @@ const PRIORITIES: { value: Priority; label: string; className: string }[] = [
 export function TaskForm({ open, onOpenChange, task }: TaskFormProps) {
   const addTask = useTaskStore((s) => s.addTask)
   const updateTask = useTaskStore((s) => s.updateTask)
+  const columns = useKanbanStore((s) => s.columns)
   const { categories } = useCategories()
 
   const [title, setTitle] = useState(task?.title ?? '')
   const [priority, setPriority] = useState<Priority>(task?.priority ?? 'low')
   const [categoryId, setCategoryId] = useState<string>(task?.categoryId ?? 'none')
   const [dueDate, setDueDate] = useState<Date | undefined>(task?.dueDate ? parseISO(task.dueDate) : undefined)
+  const [status, setStatus] = useState(task?.status || 'todo')
   const [calOpen, setCalOpen] = useState(false)
+
+  useEffect(() => {
+    if (task) {
+      setTitle(task.title)
+      setPriority(task.priority)
+      setCategoryId(task.categoryId || 'none')
+      setDueDate(task.dueDate ? parseISO(task.dueDate) : undefined)
+      setStatus(task.status || 'todo')
+    } else {
+      setTitle('')
+      setPriority('medium')
+      setCategoryId('none')
+      setDueDate(undefined)
+      setStatus('todo')
+    }
+  }, [task])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -45,6 +64,7 @@ export function TaskForm({ open, onOpenChange, task }: TaskFormProps) {
       categoryId: categoryId === 'none' ? null : categoryId,
       dueDate: dueDate ? format(dueDate, "yyyy-MM-dd'T'HH:mm:ss") : null,
       completed: task?.completed ?? false,
+      status,
     }
     if (task) {
       updateTask(task.id, payload)
@@ -170,6 +190,22 @@ export function TaskForm({ open, onOpenChange, task }: TaskFormProps) {
                 Clear date & time
               </button>
             )}
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <Label className="text-sm font-medium text-foreground">Status</Label>
+            <Select value={status} onValueChange={setStatus}>
+              <SelectTrigger className="h-10 rounded-xl">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {columns.map((col) => (
+                  <SelectItem key={col.id} value={col.id}>
+                    {col.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <DialogFooter className="pt-2">
