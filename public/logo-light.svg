@@ -1,25 +1,25 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="none" aria-hidden="true">
   <path
     d="M196 67C177 49 153 39 127 39C75 39 33 81 33 133C33 185 75 227 127 227C179 227 221 185 221 133C221 124 220 116 218 108"
-    stroke="#20D9C8"
-    stroke-width="16"
+    stroke="#0F9D93"
+    stroke-width="14"
     stroke-linecap="round"
     stroke-linejoin="round"
   />
-  <path d="M104 86V111" stroke="#20D9C8" stroke-width="16" stroke-linecap="round" />
-  <path d="M128 71V111" stroke="#20D9C8" stroke-width="16" stroke-linecap="round" />
-  <path d="M152 90V111" stroke="#20D9C8" stroke-width="16" stroke-linecap="round" />
+  <path d="M104 86V111" stroke="#0F9D93" stroke-width="14" stroke-linecap="round" />
+  <path d="M128 71V111" stroke="#0F9D93" stroke-width="14" stroke-linecap="round" />
+  <path d="M152 90V111" stroke="#0F9D93" stroke-width="14" stroke-linecap="round" />
   <path
     d="M78 147L108 182L129 156L149 177"
-    stroke="#20D9C8"
-    stroke-width="18"
+    stroke="#0F9D93"
+    stroke-width="16"
     stroke-linecap="round"
     stroke-linejoin="round"
   />
   <path
     d="M145 172L207 108"
-    stroke="#20D9C8"
-    stroke-width="20"
+    stroke="#0F9D93"
+    stroke-width="18"
     stroke-linecap="round"
     stroke-linejoin="round"
   />
