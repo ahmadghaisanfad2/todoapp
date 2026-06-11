@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useDroppable } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
-import { Trash2, Pencil, Check, X } from 'lucide-react'
+import { Plus, Trash2, Pencil, Check, X } from 'lucide-react'
 import { KanbanCard } from './KanbanCard'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -12,6 +12,7 @@ interface KanbanColumnProps {
   tasks: Task[]
   onEdit: (task: Task) => void
   onDelete: (id: string) => void
+  onAddTask: (columnId: string) => void
   onUpdateColumn: (id: string, name: string) => void
   onDeleteColumn: (id: string) => void
 }
@@ -21,6 +22,7 @@ export function KanbanColumnComponent({
   tasks,
   onEdit,
   onDelete,
+  onAddTask,
   onUpdateColumn,
   onDeleteColumn,
 }: KanbanColumnProps) {
@@ -114,11 +116,19 @@ export function KanbanColumnComponent({
             <KanbanCard key={task.id} task={task} onEdit={onEdit} onDelete={onDelete} />
           ))}
         </SortableContext>
-        {tasks.length === 0 && (
-          <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed p-4 text-xs text-muted-foreground">
-            Drop tasks here
-          </div>
-        )}
+
+        <Button
+          variant="ghost"
+          size="sm"
+          className={cn(
+            'w-full gap-1.5 text-muted-foreground hover:text-foreground',
+            tasks.length === 0 ? 'mt-auto' : 'mt-1'
+          )}
+          onClick={() => onAddTask(column.id)}
+        >
+          <Plus className="h-4 w-4" />
+          Tambah tugas
+        </Button>
       </div>
     </div>
   )

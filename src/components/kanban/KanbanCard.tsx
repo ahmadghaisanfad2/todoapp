@@ -34,25 +34,28 @@ export function KanbanCard({ task, onEdit, onDelete }: KanbanCardProps) {
 
   const isOverdue = task.dueDate && isPast(parseISO(task.dueDate)) && !task.completed
 
+  const handleClick = (e: React.MouseEvent) => {
+    if (isDragging) return
+    const target = e.target as HTMLElement
+    if (target.closest('[data-no-click]')) return
+    onEdit(task)
+  }
+
   return (
     <div
       ref={setNodeRef}
       style={style}
       className={cn(
-        'group flex items-start gap-2 rounded-lg border bg-card px-3 py-2.5 shadow-sm cursor-pointer hover:border-primary/30 transition-colors',
-        isDragging && 'opacity-50 shadow-lg',
+        'group flex items-start gap-2 rounded-lg border bg-card px-3 py-2.5 shadow-sm cursor-grab active:cursor-grabbing hover:border-primary/30 transition-colors select-none',
+        isDragging && 'opacity-50 shadow-lg z-50',
         isOverdue && 'border-red-300 dark:border-red-800'
       )}
-      onClick={() => onEdit(task)}
+      {...attributes}
+      {...listeners}
+      onClick={handleClick}
     >
-      <button
-        className="mt-0.5 cursor-grab touch-none text-muted-foreground hover:text-foreground"
-        {...attributes}
-        {...listeners}
-      >
-        <GripVertical className="h-4 w-4" />
-      </button>
-      <div className="flex-1 min-w-0">
+      <GripVertical className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground/50" />
+      <div className="flex-1 min-w-0 pointer-events-none">
         <p className={cn('text-sm font-medium leading-snug', task.completed && 'line-through opacity-60')}>
           {task.title}
         </p>
@@ -69,7 +72,8 @@ export function KanbanCard({ task, onEdit, onDelete }: KanbanCardProps) {
         </div>
       </div>
       <button
-        className="opacity-0 group-hover:opacity-100 mt-0.5 text-muted-foreground hover:text-destructive transition-opacity"
+        data-no-click
+        className="opacity-0 group-hover:opacity-100 mt-0.5 text-muted-foreground hover:text-destructive transition-opacity pointer-events-auto"
         onClick={(e) => {
           e.stopPropagation()
           onDelete(task.id)

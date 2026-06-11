@@ -19,6 +19,7 @@ interface AppPageProps {
 export function AppPage({ onNavigateHome }: AppPageProps) {
   const [taskFormOpen, setTaskFormOpen] = useState(false)
   const [editingTask, setEditingTask] = useState<Task | undefined>()
+  const [defaultStatus, setDefaultStatus] = useState<string | undefined>()
   const [categorySheetOpen, setCategorySheetOpen] = useState(false)
   const [showWelcomeBadge, setShowWelcomeBadge] = useState(false)
   const hasShownBadge = useRef(false)
@@ -48,8 +49,9 @@ export function AppPage({ onNavigateHome }: AppPageProps) {
     setTaskFormOpen(open)
   }
 
-  const handleAddTask = () => {
+  const handleAddTask = (columnId?: string) => {
     setEditingTask(undefined)
+    setDefaultStatus(columnId)
     setTaskFormOpen(true)
   }
 
@@ -82,7 +84,7 @@ export function AppPage({ onNavigateHome }: AppPageProps) {
       <Layout>
         <Header onCategoryOpen={() => setCategorySheetOpen(true)} onAddTask={handleAddTask} onMusicOpen={toggleSearch} />
         <main className="pt-6">
-          <KanbanBoard onEditTask={handleEditTask} />
+          <KanbanBoard onEditTask={handleEditTask} onAddTask={handleAddTask} />
         </main>
       </Layout>
 
@@ -90,7 +92,7 @@ export function AppPage({ onNavigateHome }: AppPageProps) {
         size="icon"
         className="fixed bottom-6 right-6 h-12 w-12 rounded-full shadow-lg shadow-black/10 sm:hidden"
         style={{ bottom: 'max(1.5rem, env(safe-area-inset-bottom, 1.5rem))' }}
-        onClick={handleAddTask}
+        onClick={() => handleAddTask()}
         aria-label="Tambah tugas"
       >
         <Plus className="h-5 w-5" />
@@ -101,6 +103,7 @@ export function AppPage({ onNavigateHome }: AppPageProps) {
         open={taskFormOpen}
         onOpenChange={handleCloseTaskForm}
         task={editingTask}
+        defaultStatus={defaultStatus}
       />
 
       <CategorySheet

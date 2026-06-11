@@ -5,6 +5,7 @@ import {
   closestCorners,
   KeyboardSensor,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   type DragStartEvent,
@@ -21,9 +22,10 @@ import type { Task } from '@/types'
 
 interface KanbanBoardProps {
   onEditTask: (task: Task) => void
+  onAddTask: (columnId?: string) => void
 }
 
-export function KanbanBoard({ onEditTask }: KanbanBoardProps) {
+export function KanbanBoard({ onEditTask, onAddTask }: KanbanBoardProps) {
   const columns = useKanbanStore((s) => s.columns)
   const addColumn = useKanbanStore((s) => s.addColumn)
   const updateColumn = useKanbanStore((s) => s.updateColumn)
@@ -36,7 +38,8 @@ export function KanbanBoard({ onEditTask }: KanbanBoardProps) {
   const [activeTask, setActiveTask] = useState<Task | null>(null)
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 8 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   )
 
@@ -130,6 +133,7 @@ export function KanbanBoard({ onEditTask }: KanbanBoardProps) {
             tasks={getTasksByColumn(column.id)}
             onEdit={onEditTask}
             onDelete={deleteTask}
+            onAddTask={onAddTask}
             onUpdateColumn={handleUpdateColumn}
             onDeleteColumn={handleDeleteColumn}
           />

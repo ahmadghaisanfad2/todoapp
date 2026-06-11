@@ -18,6 +18,7 @@ interface TaskFormProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   task?: Task
+  defaultStatus?: string
 }
 
 const PRIORITIES: { value: Priority; label: string; className: string }[] = [
@@ -26,7 +27,7 @@ const PRIORITIES: { value: Priority; label: string; className: string }[] = [
   { value: 'low', label: 'Low', className: 'border-emerald-300 text-emerald-600 dark:border-emerald-800 dark:text-emerald-400' },
 ]
 
-export function TaskForm({ open, onOpenChange, task }: TaskFormProps) {
+export function TaskForm({ open, onOpenChange, task, defaultStatus }: TaskFormProps) {
   const addTask = useTaskStore((s) => s.addTask)
   const updateTask = useTaskStore((s) => s.updateTask)
   const columns = useKanbanStore((s) => s.columns)
@@ -36,7 +37,7 @@ export function TaskForm({ open, onOpenChange, task }: TaskFormProps) {
   const [priority, setPriority] = useState<Priority>(task?.priority ?? 'low')
   const [categoryId, setCategoryId] = useState<string>(task?.categoryId ?? 'none')
   const [dueDate, setDueDate] = useState<Date | undefined>(task?.dueDate ? parseISO(task.dueDate) : undefined)
-  const [status, setStatus] = useState(task?.status || 'todo')
+  const [status, setStatus] = useState(task?.status || defaultStatus || 'todo')
   const [calOpen, setCalOpen] = useState(false)
 
   const handleSubmit = (e: React.FormEvent) => {
