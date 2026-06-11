@@ -31,10 +31,11 @@ const safeStorage = {
 
 interface TaskStore {
   tasks: Task[]
-  addTask: (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'order'>) => void
+  addTask: (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'order'> & { status?: string }) => void
   updateTask: (id: string, updates: Partial<Omit<Task, 'id' | 'createdAt'>>) => void
   deleteTask: (id: string) => void
   toggleTask: (id: string) => void
+  moveTask: (id: string, status: string, order: number) => void
 }
 
 export const useTaskStore = create<TaskStore>()(
@@ -48,9 +49,10 @@ export const useTaskStore = create<TaskStore>()(
             {
               ...task,
               id: generateId(),
+              status: task.status || 'todo',
               createdAt: new Date().toISOString(),
               updatedAt: new Date().toISOString(),
-              order: state.tasks.length,
+              order: state.tasks.filter((t) => t.status === (task.status || 'todo')).length,
             },
           ],
         })),
@@ -69,6 +71,14 @@ export const useTaskStore = create<TaskStore>()(
           tasks: state.tasks.map((t) =>
             t.id === id
               ? { ...t, completed: !t.completed, updatedAt: new Date().toISOString() }
+              : t
+          ),
+        })),
+      moveTask: (id, status, order) =>
+        set((state) => ({
+          tasks: state.tasks.map((t) =>
+            t.id === id
+              ? { ...t, status, order, updatedAt: new Date().toISOString() }
               : t
           ),
         })),
