@@ -1,15 +1,16 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import {
   DndContext,
   DragOverlay,
-  closestCorners,
   KeyboardSensor,
   PointerSensor,
   TouchSensor,
   useSensor,
   useSensors,
+  rectIntersection,
   type DragStartEvent,
   type DragEndEvent,
+  type CollisionDetection,
 } from '@dnd-kit/core'
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { KanbanColumnComponent } from './KanbanColumn'
@@ -48,6 +49,20 @@ export function KanbanBoard({ onEditTask, onAddTask }: KanbanBoardProps) {
         .filter((t) => t.status === columnId)
         .sort((a, b) => a.order - b.order),
     [tasks]
+  )
+
+  const columnIds = useMemo(() => new Set(columns.map((c) => c.id)), [columns])
+
+  const customCollisionDetection: CollisionDetection = useCallback(
+    (args) => {
+      const pointerCollisions = rectIntersection(args)
+      if (pointerCollisions.length > 0) {
+        const columnCollision = pointerCollisions.find((c) => columnIds.has(c.id as string))
+        if (columnCollision) return [columnCollision]
+      }
+      return pointerCollisions
+    },
+    [columnIds]
   )
 
   const handleDragStart = (event: DragStartEvent) => {
@@ -108,7 +123,7 @@ export function KanbanBoard({ onEditTask, onAddTask }: KanbanBoardProps) {
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={closestCorners}
+      collisionDetection={customCollisionDetection}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >

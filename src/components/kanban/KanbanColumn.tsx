@@ -39,6 +39,7 @@ export function KanbanColumnComponent({
 
   return (
     <div
+      ref={setNodeRef}
       className={cn(
         'flex w-72 shrink-0 flex-col rounded-lg border bg-muted/50',
         isOver && 'border-primary/50 bg-primary/5'
@@ -107,7 +108,6 @@ export function KanbanColumnComponent({
       </div>
 
       <div
-        ref={setNodeRef}
         className="flex flex-1 flex-col gap-2 overflow-y-auto p-2"
         style={{ minHeight: 100 }}
       >
