@@ -32,6 +32,7 @@
 
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
   --font-sans: 'Inter', system-ui, sans-serif;
+  --font-brand: 'Playwrite GB J', cursive;
 }
 
 @layer base {

@@ -26,7 +26,7 @@ export function LandingPage({ onNavigateApp }: LandingPageProps) {
             <Logo className="h-8 w-8 animate-lp-spin" />
           </div>
           <div className="text-center">
-            <p className="text-base font-semibold text-foreground font-sans">Menyiapkan ruang kerja Anda</p>
+            <p className="text-base font-semibold text-foreground font-brand" style={{ fontWeight: 500 }}>Menyiapkan ruang kerja Anda</p>
             <p className="mt-0.5 font-mono text-sm text-muted-foreground">Sebentar...</p>
           </div>
         </div>

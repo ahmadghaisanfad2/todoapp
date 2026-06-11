@@ -13,7 +13,7 @@ export function LandingNav({ onNavigateApp }: LandingNavProps) {
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
             <Logo className="h-5 w-5" />
           </div>
-          <span className="font-sans text-sm font-semibold tracking-tight text-foreground">Wazheefa</span>
+          <span className="font-brand text-lg tracking-tight text-foreground" style={{ fontWeight: 500 }}>Wazheefa</span>
         </div>
 
         <Button
