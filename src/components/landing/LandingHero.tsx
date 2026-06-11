@@ -7,95 +7,99 @@ interface LandingHeroProps {
 
 export function LandingHero({ onNavigateApp }: LandingHeroProps) {
   return (
-    <section className="relative pt-16 pb-28 md:pt-24 md:pb-36">
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-primary/[0.06] rounded-full blur-[120px] -translate-y-1/2" />
-      </div>
-      <div className="relative mx-auto max-w-6xl px-6">
-        <div className="grid lg:grid-cols-2 gap-14 items-center">
-          <div className="flex flex-col gap-5">
-            <h1 className="text-4xl md:text-5xl lg:text-[3.25rem] font-bold tracking-tight text-foreground leading-[1.1]">
-              Punya banyak tugas<br />
-              tapi tidak tahu<br />
-              <span className="text-primary"> dari mana mulai?</span>
+    <section className="relative min-h-[100dvh] flex items-center overflow-hidden">
+      <div className="relative z-10 mx-auto max-w-6xl px-6 py-24 md:py-32 w-full">
+        <div className="grid lg:grid-cols-2 gap-16 lg:gap-20 items-center">
+          {/* Left: Copy */}
+          <div className="flex flex-col gap-8">
+            <div className="animate-hero-fade-1">
+              <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-1.5 text-xs font-mono font-medium text-muted-foreground">
+                <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                Local-first task manager
+              </span>
+            </div>
+
+            <h1 className="animate-hero-fade-2 font-sans text-5xl md:text-6xl lg:text-[4.25rem] font-bold tracking-tight text-foreground leading-[1.05]">
+              Fokus, nikmati<br />
+              <span className="text-muted-foreground">prosesnya.</span>
             </h1>
-            <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-[48ch]">
-              Wazheefa membantu Anda mencatat apa yang perlu dilakukan, mengurutkan mana yang paling penting, dan menyelesaikan satu per satu tanpa merasa kewalahan.
+
+            <p className="animate-hero-fade-3 text-lg md:text-xl text-muted-foreground leading-relaxed max-w-[46ch]">
+              Catat tugas, nyalakan timer, putar musik favorit dari YouTube, dan biarkan dirimu fokus dalam alur yang nyaman.
             </p>
-            <div className="flex flex-wrap items-center gap-4 pt-1">
+
+            <div className="animate-hero-fade-4 flex flex-wrap items-center gap-5 pt-1">
               <Button
                 onClick={onNavigateApp}
                 size="lg"
-                className="h-11 rounded-2xl bg-primary px-7 text-sm font-semibold shadow-lg shadow-primary/20 transition-all hover:shadow-xl hover:shadow-primary/25 active:scale-[0.98]"
+                className="h-13 rounded-xl bg-foreground px-8 text-sm font-semibold font-mono text-background shadow-none transition-all duration-200 hover:opacity-90 active:scale-[0.98]"
               >
-                Masuk ke Aplikasi
+                Mulai Sekarang
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
-              <p className="text-xs text-muted-foreground leading-snug max-w-[20ch]">
-                Tidak perlu daftar. Langsung buka dan pakai.
+              <p className="text-sm font-mono text-muted-foreground">
+                Gratis. Tidak perlu daftar.
               </p>
             </div>
           </div>
 
-          <div className="relative hidden lg:block">
-            <div className="relative z-10 rounded-2xl border border-border bg-card shadow-2xl shadow-black/10 overflow-hidden">
-              <div className="flex items-center gap-2 border-b border-border/50 px-4 py-3 bg-muted/30">
-                <div className="flex gap-1.5">
-                  <div className="h-2.5 w-2.5 rounded-full bg-red-400/70" />
-                  <div className="h-2.5 w-2.5 rounded-full bg-amber-400/70" />
-                  <div className="h-2.5 w-2.5 rounded-full bg-green-400/70" />
-                </div>
-                <span className="ml-2 text-[11px] text-muted-foreground font-medium">Wazheefa</span>
+          {/* Right: App Preview Card */}
+          <div className="relative hidden lg:block animate-hero-fade-3">
+            <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+              {/* Window chrome */}
+              <div className="flex items-center gap-2 mb-5">
+                <div className="h-3 w-3 rounded-full bg-muted" />
+                <div className="h-3 w-3 rounded-full bg-muted" />
+                <div className="h-3 w-3 rounded-full bg-muted" />
+                <span className="ml-3 text-xs font-mono text-muted-foreground">Wazheefa</span>
               </div>
-              <div className="p-4 space-y-3">
-                <div className="flex items-center gap-2">
-                  <div className="h-8 flex-1 rounded-lg border border-input bg-background px-3 text-[12px] text-muted-foreground flex items-center">Cari tugas...</div>
-                  <div className="h-8 px-3 rounded-lg border border-input bg-background text-[11px] text-muted-foreground flex items-center">Semua</div>
-                  <div className="h-8 px-3 rounded-lg border border-input bg-background text-[11px] text-muted-foreground flex items-center">Prioritas</div>
-                </div>
-                <div className="space-y-2">
-                  {[
-                    { title: 'Review sprint backlog dengan tim', priority: 'tinggi', cat: 'Kerja', done: false, time: 'Hari ini · 14.00' },
-                    { title: 'Kirim proposal ke klien baru', priority: 'sedang', cat: 'Kerja', done: false, time: 'Besok' },
-                    { title: 'Belanja mingguan', priority: 'rendah', cat: 'Pribadi', done: false, time: '' },
-                    { title: 'Sprint planning Q2', priority: 'tinggi', cat: 'Kerja', done: true, time: 'Kemarin' },
-                  ].map((task, i) => (
-                    <div key={i} className={`flex items-start gap-3 rounded-xl border border-border/40 bg-card px-4 py-3 ${task.done ? 'opacity-45' : ''}`}>
-                      <div className={`mt-0.5 h-4 w-4 rounded border-2 shrink-0 flex items-center justify-center ${task.done ? 'bg-primary border-primary' : 'border-border'}`}>
-                        {task.done && (
-                          <svg width="8" height="8" viewBox="0 0 10 10" fill="none" className="text-primary-foreground">
-                            <path d="M2 5l2 2 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className={`text-[13px] font-medium text-foreground leading-snug ${task.done ? 'line-through' : ''}`}>{task.title}</p>
-                        {task.time && (
-                          <p className="text-[11px] text-muted-foreground mt-0.5">{task.time}</p>
-                        )}
-                      </div>
-                      <div className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                        task.priority === 'tinggi' ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' :
-                        task.priority === 'sedang' ? 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400' :
-                        'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400'
-                      }`}>
-                        {task.priority}
-                      </div>
+
+              {/* Task list mock */}
+              <div className="space-y-3">
+                {[
+                  { title: 'Review sprint backlog', tag: 'Design', tagColor: 'bg-primary/10 text-primary', done: false },
+                  { title: 'Kirim proposal ke klien', tag: 'Klien', tagColor: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400', done: false },
+                  { title: 'Update changelog v2.1', tag: 'Dev', tagColor: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400', done: true },
+                  { title: 'Riset musik lo-fi untuk fokus', tag: 'Vibes', tagColor: 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400', done: false },
+                ].map((t, i) => (
+                  <div key={i} className={`flex items-center gap-3 rounded-lg border border-border/60 px-4 py-3 ${t.done ? 'opacity-50' : ''}`}>
+                    <div className={`h-4 w-4 rounded border shrink-0 flex items-center justify-center ${t.done ? 'bg-primary border-primary' : 'border-border'}`}>
+                      {t.done && (
+                        <svg width="8" height="8" viewBox="0 0 10 10" fill="none" className="text-primary-foreground">
+                          <path d="M2 5l2 2 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      )}
                     </div>
-                  ))}
-                </div>
+                    <span className={`text-sm font-sans flex-1 ${t.done ? 'line-through text-muted-foreground' : 'text-foreground'}`}>{t.title}</span>
+                    <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${t.tagColor}`}>{t.tag}</span>
+                  </div>
+                ))}
               </div>
-            </div>
-            <div className="absolute -bottom-3 -right-3 z-0 rounded-xl border border-border/60 bg-card/90 backdrop-blur-sm px-4 py-3 shadow-lg">
-              <div className="flex items-center gap-2.5">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-primary">
-                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
+
+              {/* Timer + Music bar */}
+              <div className="mt-5 flex items-center gap-3 rounded-xl border border-border/60 px-4 py-3">
+                <div className="flex items-center gap-2">
+                  <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-primary">
+                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+                      <path d="M12 6v6l4 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    </svg>
+                  </div>
+                  <span className="text-sm font-mono text-foreground font-semibold">25:00</span>
                 </div>
-                <div>
-                  <p className="text-[13px] font-semibold text-foreground">Langsung terbuka</p>
-                  <p className="text-[11px] text-muted-foreground">Simpan di browser, tanpa server</p>
+                <div className="h-4 w-px bg-border" />
+                <div className="flex items-center gap-2 flex-1">
+                  <div className="h-8 w-8 rounded-lg bg-rose-50 dark:bg-rose-950/30 flex items-center justify-center">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-rose-500">
+                      <path d="M9 18V5l12-2v13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      <circle cx="6" cy="18" r="3" stroke="currentColor" strokeWidth="2" />
+                      <circle cx="18" cy="16" r="3" stroke="currentColor" strokeWidth="2" />
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-sans text-foreground truncate">Lofi Hip Hop Radio</p>
+                    <p className="text-[10px] font-mono text-muted-foreground">YouTube</p>
+                  </div>
                 </div>
               </div>
             </div>

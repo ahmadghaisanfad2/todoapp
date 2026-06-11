@@ -4,7 +4,6 @@ import { cn } from '@/lib/utils'
 
 interface TimerRunningProps {
   timeRemaining: number
-  totalTime: number
   progress: number
   isPaused: boolean
   onPause: () => void
@@ -26,7 +25,6 @@ function getProgressColor(progress: number): string {
 
 export function TimerRunning({
   timeRemaining,
-  totalTime,
   progress,
   isPaused,
   onPause,

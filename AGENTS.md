@@ -14,7 +14,18 @@ npm run test:smoke # Run the smoke subset of the regression suite
 npx tsc --noEmit   # Type-check only (no emit)
 ```
 
-The test runner is a Node-based harness in `tests/run.mjs`. Playwright is used by that harness for UI regression coverage and manual QA.
+The test runner is a Node-based harness in `tests/run.mjs`. Playwright is used by that harness for UI regression coverage and manual QA. Tests expect the dev server running at `http://localhost:5173` (override with `BASE_URL` env var).
+
+Run a single test suite: `node tests/run.mjs <filter>` (substring match on filename, e.g., `node tests/run.mjs smoke`).
+
+## Two Domains
+
+The app has two feature modules switched via a tab bar in AppPage:
+
+- **Tasks** — task management with categories, priorities, due dates, search, and filters.
+- **Hafalan** — Quran/study memorization tracking for managing santri (students) and their memorization tasks.
+
+Each domain has its own stores, hooks, and component subtree.
 
 ## Project Structure
 
@@ -24,27 +35,34 @@ src/
 ├── main.tsx                       # React 19 bootstrap + minimal pathname router (`/` and `/app`)
 ├── pages/
 │   ├── LandingPage.tsx            # Marketing landing page (`/`)
-│   └── AppPage.tsx                # Main task app (`/app`)
-├── types/index.ts                 # All shared interfaces and type aliases
+│   └── AppPage.tsx                # Main task+hafalan app (`/app`)
+├── types/
+│   ├── index.ts                   # Shared interfaces (Task, Category, AppSettings) + re-exports
+│   └── hafalan.ts                 # HafalanTask, Santri, HafalanLog, LogType, HafalanStatus
 ├── lib/
-│   ├── utils.ts                   # cn() — Tailwind class merge utility
-│   ├── constants.ts               # Storage keys and app colors
+│   ├── utils.ts                   # cn() + generateId() (crypto.randomUUID)
+│   ├── constants.ts               # STORAGE_KEYS and APP_COLORS
 │   └── migrate.ts                 # One-time localStorage migration (todoflow → wazheefa)
-├── store/                         # Zustand stores (persisted to localStorage)
-│   ├── taskStore.ts
-│   ├── categoryStore.ts
-│   └── settingsStore.ts
+├── store/                         # Zustand stores (6 total, all persisted to localStorage)
+│   ├── taskStore.ts               # wazheefa-tasks
+│   ├── categoryStore.ts           # wazheefa-categories
+│   ├── settingsStore.ts           # wazheefa-settings
+│   ├── hafalanTaskStore.ts        # wazheefa-hafalan-tasks
+│   ├── santriStore.ts             # wazheefa-santri
+│   └── hafalanLogStore.ts         # wazheefa-hafalan-logs
 ├── hooks/                         # Custom hooks (bridge stores → components)
 │   ├── useTasks.ts
 │   ├── useCategories.ts
-│   └── useTheme.ts
+│   ├── useTheme.ts
+│   └── useHafalan.ts             # Cross-store derived data for hafalan domain
 ├── components/
 │   ├── ui/                        # shadcn/ui primitives — DO NOT edit manually
-│   ├── common/                     # Shared components (EmptyState, PriorityBadge, ThemeProvider)
+│   ├── common/                     # EmptyState, PriorityBadge, ThemeProvider
 │   ├── layout/                     # Header, Layout
-│   ├── landing/                    # Landing page sections (Hero, Features, Showcase, CTA, etc.)
+│   ├── landing/                    # LandingNav, LandingHero, LandingFeatures, LandingShowcase, LandingTestimonials, LandingCTA, LandingFooter
 │   ├── task/                       # TaskCard, TaskFilter, TaskForm, TaskList
-│   └── category/                   # CategorySheet, CategoryForm
+│   ├── category/                   # CategorySheet, CategoryForm
+│   └── hafalan/                    # HafalanTab, SantriList, SantriCard, SantriDetail, SantriForm, HafalanTaskList, HafalanTaskCard, HafalanTaskForm, AssignTaskSheet, CreateTaskForSantriSheet, SetoranSheet
 ```
 
 ## Path Aliases
@@ -60,6 +78,7 @@ import type { Task } from '@/types'
 
 - **Strict mode** enabled: `strict`, `noUnusedLocals`, `noUnusedParameters`, `noFallthroughCasesInSwitch`
 - **`verbatimModuleSyntax: true`** — use `import type` for type-only imports
+- **`erasableSyntaxOnly: true`** — no `enum`, `namespace`, or other non-erasable syntax
 - Target: ES2023, JSX: react-jsx
 - Never use `as any`, `@ts-ignore`, or `@ts-expect-error`
 - No enums — use union types: `'high' | 'medium' | 'low'`
@@ -71,7 +90,7 @@ import type { Task } from '@/types'
 2. Third-party libraries (`date-fns`, `lucide-react`, `zustand`)
 3. Local UI components (`@/components/ui/...`)
 4. Local app components and hooks (`@/components/...`, `@/hooks/...`, `@/store/...`)
-5. Utilities (`@/lib/utils`, `@/lib/uuid`, `@/lib/constants`, `@/lib/migrate`)
+5. Utilities (`@/lib/utils`, `@/lib/constants`, `@/lib/migrate`)
 6. Type-only imports last or inline with `import type`
 
 ```typescript
@@ -104,7 +123,7 @@ export function TaskCard({ task, onEdit }: TaskCardProps) {
 
 ## State Management (Zustand)
 
-All stores use `create` with `persist` middleware for localStorage. Each store has a typed interface.
+All stores use `create` with `persist` middleware wrapping a `safeStorage` adapter (try/catch on localStorage reads/writes). Each store has a typed interface.
 
 ```typescript
 interface TaskStore {
@@ -155,7 +174,7 @@ className={cn(
 
 ## Types
 
-All shared types live in `src/types/index.ts`. Keep domain types there. Component-specific props interfaces stay colocated with their component.
+All shared types live in `src/types/index.ts` (task domain) and `src/types/hafalan.ts` (hafalan domain, re-exported from index.ts). Keep domain types there. Component-specific props interfaces stay colocated with their component.
 
 - Interfaces for object shapes: `interface Task { ... }`
 - Union types over enums: `'high' | 'medium' | 'low'`
@@ -165,7 +184,7 @@ All shared types live in `src/types/index.ts`. Keep domain types there. Componen
 ## Error Handling
 
 - Form validation: guard with early returns (`if (!title.trim()) return`)
-- No try/catch in the current codebase — stores and hooks assume localStorage is available
+- Stores use try/catch in the safeStorage adapter; hooks and components do not catch
 - No error boundaries yet
 
 ## Key Libraries
@@ -178,11 +197,6 @@ All shared types live in `src/types/index.ts`. Keep domain types there. Componen
 | shadcn/ui | latest | Radix-based component primitives |
 | date-fns | 4.x | Date formatting and comparison |
 | lucide-react | 1.x | Icons |
-| vite-plugin-pwa | 1.x | PWA service worker + manifest |
-
-## PWA
-
-Configured in `vite.config.ts` via `VitePWA`. Auto-updates service worker. Workbox caches `**/*.{js,css,html,ico,png,svg}`. Manifest defines app name, theme color (#2563EB), and icons.
 
 ## Routing
 

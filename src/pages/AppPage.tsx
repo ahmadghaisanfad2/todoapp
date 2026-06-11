@@ -7,10 +7,13 @@ import { TaskList } from '@/components/task/TaskList'
 import { TaskForm } from '@/components/task/TaskForm'
 import { CategorySheet } from '@/components/category/CategorySheet'
 import { HafalanTab } from '@/components/hafalan/HafalanTab'
+import { MusicPlayerBar } from '@/components/music/MusicPlayerBar'
+import { MusicSearchSheet } from '@/components/music/MusicSearchSheet'
+import { TimerWidget } from '@/components/timer/TimerWidget'
 import { Button } from '@/components/ui/button'
 import { useTasks } from '@/hooks/useTasks'
 import { useSettingsStore } from '@/store/settingsStore'
-import { TimerWidget } from '@/components/timer/TimerWidget'
+import { useMusicStore } from '@/store/musicStore'
 import type { Task } from '@/types'
 
 type AppTab = 'tasks' | 'hafalan'
@@ -31,6 +34,10 @@ export function AppPage({ onNavigateHome }: AppPageProps) {
   const filterStatus = useSettingsStore((s) => s.filterStatus)
   const filterPriority = useSettingsStore((s) => s.filterPriority)
   const filterCategoryId = useSettingsStore((s) => s.filterCategoryId)
+
+  const isSearchOpen = useMusicStore((s) => s.isSearchOpen)
+  const toggleSearch = useMusicStore((s) => s.toggleSearch)
+  const closeSearch = useMusicStore((s) => s.closeSearch)
 
   const hasActiveFilters = filterStatus !== 'all' || filterPriority !== 'all' || filterCategoryId !== null || searchQuery.trim().length > 0
 
@@ -61,7 +68,7 @@ export function AppPage({ onNavigateHome }: AppPageProps) {
   }
 
   return (
-    <div className="min-h-[100dvh] bg-background">
+    <div className="min-h-[100dvh] bg-background pb-16">
       <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
         <button
           onClick={onNavigateHome}
@@ -123,7 +130,7 @@ export function AppPage({ onNavigateHome }: AppPageProps) {
 
       {activeTab === 'tasks' ? (
         <Layout>
-          <Header onCategoryOpen={() => setCategorySheetOpen(true)} onAddTask={handleAddTask} />
+          <Header onCategoryOpen={() => setCategorySheetOpen(true)} onAddTask={handleAddTask} onMusicOpen={toggleSearch} />
           <main className="pt-6">
             <TaskFilter searchQuery={searchQuery} onSearchChange={setSearchQuery} />
             <div className="mt-4">
@@ -168,6 +175,8 @@ export function AppPage({ onNavigateHome }: AppPageProps) {
         onOpenChange={setCategorySheetOpen}
       />
 
+      <MusicPlayerBar onOpenSearch={toggleSearch} />
+      <MusicSearchSheet open={isSearchOpen} onOpenChange={closeSearch} />
       <TimerWidget />
     </div>
   )

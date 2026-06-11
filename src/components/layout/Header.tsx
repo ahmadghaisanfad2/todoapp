@@ -1,4 +1,4 @@
-import { Sun, Moon, Monitor, Tags, Plus } from 'lucide-react'
+import { Sun, Moon, Monitor, Tags, Plus, Music } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useTheme } from '@/hooks/useTheme'
 import { cn } from '@/lib/utils'
@@ -6,9 +6,10 @@ import { cn } from '@/lib/utils'
 interface HeaderProps {
   onCategoryOpen: () => void
   onAddTask: () => void
+  onMusicOpen: () => void
 }
 
-export function Header({ onCategoryOpen, onAddTask }: HeaderProps) {
+export function Header({ onCategoryOpen, onAddTask, onMusicOpen }: HeaderProps) {
   const { theme, setTheme } = useTheme()
 
   const cycleTheme = () => {
@@ -49,6 +50,16 @@ export function Header({ onCategoryOpen, onAddTask }: HeaderProps) {
           >
             <Tags className="h-4 w-4" />
             <span className="hidden text-xs sm:inline">Categories</span>
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onMusicOpen}
+            aria-label="Music player"
+            className="gap-1.5 px-2.5"
+          >
+            <Music className="h-4 w-4" />
+            <span className="hidden text-xs sm:inline">Music</span>
           </Button>
           <Button
             variant="ghost"

@@ -27,7 +27,6 @@ export function TimerWidget() {
         <div className="rounded-2xl border border-border bg-card shadow-2xl">
           <TimerRunning
             timeRemaining={timer.timeRemaining}
-            totalTime={timer.totalTime}
             progress={timer.progress}
             isPaused={timer.state === 'paused'}
             onPause={timer.pause}

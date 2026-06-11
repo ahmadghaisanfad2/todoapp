@@ -1,10 +1,6 @@
 import { useState, useEffect } from 'react'
 import { LandingNav } from '@/components/landing/LandingNav'
 import { LandingHero } from '@/components/landing/LandingHero'
-import { LandingFeatures } from '@/components/landing/LandingFeatures'
-import { LandingShowcase } from '@/components/landing/LandingShowcase'
-import { LandingTestimonials } from '@/components/landing/LandingTestimonials'
-import { LandingCTA } from '@/components/landing/LandingCTA'
 import { LandingFooter } from '@/components/landing/LandingFooter'
 
 interface LandingPageProps {
@@ -32,18 +28,14 @@ export function LandingPage({ onNavigateApp }: LandingPageProps) {
             </svg>
           </div>
           <div className="text-center">
-            <p className="text-base font-semibold text-foreground">Menyiapkan ruang kerja Anda</p>
-            <p className="text-sm text-muted-foreground mt-0.5">Sebentar...</p>
+            <p className="text-base font-semibold text-foreground font-sans">Menyiapkan ruang kerja Anda</p>
+            <p className="text-sm font-mono text-muted-foreground mt-0.5">Sebentar...</p>
           </div>
         </div>
       )}
       <LandingNav onNavigateApp={() => setIsEntering(true)} />
       <main>
         <LandingHero onNavigateApp={() => setIsEntering(true)} />
-        <LandingFeatures />
-        <LandingShowcase />
-        <LandingTestimonials />
-        <LandingCTA onNavigateApp={() => setIsEntering(true)} />
       </main>
       <LandingFooter onNavigateApp={() => setIsEntering(true)} />
     </div>
