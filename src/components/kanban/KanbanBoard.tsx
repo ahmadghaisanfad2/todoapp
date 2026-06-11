@@ -100,6 +100,18 @@ export function KanbanBoard({ onEditTask }: KanbanBoardProps) {
     updateColumn(id, { name })
   }
 
+  const handleDeleteColumn = (columnId: string) => {
+    const remaining = columns.filter((col) => col.id !== columnId)
+    if (remaining.length === 0) return
+
+    const fallbackId = remaining[0].id
+    tasks
+      .filter((t) => t.status === columnId)
+      .forEach((t) => moveTask(t.id, fallbackId, getTasksByColumn(fallbackId).length))
+
+    deleteColumn(columnId)
+  }
+
   const sortedColumns = [...columns].sort((a, b) => a.order - b.order)
 
   return (
@@ -119,7 +131,7 @@ export function KanbanBoard({ onEditTask }: KanbanBoardProps) {
             onEdit={onEditTask}
             onDelete={deleteTask}
             onUpdateColumn={handleUpdateColumn}
-            onDeleteColumn={deleteColumn}
+            onDeleteColumn={handleDeleteColumn}
           />
         ))}
         <ColumnForm onAdd={addColumn} />
