@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Timer } from 'lucide-react'
 import { useTimer } from '@/hooks/useTimer'
 import { TimerSetup } from './TimerSetup'
@@ -8,7 +8,31 @@ import { cn } from '@/lib/utils'
 
 export function TimerWidget() {
   const [isExpanded, setIsExpanded] = useState(false)
+  const [showHint, setShowHint] = useState(() => {
+    return !localStorage.getItem('wazheefa-timer-hint-seen')
+  })
   const timer = useTimer()
+  const widgetRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!isExpanded) return
+    const handleClickOutside = (e: MouseEvent) => {
+      if (widgetRef.current && !widgetRef.current.contains(e.target as Node)) {
+        setIsExpanded(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [isExpanded])
+
+  useEffect(() => {
+    if (!showHint) return
+    const t = setTimeout(() => {
+      setShowHint(false)
+      localStorage.setItem('wazheefa-timer-hint-seen', 'true')
+    }, 5000)
+    return () => clearTimeout(t)
+  }, [showHint])
 
   if (timer.state === 'complete') {
     return (
@@ -22,7 +46,7 @@ export function TimerWidget() {
 
   if (timer.state === 'running' || timer.state === 'paused') {
     return (
-      <div className="fixed bottom-6 right-6 z-[60] sm:bottom-6 sm:right-6"
+      <div ref={widgetRef} className="fixed bottom-6 right-6 z-[60]"
            style={{ bottom: 'max(1.5rem, env(safe-area-inset-bottom, 1.5rem))' }}>
         <div className="rounded-2xl border border-border bg-card shadow-2xl">
           <TimerRunning
@@ -39,7 +63,7 @@ export function TimerWidget() {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-[60] sm:bottom-6 sm:right-6"
+    <div ref={widgetRef} className="fixed bottom-6 right-6 z-[60]"
          style={{ bottom: 'max(1.5rem, env(safe-area-inset-bottom, 1.5rem))' }}>
       {isExpanded ? (
         <div className="rounded-2xl border border-border bg-card shadow-2xl">
@@ -49,18 +73,32 @@ export function TimerWidget() {
           }} />
         </div>
       ) : (
-        <button
-          onClick={() => setIsExpanded(true)}
-          className={cn(
-            'flex h-12 w-12 items-center justify-center rounded-full',
-            'bg-primary text-primary-foreground shadow-lg shadow-primary/20',
-            'transition-all duration-200 hover:scale-105 hover:shadow-xl',
-            'active:scale-95'
+        <div className="relative">
+          {showHint && (
+            <div className="absolute bottom-full right-0 mb-3 px-3 py-2 rounded-lg bg-foreground text-background text-xs font-medium shadow-lg whitespace-nowrap animate-hero-fade-1">
+              Ada timer fokus di sini!
+              <div className="absolute top-full right-4 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-foreground" />
+            </div>
           )}
-          aria-label="Open focus timer"
-        >
-          <Timer className="h-5 w-5" />
-        </button>
+          <button
+            onClick={() => {
+              setIsExpanded(true)
+              if (showHint) {
+                setShowHint(false)
+                localStorage.setItem('wazheefa-timer-hint-seen', 'true')
+              }
+            }}
+            className={cn(
+              'flex h-12 w-12 items-center justify-center rounded-full',
+              'bg-primary text-primary-foreground shadow-lg shadow-primary/20',
+              'transition-all duration-200 hover:scale-105 hover:shadow-xl',
+              'active:scale-95'
+            )}
+            aria-label="Open focus timer"
+          >
+            <Timer className="h-5 w-5" />
+          </button>
+        </div>
       )}
     </div>
   )

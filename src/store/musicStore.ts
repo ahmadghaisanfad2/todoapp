@@ -8,6 +8,12 @@ interface MusicTrack {
   channel: string
 }
 
+interface Playlist {
+  id: string
+  name: string
+  tracks: MusicTrack[]
+}
+
 type RepeatMode = 'off' | 'one' | 'all'
 
 interface MusicStore {
@@ -19,6 +25,8 @@ interface MusicStore {
   isShuffle: boolean
   repeatMode: RepeatMode
   playlist: MusicTrack[]
+  history: MusicTrack[]
+  playlists: Playlist[]
   setTrack: (track: MusicTrack) => void
   setIsPlaying: (playing: boolean) => void
   setVolume: (volume: number) => void
@@ -30,6 +38,13 @@ interface MusicStore {
   nextTrack: () => void
   prevTrack: () => void
   addToPlaylist: (track: MusicTrack) => void
+  addToHistory: (track: MusicTrack) => void
+  removeFromHistory: (videoId: string) => void
+  createPlaylist: (name: string) => void
+  deletePlaylist: (id: string) => void
+  addTrackToPlaylist: (playlistId: string, track: MusicTrack) => void
+  removeTrackFromPlaylist: (playlistId: string, videoId: string) => void
+  playPlaylist: (playlistId: string) => void
 }
 
 export const useMusicStore = create<MusicStore>()(
@@ -43,9 +58,12 @@ export const useMusicStore = create<MusicStore>()(
       isShuffle: false,
       repeatMode: 'off',
       playlist: LOFI_PRESETS.map(p => ({ videoId: p.videoId, title: p.title, channel: p.channel })),
+      history: [],
+      playlists: [],
       setTrack: (track) => {
         const { playlist } = get()
         const exists = playlist.some(t => t.videoId === track.videoId)
+        get().addToHistory(track)
         if (!exists) {
           set({ currentTrack: track, isPlaying: true, isPlayerOpen: true, playlist: [...playlist, track] })
         } else {
@@ -107,9 +125,49 @@ export const useMusicStore = create<MusicStore>()(
           set({ playlist: [...playlist, track] })
         }
       },
+      addToHistory: (track) => {
+        const { history } = get()
+        const filtered = history.filter(t => t.videoId !== track.videoId)
+        set({ history: [track, ...filtered].slice(0, 50) })
+      },
+      removeFromHistory: (videoId) => {
+        set((s) => ({ history: s.history.filter(t => t.videoId !== videoId) }))
+      },
+      createPlaylist: (name) => {
+        const { playlists } = get()
+        set({ playlists: [...playlists, { id: crypto.randomUUID(), name, tracks: [] }] })
+      },
+      deletePlaylist: (id) => {
+        set((s) => ({ playlists: s.playlists.filter(p => p.id !== id) }))
+      },
+      addTrackToPlaylist: (playlistId, track) => {
+        set((s) => ({
+          playlists: s.playlists.map(p =>
+            p.id === playlistId
+              ? { ...p, tracks: p.tracks.some(t => t.videoId === track.videoId) ? p.tracks : [...p.tracks, track] }
+              : p
+          )
+        }))
+      },
+      removeTrackFromPlaylist: (playlistId, videoId) => {
+        set((s) => ({
+          playlists: s.playlists.map(p =>
+            p.id === playlistId
+              ? { ...p, tracks: p.tracks.filter(t => t.videoId !== videoId) }
+              : p
+          )
+        }))
+      },
+      playPlaylist: (playlistId) => {
+        const { playlists } = get()
+        const playlist = playlists.find(p => p.id === playlistId)
+        if (!playlist || playlist.tracks.length === 0) return
+        get().addToHistory(playlist.tracks[0])
+        set({ currentTrack: playlist.tracks[0], isPlaying: true, isPlayerOpen: true })
+      },
     }),
     { name: 'wazheefa-music' }
   )
 )
 
-export type { MusicTrack, RepeatMode }
+export type { MusicTrack, Playlist, RepeatMode }

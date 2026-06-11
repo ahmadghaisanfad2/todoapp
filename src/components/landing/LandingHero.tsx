@@ -1,132 +1,117 @@
-import { ArrowRight, CheckCircle2, Columns3, Sparkles } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import heroLight from '@/assets/hero-atmosphere-light.png'
+import heroDark from '@/assets/hero-atmosphere-dark.png'
 
 interface LandingHeroProps {
   onNavigateApp: () => void
 }
 
-const HIGHLIGHTS = [
-  'Papan Kanban, timer, dan player dalam satu flow',
-  'Geser tugas antar kolom untuk kelola alur kerja',
-  'Semua data tetap di browser Anda',
-]
-
-const KANBAN_COLUMNS = [
-  {
-    title: 'To Do',
-    dotColor: 'bg-white/40',
-    tasks: ['Finalize launch copy', 'Review pricing notes'],
-  },
-  {
-    title: 'Aktif',
-    dotColor: 'bg-sky-400',
-    tasks: ['Rekonsiliasi feedback'],
-  },
-  {
-    title: 'Selesai',
-    dotColor: 'bg-emerald-400',
-    tasks: ['Setup analytics'],
-  },
-]
-
 export function LandingHero({ onNavigateApp }: LandingHeroProps) {
   return (
-    <section className="relative isolate overflow-hidden bg-slate-950 text-white">
-      <div className="absolute inset-0">
+    <section className="relative isolate min-h-[100dvh] overflow-hidden bg-background text-foreground">
+      <div className="absolute inset-0 -z-10">
         <img
-          src="/landing-hero-bg.svg"
+          src={heroLight}
           alt=""
           aria-hidden="true"
-          className="h-full w-full object-cover object-center opacity-95"
+          className="h-full w-full object-cover object-center dark:hidden"
         />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.1),transparent_32%),linear-gradient(180deg,rgba(2,6,23,0.04)_0%,rgba(2,6,23,0.5)_48%,rgba(2,6,23,0.94)_100%)]" />
-        <div className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-slate-950 via-slate-950/88 to-transparent" />
+        <img
+          src={heroDark}
+          alt=""
+          aria-hidden="true"
+          hidden
+          className="h-full w-full object-cover object-center dark:block"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-background/60 to-background dark:from-background/40 dark:via-background/65 dark:to-background" />
       </div>
 
-      <div className="relative z-10 mx-auto flex min-h-[calc(100dvh-4.5rem)] max-w-7xl items-center px-6 py-16 md:py-20">
-        <div className="grid w-full items-center gap-14 lg:grid-cols-[minmax(0,1.04fr)_minmax(0,0.96fr)] lg:gap-10 xl:gap-16">
+      <div className="relative z-10 mx-auto flex min-h-[100dvh] max-w-6xl items-center px-6 py-24 md:py-32">
+        <div className="grid w-full items-center gap-16 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-12">
           <div className="flex flex-col gap-8">
             <div className="animate-hero-fade-1">
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/8 px-4 py-2 text-[11px] font-medium uppercase tracking-[0.24em] text-white/74 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-xl">
-                <Sparkles className="h-3.5 w-3.5 text-emerald-300" />
-                Flow-state productivity
+              <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-[11px] font-mono font-medium uppercase tracking-[0.2em] text-primary">
+                <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                Produktivitas tanpa distraksi
               </span>
             </div>
 
-            <div className="space-y-5">
-              <h1 className="animate-hero-fade-2 max-w-[11ch] font-sans text-5xl font-semibold leading-[0.96] tracking-[-0.06em] text-white sm:text-6xl md:text-7xl xl:text-[5.6rem]">
-                Fokus lebih tenang, kerja lebih dalam.
-              </h1>
-              <p className="animate-hero-fade-3 max-w-[34rem] text-base leading-7 text-white/68 sm:text-lg sm:leading-8">
-                Wazheefa menyatukan papan Kanban, timer fokus, dan musik YouTube dalam satu workspace yang terasa halus, ringan, dan siap dipakai kapan saja.
-              </p>
-            </div>
+            <h1 className="animate-hero-fade-2 max-w-[14ch] text-4xl font-semibold leading-[1.05] tracking-tight text-foreground sm:text-5xl md:text-6xl xl:text-[4.2rem]">
+              Fokus pada yang penting,<br />
+              selesaikan dengan tenang.
+            </h1>
+
+            <p className="animate-hero-fade-3 max-w-[42ch] text-base leading-relaxed text-muted-foreground sm:text-lg">
+              Kelola tugas, atur timer fokus, dan putar musik favorit — semuanya dalam satu ruang kerja yang bersih dan efisien.
+            </p>
 
             <div className="animate-hero-fade-4 flex flex-wrap items-center gap-4">
               <Button
                 onClick={onNavigateApp}
                 size="lg"
-                className="h-12 rounded-full bg-white px-6 text-sm font-semibold text-slate-950 shadow-[0_18px_48px_rgba(255,255,255,0.16)] transition-transform duration-200 hover:scale-[1.02] hover:bg-white/95 active:scale-[0.99]"
+                className="h-12 rounded-xl bg-primary px-7 text-sm font-semibold font-mono shadow-lg shadow-primary/20 transition-all duration-200 hover:shadow-xl hover:shadow-primary/25 hover:scale-[1.02] active:scale-[0.99]"
               >
-                Buka workspace
+                Mulai Sekarang
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
-              <div className="rounded-full border border-white/12 bg-white/8 px-4 py-2 text-sm text-white/62 backdrop-blur-xl">
-                Gratis. Tidak perlu akun. Langsung jalan.
-              </div>
-            </div>
-
-            <div className="grid gap-3 sm:max-w-xl sm:grid-cols-3">
-              {HIGHLIGHTS.map((item) => (
-                <div
-                  key={item}
-                  className="rounded-2xl border border-white/10 bg-white/6 px-4 py-4 text-sm leading-6 text-white/74 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-xl"
-                >
-                  <CheckCircle2 className="mb-3 h-4 w-4 text-emerald-300" />
-                  {item}
-                </div>
-              ))}
+              <span className="text-sm font-mono text-muted-foreground">
+                Gratis. Tidak perlu registrasi.
+              </span>
             </div>
           </div>
 
           <div className="animate-hero-fade-3 lg:justify-self-end">
-            <div className="animate-hero-panel-breathe relative mx-auto max-w-[34rem] rounded-[2rem] border border-white/12 bg-white/8 p-4 shadow-[0_30px_120px_rgba(4,10,25,0.55)] backdrop-blur-2xl">
-              <div className="absolute inset-x-10 -top-px h-px bg-gradient-to-r from-transparent via-white/45 to-transparent" />
-              <div className="rounded-[1.65rem] border border-white/10 bg-slate-950/72 p-4 sm:p-5">
-                <div className="mb-5 flex items-center justify-between gap-4 rounded-[1.3rem] border border-white/8 bg-white/5 px-4 py-3">
-                  <div className="flex items-center gap-2">
-                    <Columns3 className="h-4 w-4 text-emerald-300" />
-                    <div>
-                      <p className="text-[11px] uppercase tracking-[0.24em] text-white/42">Workflow</p>
-                      <p className="mt-0.5 text-sm font-medium text-white">Papan Kanban</p>
-                    </div>
-                  </div>
-                  <div className="rounded-full border border-emerald-400/25 bg-emerald-400/12 px-3 py-1 text-[11px] font-medium text-emerald-200">
-                    Aktif
-                  </div>
-                </div>
+            <div className="relative mx-auto max-w-lg rounded-2xl border border-border/60 bg-card/80 p-5 shadow-2xl shadow-primary/5 backdrop-blur-xl">
+              <div className="absolute inset-x-8 -top-px h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
 
-                <div className="grid grid-cols-3 gap-3">
-                  {KANBAN_COLUMNS.map((col) => (
-                    <div key={col.title} className="rounded-[1rem] border border-white/8 bg-white/4 p-3">
-                      <div className="mb-3 flex items-center gap-1.5">
-                        <div className={`h-1.5 w-1.5 rounded-full ${col.dotColor}`} />
-                        <span className="text-[10px] font-medium uppercase tracking-wider text-white/50">{col.title}</span>
-                      </div>
-                      <div className="space-y-2">
-                        {col.tasks.map((task) => (
-                          <div key={task} className="rounded-lg border border-white/7 bg-slate-950/55 px-2.5 py-2">
-                            <span className="text-[11px] text-white/74 leading-snug">{task}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+              <div className="flex items-center gap-2 mb-5">
+                <div className="h-3 w-3 rounded-full bg-muted" />
+                <div className="h-3 w-3 rounded-full bg-muted" />
+                <div className="h-3 w-3 rounded-full bg-muted" />
+                <span className="ml-2 text-[11px] font-mono text-muted-foreground">Wazheefa</span>
               </div>
 
-              <div className="absolute -right-4 top-8 hidden rounded-2xl border border-white/12 bg-white/10 px-4 py-3 text-sm text-white/70 shadow-[0_20px_60px_rgba(2,6,23,0.4)] backdrop-blur-xl xl:block">
-                Geser. Atur. Selesaikan.
+              <div className="space-y-2.5">
+                {[
+                  { title: 'Finalisasi desain halaman utama', tag: 'Desain', done: false },
+                  { title: 'Tanggapi email dari klien', tag: 'Klien', done: false },
+                  { title: 'Review pull request tim', tag: 'Engineering', done: true },
+                ].map((t, i) => (
+                  <div
+                    key={i}
+                    className={`flex items-center gap-3 rounded-xl border border-border/50 px-3.5 py-3 transition-colors ${t.done ? 'opacity-50' : ''}`}
+                  >
+                    <div className={`h-4 w-4 rounded border-2 shrink-0 flex items-center justify-center ${t.done ? 'bg-primary border-primary' : 'border-border'}`}>
+                      {t.done && (
+                        <svg width="8" height="8" viewBox="0 0 10 10" fill="none" className="text-primary-foreground">
+                          <path d="M2 5l2 2 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      )}
+                    </div>
+                    <span className={`text-sm flex-1 ${t.done ? 'line-through text-muted-foreground' : 'text-foreground'}`}>{t.title}</span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-primary/10 text-primary">{t.tag}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-4 flex items-center gap-3 rounded-xl border border-border/50 bg-muted/30 px-3.5 py-3">
+                <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-primary">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+                    <path d="M12 6v6l4 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                  </svg>
+                </div>
+                <span className="text-sm font-mono font-semibold text-foreground">25:00</span>
+                <div className="h-4 w-px bg-border mx-1" />
+                <div className="flex items-center gap-2 flex-1 min-w-0">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-primary shrink-0">
+                    <path d="M9 18V5l12-2v13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <circle cx="6" cy="18" r="3" stroke="currentColor" strokeWidth="2" />
+                    <circle cx="18" cy="16" r="3" stroke="currentColor" strokeWidth="2" />
+                  </svg>
+                  <span className="text-xs text-muted-foreground truncate">Ambient Focus Session</span>
+                </div>
               </div>
             </div>
           </div>

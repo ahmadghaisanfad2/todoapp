@@ -9,6 +9,7 @@ import { MusicPlayerBar } from '@/components/music/MusicPlayerBar'
 import { MusicSearchSheet } from '@/components/music/MusicSearchSheet'
 import { TimerWidget } from '@/components/timer/TimerWidget'
 import { Button } from '@/components/ui/button'
+import { Logo } from '@/components/common/Logo'
 import { useMusicStore } from '@/store/musicStore'
 import type { Task } from '@/types'
 
@@ -71,10 +72,7 @@ export function AppPage({ onNavigateHome }: AppPageProps) {
       {showWelcomeBadge && (
         <div className="mx-auto max-w-7xl px-4 pt-4">
           <div className="inline-flex items-center gap-2.5 rounded-xl border border-primary/20 bg-primary/5 px-4 py-2.5 animate-lp-fade-up">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-primary shrink-0">
-              <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              <rect x="3" y="3" width="18" height="18" rx="4" stroke="currentColor" strokeWidth="1.5" />
-            </svg>
+            <Logo className="h-4 w-4 shrink-0" />
             <span className="text-[13px] font-medium text-foreground">Selamat datang.</span>
             <span className="text-[13px] text-muted-foreground">Mari bereskan yang penting hari ini.</span>
           </div>

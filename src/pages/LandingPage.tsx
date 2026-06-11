@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { LandingFooter } from '@/components/landing/LandingFooter'
 import { LandingHero } from '@/components/landing/LandingHero'
 import { LandingNav } from '@/components/landing/LandingNav'
+import { Logo } from '@/components/common/Logo'
 
 interface LandingPageProps {
   onNavigateApp: () => void
@@ -19,17 +19,15 @@ export function LandingPage({ onNavigateApp }: LandingPageProps) {
   }, [isEntering, onNavigateApp])
 
   return (
-    <div className="min-h-[100dvh] bg-slate-950 text-white">
+    <div className="min-h-[100dvh] bg-background text-foreground">
       {isEntering && (
-        <div className="fixed inset-0 z-50 flex animate-lp-entering flex-col items-center justify-center gap-5 bg-slate-950/90 backdrop-blur-sm">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/12 bg-white/8">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="animate-lp-spin text-emerald-300">
-              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            </svg>
+        <div className="fixed inset-0 z-[60] flex animate-lp-entering flex-col items-center justify-center gap-5 bg-background/90 backdrop-blur-sm">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
+            <Logo className="h-8 w-8 animate-lp-spin" />
           </div>
           <div className="text-center">
-            <p className="font-sans text-base font-semibold text-white">Menyiapkan ruang kerja Anda</p>
-            <p className="mt-0.5 font-mono text-sm text-white/55">Sebentar...</p>
+            <p className="text-base font-semibold text-foreground font-sans">Menyiapkan ruang kerja Anda</p>
+            <p className="mt-0.5 font-mono text-sm text-muted-foreground">Sebentar...</p>
           </div>
         </div>
       )}
@@ -38,7 +36,6 @@ export function LandingPage({ onNavigateApp }: LandingPageProps) {
       <main>
         <LandingHero onNavigateApp={() => setIsEntering(true)} />
       </main>
-      <LandingFooter onNavigateApp={() => setIsEntering(true)} />
     </div>
   )
 }

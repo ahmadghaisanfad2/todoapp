@@ -1,5 +1,6 @@
 import { Sun, Moon, Monitor, Tags, Plus, Music } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Logo } from '@/components/common/Logo'
 import { useTheme } from '@/hooks/useTheme'
 import { cn } from '@/lib/utils'
 
@@ -25,6 +26,7 @@ export function Header({ onCategoryOpen, onAddTask, onMusicOpen }: HeaderProps) 
     <header className="sticky top-0 z-10 border-b border-border/60 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/70">
       <div className="mx-auto flex h-16 items-center justify-between gap-4">
         <div className="flex items-center gap-3">
+          <Logo className="h-7 w-7" />
           <h1 className="text-2xl font-bold tracking-tight text-foreground">Wazheefa</h1>
           <span className="hidden text-sm text-muted-foreground sm:block">
             Stay focused, get things done

@@ -116,37 +116,93 @@ export function MusicPlayerBar({ onOpenSearch }: MusicPlayerBarProps) {
 
       {isPlayerOpen && (
         <div className="border-t border-border/60 bg-background/95 backdrop-blur-xl">
-          <div className="mx-auto max-w-5xl px-4 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
+          <div className="mx-auto max-w-5xl px-4 py-3">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-3 min-w-0 flex-1">
                 <div className={cn(
-                  'flex h-10 w-10 items-center justify-center rounded-full bg-primary/10',
+                  'flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10',
                   isPlaying && 'animate-pulse'
                 )}>
-                  <Music className="h-5 w-5 text-primary" />
+                  <Music className="h-4 w-4 text-primary" />
                 </div>
-                <div>
-                  <p className="font-medium">{currentTrack.title}</p>
-                  <p className="text-sm text-muted-foreground">{currentTrack.channel}</p>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium truncate">{currentTrack.title}</p>
+                  <p className="text-xs text-muted-foreground truncate">{currentTrack.channel}</p>
                 </div>
               </div>
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={togglePlayer}
-                className="h-9 w-9"
+                className="h-8 w-8 shrink-0"
               >
                 <ChevronDown className="h-4 w-4" />
               </Button>
             </div>
 
-            <div className="mt-3 flex items-center gap-3">
-              <span className="w-10 text-right text-xs font-mono text-muted-foreground">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1 shrink-0">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={toggleShuffle}
+                  className={cn('h-8 w-8', isShuffle && 'text-primary')}
+                >
+                  <Shuffle className="h-3.5 w-3.5" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={prevTrack}
+                  className="h-8 w-8"
+                >
+                  <SkipBack className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={togglePlayPause}
+                  className="h-9 w-9"
+                >
+                  {isPlaying ? (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                      <rect x="6" y="4" width="4" height="16" rx="1" />
+                      <rect x="14" y="4" width="4" height="16" rx="1" />
+                    </svg>
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                      <polygon points="5,3 19,12 5,21" />
+                    </svg>
+                  )}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={nextTrack}
+                  className="h-8 w-8"
+                >
+                  <SkipForward className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={cycleRepeat}
+                  className={cn('h-8 w-8', repeatMode !== 'off' && 'text-primary')}
+                >
+                  {repeatMode === 'one' ? (
+                    <Repeat1 className="h-3.5 w-3.5" />
+                  ) : (
+                    <Repeat className="h-3.5 w-3.5" />
+                  )}
+                </Button>
+              </div>
+
+              <span className="w-9 text-right text-[11px] font-mono text-muted-foreground shrink-0">
                 {formatTime(displayTime)}
               </span>
               
-              <div className="flex-1 relative">
-                <div className="h-1.5 w-full rounded-full bg-border overflow-hidden">
+              <div className="flex-1 relative min-w-0">
+                <div className="h-1 w-full rounded-full bg-border overflow-hidden">
                   <div 
                     className="h-full bg-primary transition-all duration-100"
                     style={{ width: `${progressPercent}%` }}
@@ -166,11 +222,11 @@ export function MusicPlayerBar({ onOpenSearch }: MusicPlayerBarProps) {
                 />
               </div>
               
-              <span className="w-10 text-xs font-mono text-muted-foreground">
+              <span className="w-9 text-[11px] font-mono text-muted-foreground shrink-0">
                 {formatTime(duration)}
               </span>
 
-              <div className="flex items-center gap-1 ml-2">
+              <div className="flex items-center gap-1 shrink-0">
                 <Button
                   variant="ghost"
                   size="icon"
@@ -178,9 +234,9 @@ export function MusicPlayerBar({ onOpenSearch }: MusicPlayerBarProps) {
                   className="h-8 w-8"
                 >
                   {volume === 0 ? (
-                    <VolumeX className="h-4 w-4" />
+                    <VolumeX className="h-3.5 w-3.5" />
                   ) : (
-                    <Volume2 className="h-4 w-4" />
+                    <Volume2 className="h-3.5 w-3.5" />
                   )}
                 </Button>
                 <input
@@ -189,76 +245,17 @@ export function MusicPlayerBar({ onOpenSearch }: MusicPlayerBarProps) {
                   max="100"
                   value={volume}
                   onChange={(e) => setVolume(Number(e.target.value))}
-                  className="w-20 h-1.5 cursor-pointer appearance-none rounded-full bg-border accent-primary"
+                  className="w-16 h-1 cursor-pointer appearance-none rounded-full bg-border accent-primary"
                 />
               </div>
-            </div>
 
-            <div className="mt-3 flex items-center justify-center gap-2">
               <Button
-                variant={isShuffle ? 'default' : 'ghost'}
-                size="icon"
-                onClick={toggleShuffle}
-                className={cn('h-9 w-9', isShuffle && 'text-primary')}
-              >
-                <Shuffle className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={prevTrack}
-                className="h-10 w-10"
-              >
-                <SkipBack className="h-5 w-5" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={togglePlayPause}
-                className="h-10 w-10"
-              >
-                {isPlaying ? (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <rect x="6" y="4" width="4" height="16" rx="1" />
-                    <rect x="14" y="4" width="4" height="16" rx="1" />
-                  </svg>
-                ) : (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <polygon points="5,3 19,12 5,21" />
-                  </svg>
-                )}
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={nextTrack}
-                className="h-10 w-10"
-              >
-                <SkipForward className="h-5 w-5" />
-              </Button>
-              <Button
-                variant={repeatMode !== 'off' ? 'default' : 'ghost'}
-                size="icon"
-                onClick={cycleRepeat}
-                className={cn('h-9 w-9', repeatMode !== 'off' && 'text-primary')}
-              >
-                {repeatMode === 'one' ? (
-                  <Repeat1 className="h-4 w-4" />
-                ) : (
-                  <Repeat className="h-4 w-4" />
-                )}
-              </Button>
-            </div>
-
-            <div className="mt-3">
-              <Button
-                variant="outline"
                 size="sm"
                 onClick={onOpenSearch}
-                className="w-full gap-2 text-sm"
+                className="h-7 px-2.5 text-[11px] font-mono bg-primary text-primary-foreground hover:bg-primary/90 shrink-0"
               >
-                <Music className="h-3.5 w-3.5" />
-                Change track
+                <Music className="h-3 w-3 mr-1" />
+                Ganti
               </Button>
             </div>
           </div>
