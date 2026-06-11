@@ -1,57 +1,179 @@
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef, useCallback, useState } from 'react'
 import { useMusicStore } from '@/store/musicStore'
 
-export function useYouTubePlayer() {
-  const iframeRef = useRef<HTMLIFrameElement>(null)
-  const { currentTrack, isPlaying, volume, setIsPlaying } = useMusicStore()
+interface YouTubePlayerInstance {
+  playVideo(): void
+  pauseVideo(): void
+  loadVideoById(videoId: string): void
+  seekTo(seconds: number, allowSeekAhead: boolean): void
+  setVolume(volume: number): void
+  getCurrentTime(): number
+  getDuration(): number
+}
 
-  const postMessage = useCallback((command: string, args?: unknown[]) => {
-    const iframe = iframeRef.current
-    if (!iframe?.contentWindow) return
-    iframe.contentWindow.postMessage(JSON.stringify({
-      event: 'command',
-      func: command,
-      args: args || [],
-    }), '*')
+interface YouTubePlayerOptions {
+  height?: string
+  width?: string
+  videoId?: string
+  playerVars?: Record<string, number>
+  events?: {
+    onReady?: () => void
+    onStateChange?: (event: { data: number }) => void
+  }
+}
+
+interface YouTubePlayerState {
+  currentTime: number
+  duration: number
+}
+
+interface YouTubeWindowAPI {
+  Player: new (element: HTMLElement | string, options: YouTubePlayerOptions) => YouTubePlayerInstance
+  PlayerState: { ENDED: 0; PLAYING: 1; PAUSED: 2 }
+}
+
+function getYouTubeAPI(): YouTubeWindowAPI | undefined {
+  return (window as unknown as { YT?: YouTubeWindowAPI }).YT
+}
+
+export function useYouTubePlayer() {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const playerRef = useRef<YouTubePlayerInstance | null>(null)
+  const { currentTrack, isPlaying, volume, setIsPlaying } = useMusicStore()
+  const [playerState, setPlayerState] = useState<YouTubePlayerState>({
+    currentTime: 0,
+    duration: 0,
+  })
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  useEffect(() => {
+    if (!currentTrack) return
+    if (!containerRef.current) return
+
+    if (playerRef.current) {
+      playerRef.current.loadVideoById(currentTrack.videoId)
+      return
+    }
+
+    const tag = document.createElement('script')
+    tag.src = 'https://www.youtube.com/iframe_api'
+    const firstScriptTag = document.getElementsByTagName('script')[0]
+    firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag)
+
+    ;(window as unknown as { onYouTubeIframeAPIReady?: () => void }).onYouTubeIframeAPIReady = () => {
+      if (!containerRef.current) return
+      const YT = getYouTubeAPI()
+      if (!YT) return
+      playerRef.current = new YT.Player(containerRef.current, {
+        height: '1',
+        width: '1',
+        videoId: currentTrack.videoId,
+        playerVars: {
+          autoplay: 1,
+          controls: 0,
+          disablekb: 1,
+          fs: 0,
+          iv_load_policy: 3,
+          modestbranding: 1,
+          rel: 0,
+        },
+        events: {
+          onReady: () => {
+            if (playerRef.current) {
+              playerRef.current.setVolume(volume)
+              playerRef.current.playVideo()
+              setIsPlaying(true)
+              startPolling()
+            }
+          },
+          onStateChange: (event: { data: number }) => {
+            if (event.data === 0) {
+              setIsPlaying(false)
+              stopPolling()
+            }
+          },
+        },
+      })
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTrack])
+
+  const startPolling = useCallback(() => {
+    if (intervalRef.current) clearInterval(intervalRef.current)
+    intervalRef.current = setInterval(() => {
+      if (playerRef.current) {
+        const currentTime = playerRef.current.getCurrentTime()
+        const duration = playerRef.current.getDuration()
+        if (typeof currentTime === 'number') {
+          setPlayerState((prev) => ({ ...prev, currentTime }))
+        }
+        if (typeof duration === 'number' && duration > 0) {
+          setPlayerState((prev) => ({ ...prev, duration }))
+        }
+      }
+    }, 250)
   }, [])
 
+  const stopPolling = useCallback(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = null
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!playerRef.current) return
+    playerRef.current.setVolume(volume)
+  }, [volume])
+
+  useEffect(() => {
+    if (!playerRef.current || !currentTrack) return
+    if (isPlaying) {
+      playerRef.current.playVideo()
+      startPolling()
+    } else {
+      playerRef.current.pauseVideo()
+      stopPolling()
+    }
+  }, [isPlaying, currentTrack, startPolling, stopPolling])
+
+  useEffect(() => {
+    return () => {
+      stopPolling()
+    }
+  }, [stopPolling])
+
   const play = useCallback(() => {
-    postMessage('playVideo')
+    if (playerRef.current) {
+      playerRef.current.playVideo()
+    }
     setIsPlaying(true)
-  }, [postMessage, setIsPlaying])
+  }, [setIsPlaying])
 
   const pause = useCallback(() => {
-    postMessage('pauseVideo')
+    if (playerRef.current) {
+      playerRef.current.pauseVideo()
+    }
     setIsPlaying(false)
-  }, [postMessage, setIsPlaying])
+  }, [setIsPlaying])
 
   const togglePlayPause = useCallback(() => {
     if (isPlaying) pause()
     else play()
   }, [isPlaying, play, pause])
 
-  useEffect(() => {
-    if (!currentTrack) return
-    const iframe = iframeRef.current
-    if (!iframe) return
-    iframe.src = `https://www.youtube.com/embed/${currentTrack.videoId}?enablejsapi=1&origin=${window.location.origin}`
-  }, [currentTrack])
-
-  useEffect(() => {
-    if (!iframeRef.current) return
-    postMessage('setVolume', [volume])
-  }, [volume, postMessage])
-
-  useEffect(() => {
-    if (!currentTrack) return
-    if (isPlaying) postMessage('playVideo')
-    else postMessage('pauseVideo')
-  }, [isPlaying, currentTrack, postMessage])
+  const seekTo = useCallback((seconds: number) => {
+    if (playerRef.current) {
+      playerRef.current.seekTo(seconds, true)
+    }
+  }, [])
 
   return {
-    iframeRef,
+    containerRef,
     play,
     pause,
     togglePlayPause,
+    seekTo,
+    currentTime: playerState.currentTime,
+    duration: playerState.duration,
   }
 }

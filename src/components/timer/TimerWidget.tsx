@@ -22,7 +22,7 @@ export function TimerWidget() {
 
   if (timer.state === 'running' || timer.state === 'paused') {
     return (
-      <div className="fixed bottom-6 right-6 z-40 sm:bottom-6 sm:right-6"
+      <div className="fixed bottom-6 right-6 z-[60] sm:bottom-6 sm:right-6"
            style={{ bottom: 'max(1.5rem, env(safe-area-inset-bottom, 1.5rem))' }}>
         <div className="rounded-2xl border border-border bg-card shadow-2xl">
           <TimerRunning
@@ -39,7 +39,7 @@ export function TimerWidget() {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-40 sm:bottom-6 sm:right-6"
+    <div className="fixed bottom-6 right-6 z-[60] sm:bottom-6 sm:right-6"
          style={{ bottom: 'max(1.5rem, env(safe-area-inset-bottom, 1.5rem))' }}>
       {isExpanded ? (
         <div className="rounded-2xl border border-border bg-card shadow-2xl">

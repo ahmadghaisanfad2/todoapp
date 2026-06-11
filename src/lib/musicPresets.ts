@@ -36,4 +36,22 @@ export const LOFI_PRESETS: MusicPreset[] = [
     channel: 'Jazz Lofi',
     thumbnail: 'https://img.youtube.com/vi/rUxyKA_-grg/mqdefault.jpg',
   },
+  {
+    videoId: '2OEL4P1Rz04',
+    title: 'Classical Piano',
+    channel: 'HALIDONMUSIC',
+    thumbnail: 'https://img.youtube.com/vi/2OEL4P1Rz04/mqdefault.jpg',
+  },
+  {
+    videoId: '5qap5aO4i9A',
+    title: 'Deep Focus',
+    channel: 'Spotify',
+    thumbnail: 'https://img.youtube.com/vi/5qap5aO4i9A/mqdefault.jpg',
+  },
+  {
+    videoId: 'MkNeIUgNPQ8',
+    title: 'Rain Sounds',
+    channel: 'Relaxing White Noise',
+    thumbnail: 'https://img.youtube.com/vi/MkNeIUgNPQ8/mqdefault.jpg',
+  },
 ]

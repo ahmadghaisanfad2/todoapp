@@ -321,6 +321,17 @@
   }
 }
 
+@keyframes hero-panel-breathe {
+  0%, 100% {
+    transform: translateY(0);
+    box-shadow: 0 28px 90px rgba(3, 8, 20, 0.34);
+  }
+  50% {
+    transform: translateY(-6px);
+    box-shadow: 0 34px 110px rgba(3, 8, 20, 0.48);
+  }
+}
+
 @keyframes scroll-reveal {
   from {
     opacity: 0;
@@ -410,6 +421,10 @@
     animation: scroll-reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
+  .animate-hero-panel-breathe {
+    animation: hero-panel-breathe 7s ease-in-out infinite;
+  }
+
   .grain-overlay {
     position: relative;
   }
@@ -441,7 +456,8 @@
   .animate-hero-fade-4,
   .animate-shimmer,
   .animate-pulse-glow,
-  .animate-scroll-reveal {
+  .animate-scroll-reveal,
+  .animate-hero-panel-breathe {
     animation: none;
   }
 }

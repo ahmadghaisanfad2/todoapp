@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { format, parseISO } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
@@ -38,22 +38,6 @@ export function TaskForm({ open, onOpenChange, task }: TaskFormProps) {
   const [dueDate, setDueDate] = useState<Date | undefined>(task?.dueDate ? parseISO(task.dueDate) : undefined)
   const [status, setStatus] = useState(task?.status || 'todo')
   const [calOpen, setCalOpen] = useState(false)
-
-  useEffect(() => {
-    if (task) {
-      setTitle(task.title)
-      setPriority(task.priority)
-      setCategoryId(task.categoryId || 'none')
-      setDueDate(task.dueDate ? parseISO(task.dueDate) : undefined)
-      setStatus(task.status || 'todo')
-    } else {
-      setTitle('')
-      setPriority('medium')
-      setCategoryId('none')
-      setDueDate(undefined)
-      setStatus('todo')
-    }
-  }, [task])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
