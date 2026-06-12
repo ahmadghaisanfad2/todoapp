@@ -34,11 +34,10 @@ export default async function categoryCrudTests({ page, test, assert, BASE_URL }
 
   test('can create a category', async () => {
     const sheet = getSheet()
-    const addBtn = sheet.locator('button', { hasText: 'Add Category' })
+    const addBtn = sheet.getByRole('button', { name: 'Add category' })
     await addBtn.click()
 
-    // The CategoryForm dialog has title "Add Category" or "Edit Category"
-    const catDialog = page.getByRole('dialog', { name: /Add Category/ })
+    const catDialog = page.getByRole('dialog', { name: /Add category/i })
     await catDialog.waitFor({ state: 'visible', timeout: 5000 })
 
     await catDialog.locator('#cat-name').fill('Work')
@@ -53,9 +52,8 @@ export default async function categoryCrudTests({ page, test, assert, BASE_URL }
 
   test('category action buttons have larger touch targets (h-9 w-9)', async () => {
     const sheet = getSheet()
-    // Find the edit button (Pencil icon) inside the category row
-    const catRow = sheet.locator('div.rounded-lg.border', { hasText: 'Work' })
-    const editBtn = catRow.locator('button').first()
+    const catRow = sheet.locator('[data-category-row]', { hasText: 'Work' })
+    const editBtn = catRow.getByRole('button', { name: 'Edit Work' })
     const box = await editBtn.boundingBox()
     assert.ok(box, 'Action button should have a bounding box')
     // h-9 = 36px
@@ -64,12 +62,11 @@ export default async function categoryCrudTests({ page, test, assert, BASE_URL }
 
   test('can edit a category', async () => {
     const sheet = getSheet()
-    // Click the edit button (pencil icon) for "Work" — it's the first button in the row
-    const catRow = sheet.locator('div.rounded-lg.border', { hasText: 'Work' })
-    const editBtn = catRow.locator('button').first()
+    const catRow = sheet.locator('[data-category-row]', { hasText: 'Work' })
+    const editBtn = catRow.getByRole('button', { name: 'Edit Work' })
     await editBtn.click()
 
-    const catDialog = page.getByRole('dialog', { name: /Edit Category/ })
+    const catDialog = page.getByRole('dialog', { name: /Edit category/i })
     await catDialog.waitFor({ state: 'visible', timeout: 5000 })
 
     await catDialog.locator('#cat-name').fill('Work Projects')
@@ -88,9 +85,8 @@ export default async function categoryCrudTests({ page, test, assert, BASE_URL }
     })
 
     const sheet = getSheet()
-    const catRow = sheet.locator('div.rounded-lg.border', { hasText: 'Work Projects' })
-    // Delete button is the last button (with text-destructive class)
-    const deleteBtn = catRow.locator('button.text-destructive')
+    const catRow = sheet.locator('[data-category-row]', { hasText: 'Work Projects' })
+    const deleteBtn = catRow.getByRole('button', { name: 'Delete Work Projects' })
     await deleteBtn.click()
     await page.waitForTimeout(500)
 

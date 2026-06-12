@@ -1,106 +1,78 @@
 /**
- * Filter and reset regression tests — covers filter application, reset, and differentiated empty states.
+ * Kanban board regression tests — covers current board layout and status grouping.
  */
-export default async function filterTests({ page, test, assert, BASE_URL }) {
+export default async function kanbanBoardTests({ page, test, assert, BASE_URL }) {
   await page.setViewportSize({ width: 1280, height: 800 })
   await page.goto(BASE_URL + '/app')
   await page.waitForLoadState('networkidle')
 
-  // Setup: clear state and create test tasks
   await page.evaluate(() => {
     localStorage.removeItem('wazheefa-tasks')
     localStorage.removeItem('wazheefa-settings')
     localStorage.removeItem('wazheefa-categories')
+    localStorage.removeItem('wazheefa-kanban')
   })
   await page.reload()
   await page.waitForLoadState('networkidle')
 
-  // Create two tasks with different priorities
   async function createTask(title, priority) {
-    const fab = page.locator('button[aria-label="Add task"]')
-    await fab.click()
-    const dialog = page.locator('[role="dialog"]')
+    await page.getByRole('button', { name: 'Add task' }).click()
+    const dialog = page.getByRole('dialog', { name: /Add task/i })
     await dialog.waitFor({ state: 'visible', timeout: 5000 })
-    await page.fill('#task-title', title)
-    if (priority) {
-      const btn = dialog.locator('button', { hasText: priority })
-      await btn.click()
-    }
-    const submitBtn = dialog.locator('button[type="submit"]')
-    await submitBtn.click()
+    await dialog.locator('#task-title').fill(title)
+    await dialog.locator('button', { hasText: priority }).click()
+    await dialog.locator('button[type="submit"]').click()
     await dialog.waitFor({ state: 'hidden', timeout: 3000 })
   }
 
   await createTask('Important meeting', 'High')
   await createTask('Casual reading', 'Low')
 
-  test('filter controls have larger height (h-10 = 40px)', async () => {
-    const trigger = page.locator('button[role="combobox"]').first()
-    const box = await trigger.boundingBox()
-    assert.ok(box, 'Select trigger should have a bounding box')
-    assert.ok(box.height >= 38, `Select trigger height (${box.height}) should be >= 38px`)
+  test('default board columns are visible', async () => {
+    for (const columnName of ['Backlog', 'To Do', 'In Progress', 'Done']) {
+      const heading = page.getByRole('heading', { name: columnName })
+      assert.ok(await heading.isVisible(), `${columnName} column should be visible`)
+    }
   })
 
-  test('can apply priority filter', async () => {
-    // Open priority select (second combobox)
-    const priorityTrigger = page.locator('button[role="combobox"]').nth(1)
-    await priorityTrigger.click()
-    const highOption = page.locator('[role="option"]', { hasText: 'High' })
-    await highOption.waitFor({ state: 'visible', timeout: 3000 })
-    await highOption.click()
-    await page.waitForTimeout(500)
+  test('new header tasks appear in To Do by default', async () => {
+    const todoColumn = page.locator('[data-kanban-column]').filter({
+      has: page.getByRole('heading', { name: 'To Do' }),
+    })
 
-    // Should show Important meeting but not Casual reading
-    const important = page.locator('text=Important meeting')
-    assert.ok(await important.isVisible(), 'High-priority task should be visible')
-    const casual = page.locator('text=Casual reading')
-    assert.equal(await casual.count(), 0, 'Low-priority task should be hidden')
+    assert.ok(await todoColumn.locator('text=Important meeting').isVisible(), 'High-priority task should appear in To Do')
+    assert.ok(await todoColumn.locator('text=Casual reading').isVisible(), 'Low-priority task should appear in To Do')
   })
 
-  test('clear filters button appears when filters are active', async () => {
-    const clearBtn = page.locator('button', { hasText: 'Clear filters' })
-    assert.ok(await clearBtn.isVisible(), 'Clear filters button should appear when filters are active')
+  test('priority badges render on task cards', async () => {
+    const importantCard = page.locator('[data-kanban-card]', { hasText: 'Important meeting' })
+    const casualCard = page.locator('[data-kanban-card]', { hasText: 'Casual reading' })
+
+    assert.ok(await importantCard.locator('text=high').isVisible(), 'High priority badge should render')
+    assert.ok(await casualCard.locator('text=low').isVisible(), 'Low priority badge should render')
   })
 
-  test('clear filters resets all filters and search', async () => {
-    // Also add a search query
-    await page.fill('input[placeholder="Search tasks..."]', 'something')
-    await page.waitForTimeout(300)
+  test('status select moves a task between columns', async () => {
+    await page.locator('text=Important meeting').click()
+    const dialog = page.getByRole('dialog', { name: /Edit task/i })
+    await dialog.waitFor({ state: 'visible', timeout: 5000 })
+    await dialog.getByRole('combobox').last().click()
+    await page.getByRole('option', { name: 'In Progress' }).click()
+    await dialog.locator('button[type="submit"]').click()
+    await dialog.waitFor({ state: 'hidden', timeout: 3000 })
 
-    const clearBtn = page.locator('button', { hasText: 'Clear filters' })
-    await clearBtn.click()
-    await page.waitForTimeout(500)
-
-    // Both tasks should be visible again
-    const important = page.locator('text=Important meeting')
-    const casual = page.locator('text=Casual reading')
-    assert.ok(await important.isVisible(), 'All tasks should be visible after reset')
-    assert.ok(await casual.isVisible(), 'All tasks should be visible after reset')
-
-    // Search field should be cleared
-    const searchVal = await page.locator('input[placeholder="Search tasks..."]').inputValue()
-    assert.equal(searchVal, '', 'Search should be cleared after reset')
+    const inProgressColumn = page.locator('[data-kanban-column]').filter({
+      has: page.getByRole('heading', { name: 'In Progress' }),
+    })
+    assert.ok(await inProgressColumn.locator('text=Important meeting').isVisible(), 'Task should move to In Progress')
   })
 
-  test('filtered empty state shows "No matching tasks" message', async () => {
-    // Search for something that doesn't exist
-    await page.fill('input[placeholder="Search tasks..."]', 'zzz-nonexistent-query')
-    await page.waitForTimeout(500)
+  test('column add buttons remain first after tasks exist', async () => {
+    const todoColumn = page.locator('[data-kanban-column]').filter({
+      has: page.getByRole('heading', { name: 'To Do' }),
+    })
+    const firstActionLabel = await todoColumn.locator('[data-kanban-column-body] > *').first().getAttribute('aria-label')
 
-    const noMatching = page.locator('text=No matching tasks')
-    assert.ok(await noMatching.isVisible(), 'Should show "No matching tasks" when filters yield no results')
-
-    const adjustMsg = page.locator('text=Try adjusting your filters')
-    assert.ok(await adjustMsg.isVisible(), 'Should show helpful message to adjust filters')
-
-    // Clear to restore
-    const clearBtn = page.locator('button', { hasText: 'Clear filters' })
-    await clearBtn.click()
-    await page.waitForTimeout(300)
-  })
-
-  test('clear filters button disappears when no filters are active', async () => {
-    const clearBtn = page.locator('button', { hasText: 'Clear filters' })
-    assert.equal(await clearBtn.count(), 0, 'Clear filters button should not appear when no filters are active')
+    assert.equal(firstActionLabel, 'Tambah tugas di To Do', 'To Do add button should stay first after tasks exist')
   })
 }

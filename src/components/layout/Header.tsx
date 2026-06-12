@@ -36,7 +36,7 @@ export function Header({ onCategoryOpen, onAddTask, onMusicOpen }: HeaderProps) 
           <Button
             variant="ghost"
             size="sm"
-            onClick={onAddTask}
+            onClick={() => onAddTask()}
             className="hidden sm:inline-flex gap-1.5 text-sm font-medium"
             aria-label="Add task"
           >

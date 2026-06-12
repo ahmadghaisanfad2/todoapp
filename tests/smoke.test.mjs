@@ -13,20 +13,20 @@ export default async function smokeTest({ page, test, assert, BASE_URL }) {
     assert.ok(await title.isVisible(), 'Wazheefa title should be visible')
   })
 
-  test('search input is visible', async () => {
-    const search = page.locator('input[placeholder="Search tasks..."]')
-    await search.waitFor({ state: 'visible', timeout: 5000 })
-    assert.ok(await search.isVisible(), 'Search input should be visible')
+  test('Kanban board columns are visible', async () => {
+    const todo = page.getByRole('heading', { name: 'To Do' })
+    await todo.waitFor({ state: 'visible', timeout: 5000 })
+    assert.ok(await todo.isVisible(), 'To Do column should be visible')
   })
 
   test('FAB (Add task) button is visible', async () => {
-    const fab = page.locator('button[aria-label="Add task"]')
+    const fab = page.getByRole('button', { name: 'Add task' })
     await fab.waitFor({ state: 'visible', timeout: 5000 })
     assert.ok(await fab.isVisible(), 'FAB should be visible')
   })
 
   test('clicking FAB opens task dialog', async () => {
-    const fab = page.locator('button[aria-label="Add task"]')
+    const fab = page.getByRole('button', { name: 'Add task' })
     await fab.click()
     const dialog = page.locator('[role="dialog"]')
     await dialog.waitFor({ state: 'visible', timeout: 5000 })

@@ -4,7 +4,7 @@
 export default async function themeResponsiveTests({ page, test, assert, BASE_URL }) {
   // Start fresh
   await page.setViewportSize({ width: 1280, height: 800 })
-  await page.goto(BASE_URL)
+  await page.goto(BASE_URL + '/app')
   await page.waitForLoadState('networkidle')
 
   await page.evaluate(() => {
@@ -56,10 +56,12 @@ export default async function themeResponsiveTests({ page, test, assert, BASE_UR
     const title = page.locator('h1', { hasText: 'Wazheefa' })
     assert.ok(await title.isVisible(), 'Title should be visible on mobile')
 
-    const search = page.locator('input[placeholder="Search tasks..."]')
-    assert.ok(await search.isVisible(), 'Search should be visible on mobile')
+    const board = page.locator('[data-kanban-column]').filter({
+      has: page.getByRole('heading', { name: 'To Do' }),
+    })
+    assert.ok(await board.isVisible(), 'Kanban board should be visible on mobile')
 
-    const fab = page.locator('button[aria-label="Add task"]')
+    const fab = page.getByRole('button', { name: 'Tambah tugas', exact: true })
     assert.ok(await fab.isVisible(), 'FAB should be visible on mobile')
   })
 
@@ -67,7 +69,7 @@ export default async function themeResponsiveTests({ page, test, assert, BASE_UR
     await page.setViewportSize({ width: 375, height: 812 })
     await page.waitForTimeout(300)
 
-    const fab = page.locator('button[aria-label="Add task"]')
+    const fab = page.getByRole('button', { name: 'Tambah tugas', exact: true })
     const box = await fab.boundingBox()
     assert.ok(box, 'FAB should have a bounding box on mobile')
     assert.ok(box.x + box.width <= 375, 'FAB should be within mobile viewport')
@@ -86,7 +88,7 @@ export default async function themeResponsiveTests({ page, test, assert, BASE_UR
     await page.setViewportSize({ width: 375, height: 812 })
     await page.waitForTimeout(300)
 
-    const fab = page.locator('button[aria-label="Add task"]')
+    const fab = page.getByRole('button', { name: 'Tambah tugas', exact: true })
     await fab.click()
     const dialog = page.locator('[role="dialog"]')
     await dialog.waitFor({ state: 'visible', timeout: 5000 })
@@ -99,20 +101,15 @@ export default async function themeResponsiveTests({ page, test, assert, BASE_UR
     await dialog.waitFor({ state: 'hidden', timeout: 3000 })
   })
 
-  // Reset viewport back to desktop
-  test('filter controls remain usable at mobile width', async () => {
+  test('Kanban columns remain reachable at mobile width', async () => {
     await page.setViewportSize({ width: 375, height: 812 })
     await page.waitForTimeout(300)
 
-    const triggers = page.locator('button[role="combobox"]')
-    const count = await triggers.count()
-    assert.ok(count >= 3, `Should have at least 3 filter controls, found ${count}`)
-
-    // Check no controls are cut off (they should all be within viewport x bounds)
-    for (let i = 0; i < Math.min(count, 3); i++) {
-      const box = await triggers.nth(i).boundingBox()
-      assert.ok(box, `Filter control ${i} should have a bounding box`)
-      assert.ok(box.x >= 0, `Filter control ${i} should not be positioned off-screen left`)
-    }
+    const column = page.locator('[data-kanban-column]').filter({
+      has: page.getByRole('heading', { name: 'To Do' }),
+    })
+    const box = await column.boundingBox()
+    assert.ok(box, 'To Do column should have a bounding box')
+    assert.ok(box.width <= 320, `Column width (${box.width}) should fit within the horizontal board scroller`)
   })
 }

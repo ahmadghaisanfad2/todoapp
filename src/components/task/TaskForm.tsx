@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { format, parseISO } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -64,6 +64,9 @@ export function TaskForm({ open, onOpenChange, task, defaultStatus }: TaskFormPr
       <DialogContent className="sm:max-w-lg rounded-2xl">
         <DialogHeader className="pb-1">
           <DialogTitle className="text-xl font-semibold">{task ? 'Edit task' : 'Add task'}</DialogTitle>
+          <DialogDescription className="sr-only">
+            {task ? 'Update this task details and status.' : 'Create a task with title, priority, due date, category, and status.'}
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="flex flex-col gap-5 pt-2">
           <div className="flex flex-col gap-2">

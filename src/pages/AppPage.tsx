@@ -42,11 +42,15 @@ export function AppPage({ onNavigateHome }: AppPageProps) {
 
   const handleEditTask = (task: Task) => {
     setEditingTask(task)
+    setDefaultStatus(undefined)
     setTaskFormOpen(true)
   }
 
   const handleCloseTaskForm = (open: boolean) => {
-    if (!open) setEditingTask(undefined)
+    if (!open) {
+      setEditingTask(undefined)
+      setDefaultStatus(undefined)
+    }
     setTaskFormOpen(open)
   }
 
@@ -88,8 +92,8 @@ export function AppPage({ onNavigateHome }: AppPageProps) {
 
       <Button
         size="icon"
-        className="fixed bottom-6 right-6 h-12 w-12 rounded-full shadow-lg shadow-black/10 sm:hidden"
-        style={{ bottom: 'max(1.5rem, env(safe-area-inset-bottom, 1.5rem))' }}
+        className="fixed bottom-20 right-6 z-[70] h-12 w-12 rounded-full shadow-lg shadow-black/10 sm:hidden"
+        style={{ bottom: 'max(5rem, calc(env(safe-area-inset-bottom, 0px) + 5rem))' }}
         onClick={() => handleAddTask()}
         aria-label="Tambah tugas"
       >
@@ -97,7 +101,7 @@ export function AppPage({ onNavigateHome }: AppPageProps) {
       </Button>
 
       <TaskForm
-        key={editingTask?.id ?? 'new'}
+        key={editingTask?.id ?? defaultStatus ?? 'new'}
         open={taskFormOpen}
         onOpenChange={handleCloseTaskForm}
         task={editingTask}

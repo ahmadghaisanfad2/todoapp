@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -33,6 +33,9 @@ export function CategoryForm({ open, onOpenChange, category, onSave }: CategoryF
       <DialogContent className="sm:max-w-sm rounded-2xl">
         <DialogHeader className="pb-1">
           <DialogTitle className="text-lg font-semibold">{category ? 'Edit category' : 'Add category'}</DialogTitle>
+          <DialogDescription className="sr-only">
+            {category ? 'Update this category name and color.' : 'Create a category to organize tasks.'}
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="flex flex-col gap-5 pt-2">
           <div className="flex flex-col gap-2">

@@ -40,6 +40,7 @@ export function KanbanColumnComponent({
   return (
     <div
       ref={setNodeRef}
+      data-kanban-column
       className={cn(
         'flex w-72 shrink-0 flex-col rounded-lg border bg-muted/50',
         isOver && 'border-primary/50 bg-primary/5'
@@ -108,27 +109,26 @@ export function KanbanColumnComponent({
       </div>
 
       <div
+        data-kanban-column-body
         className="flex flex-1 flex-col gap-2 overflow-y-auto p-2"
         style={{ minHeight: 100 }}
       >
+        <Button
+          variant="ghost"
+          size="sm"
+          className="w-full gap-1.5 text-muted-foreground hover:text-foreground"
+          onClick={() => onAddTask(column.id)}
+          aria-label={`Tambah tugas di ${column.name}`}
+        >
+          <Plus className="h-4 w-4" />
+          Tambah tugas
+        </Button>
+
         <SortableContext items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
           {tasks.map((task) => (
             <KanbanCard key={task.id} task={task} onEdit={onEdit} onDelete={onDelete} />
           ))}
         </SortableContext>
-
-        <Button
-          variant="ghost"
-          size="sm"
-          className={cn(
-            'w-full gap-1.5 text-muted-foreground hover:text-foreground',
-            tasks.length === 0 ? 'mt-auto' : 'mt-1'
-          )}
-          onClick={() => onAddTask(column.id)}
-        >
-          <Plus className="h-4 w-4" />
-          Tambah tugas
-        </Button>
       </div>
     </div>
   )

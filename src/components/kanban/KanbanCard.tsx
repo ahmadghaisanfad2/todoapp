@@ -45,6 +45,7 @@ export function KanbanCard({ task, onEdit, onDelete }: KanbanCardProps) {
     <div
       ref={setNodeRef}
       style={style}
+      data-kanban-card
       className={cn(
         'group flex items-start gap-2 rounded-lg border bg-card px-3 py-2.5 shadow-sm cursor-grab active:cursor-grabbing hover:border-primary/30 transition-colors select-none',
         isDragging && 'opacity-50 shadow-lg z-50',
@@ -72,7 +73,9 @@ export function KanbanCard({ task, onEdit, onDelete }: KanbanCardProps) {
         </div>
       </div>
       <button
+        type="button"
         data-no-click
+        aria-label={`Delete ${task.title}`}
         className="opacity-0 group-hover:opacity-100 mt-0.5 text-muted-foreground hover:text-destructive transition-opacity pointer-events-auto"
         onClick={(e) => {
           e.stopPropagation()
