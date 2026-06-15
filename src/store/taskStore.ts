@@ -36,6 +36,7 @@ interface TaskStore {
   deleteTask: (id: string) => void
   toggleTask: (id: string) => void
   moveTask: (id: string, status: string, order: number) => void
+  deleteTasksByWorkspace: (workspaceId: string) => void
 }
 
 export const useTaskStore = create<TaskStore>()(
@@ -81,6 +82,10 @@ export const useTaskStore = create<TaskStore>()(
               ? { ...t, status, order, completed: status === 'done', updatedAt: new Date().toISOString() }
               : t
           ),
+        })),
+      deleteTasksByWorkspace: (workspaceId) =>
+        set((state) => ({
+          tasks: state.tasks.filter((t) => t.workspaceId !== workspaceId),
         })),
     }),
     { name: STORAGE_KEYS.TASKS, storage: createJSONStorage(() => safeStorage) }

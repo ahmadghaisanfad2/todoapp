@@ -18,6 +18,7 @@ import { KanbanCard } from './KanbanCard'
 import { ColumnForm } from './ColumnForm'
 import { useKanbanStore } from '@/store/kanbanStore'
 import { useTaskStore } from '@/store/taskStore'
+import { useWorkspaceStore } from '@/store/workspaceStore'
 import type { Task } from '@/types'
 
 interface KanbanBoardProps {
@@ -31,9 +32,15 @@ export function KanbanBoard({ onEditTask, onAddTask }: KanbanBoardProps) {
   const updateColumn = useKanbanStore((s) => s.updateColumn)
   const deleteColumn = useKanbanStore((s) => s.deleteColumn)
 
-  const tasks = useTaskStore((s) => s.tasks)
+  const allTasks = useTaskStore((s) => s.tasks)
   const moveTask = useTaskStore((s) => s.moveTask)
   const deleteTask = useTaskStore((s) => s.deleteTask)
+  const activeWorkspaceId = useWorkspaceStore((s) => s.activeWorkspaceId)
+
+  const tasks = useMemo(
+    () => allTasks.filter((t) => t.workspaceId === activeWorkspaceId),
+    [allTasks, activeWorkspaceId]
+  )
 
   const [activeTask, setActiveTask] = useState<Task | null>(null)
 

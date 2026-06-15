@@ -8,9 +8,11 @@ import { CategorySheet } from '@/components/category/CategorySheet'
 import { MusicPlayerBar } from '@/components/music/MusicPlayerBar'
 import { MusicSearchSheet } from '@/components/music/MusicSearchSheet'
 import { TimerWidget } from '@/components/timer/TimerWidget'
+import { WorkspaceSwitcher } from '@/components/workspace/WorkspaceSwitcher'
 import { Button } from '@/components/ui/button'
 import { Logo } from '@/components/common/Logo'
 import { useMusicStore } from '@/store/musicStore'
+import { ensureDefaultWorkspace } from '@/store/workspaceStore'
 import type { Task } from '@/types'
 
 interface AppPageProps {
@@ -30,6 +32,7 @@ export function AppPage({ onNavigateHome }: AppPageProps) {
   const closeSearch = useMusicStore((s) => s.closeSearch)
 
   useEffect(() => {
+    ensureDefaultWorkspace()
     if (hasShownBadge.current) return
     hasShownBadge.current = true
     queueMicrotask(() => {
@@ -42,15 +45,11 @@ export function AppPage({ onNavigateHome }: AppPageProps) {
 
   const handleEditTask = (task: Task) => {
     setEditingTask(task)
-    setDefaultStatus(undefined)
     setTaskFormOpen(true)
   }
 
   const handleCloseTaskForm = (open: boolean) => {
-    if (!open) {
-      setEditingTask(undefined)
-      setDefaultStatus(undefined)
-    }
+    if (!open) setEditingTask(undefined)
     setTaskFormOpen(open)
   }
 
@@ -63,13 +62,17 @@ export function AppPage({ onNavigateHome }: AppPageProps) {
   return (
     <div className="min-h-[100dvh] bg-background pb-16">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
-        <button
-          onClick={onNavigateHome}
-          className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Kembali ke beranda
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={onNavigateHome}
+            className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span className="hidden sm:inline">Back to home</span>
+          </button>
+          <div className="h-4 w-px bg-border/60 hidden sm:block" />
+          <WorkspaceSwitcher />
+        </div>
         <span className="text-sm font-semibold text-foreground">Wazheefa</span>
       </div>
 
@@ -92,8 +95,8 @@ export function AppPage({ onNavigateHome }: AppPageProps) {
 
       <Button
         size="icon"
-        className="fixed bottom-20 right-6 z-[70] h-12 w-12 rounded-full shadow-lg shadow-black/10 sm:hidden"
-        style={{ bottom: 'max(5rem, calc(env(safe-area-inset-bottom, 0px) + 5rem))' }}
+        className="fixed bottom-6 right-6 h-12 w-12 rounded-full shadow-lg shadow-black/10 sm:hidden"
+        style={{ bottom: 'max(1.5rem, env(safe-area-inset-bottom, 1.5rem))' }}
         onClick={() => handleAddTask()}
         aria-label="Tambah tugas"
       >
@@ -101,7 +104,7 @@ export function AppPage({ onNavigateHome }: AppPageProps) {
       </Button>
 
       <TaskForm
-        key={editingTask?.id ?? defaultStatus ?? 'new'}
+        key={editingTask?.id ?? 'new'}
         open={taskFormOpen}
         onOpenChange={handleCloseTaskForm}
         task={editingTask}

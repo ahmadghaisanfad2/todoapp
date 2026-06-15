@@ -4,7 +4,11 @@ export const STORAGE_KEYS = {
   SETTINGS: 'wazheefa-settings',
   KANBAN: 'wazheefa-kanban',
   MUSIC: 'wazheefa-music',
+  WORKSPACES: 'wazheefa-workspaces',
 } as const
+
+export const DEFAULT_WORKSPACE_NAME = 'Personal'
+export const DEFAULT_WORKSPACE_COLOR = '#6366F1'
 
 export const DEFAULT_COLUMNS = [
   { id: 'backlog', name: 'Backlog', order: 0 },

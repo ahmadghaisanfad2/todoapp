@@ -34,6 +34,7 @@ interface CategoryStore {
   addCategory: (category: Omit<Category, 'id' | 'createdAt'>) => void
   updateCategory: (id: string, updates: Partial<Omit<Category, 'id' | 'createdAt'>>) => void
   deleteCategory: (id: string) => void
+  deleteCategoriesByWorkspace: (workspaceId: string) => void
 }
 
 export const useCategoryStore = create<CategoryStore>()(
@@ -60,6 +61,10 @@ export const useCategoryStore = create<CategoryStore>()(
       deleteCategory: (id) =>
         set((state) => ({
           categories: state.categories.filter((c) => c.id !== id),
+        })),
+      deleteCategoriesByWorkspace: (workspaceId) =>
+        set((state) => ({
+          categories: state.categories.filter((c) => c.workspaceId !== workspaceId),
         })),
     }),
     { name: STORAGE_KEYS.CATEGORIES, storage: createJSONStorage(() => safeStorage) }

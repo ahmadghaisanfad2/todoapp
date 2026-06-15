@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { format, parseISO } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -11,6 +11,7 @@ import { Calendar } from '@/components/ui/calendar'
 import { cn } from '@/lib/utils'
 import { useTaskStore } from '@/store/taskStore'
 import { useKanbanStore } from '@/store/kanbanStore'
+import { useWorkspaceStore } from '@/store/workspaceStore'
 import { useCategories } from '@/hooks/useCategories'
 import type { Task, Priority } from '@/types'
 
@@ -31,6 +32,7 @@ export function TaskForm({ open, onOpenChange, task, defaultStatus }: TaskFormPr
   const addTask = useTaskStore((s) => s.addTask)
   const updateTask = useTaskStore((s) => s.updateTask)
   const columns = useKanbanStore((s) => s.columns)
+  const activeWorkspaceId = useWorkspaceStore((s) => s.activeWorkspaceId)
   const { categories } = useCategories()
 
   const [title, setTitle] = useState(task?.title ?? '')
@@ -47,6 +49,7 @@ export function TaskForm({ open, onOpenChange, task, defaultStatus }: TaskFormPr
       title: title.trim(),
       priority,
       categoryId: categoryId === 'none' ? null : categoryId,
+      workspaceId: task?.workspaceId ?? activeWorkspaceId,
       dueDate: dueDate ? format(dueDate, "yyyy-MM-dd'T'HH:mm:ss") : null,
       completed: task?.completed ?? false,
       status,
@@ -64,9 +67,6 @@ export function TaskForm({ open, onOpenChange, task, defaultStatus }: TaskFormPr
       <DialogContent className="sm:max-w-lg rounded-2xl">
         <DialogHeader className="pb-1">
           <DialogTitle className="text-xl font-semibold">{task ? 'Edit task' : 'Add task'}</DialogTitle>
-          <DialogDescription className="sr-only">
-            {task ? 'Update this task details and status.' : 'Create a task with title, priority, due date, category, and status.'}
-          </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="flex flex-col gap-5 pt-2">
           <div className="flex flex-col gap-2">
