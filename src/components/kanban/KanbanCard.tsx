@@ -36,8 +36,7 @@ export function KanbanCard({ task, onEdit, onDelete }: KanbanCardProps) {
 
   const handleClick = (e: React.MouseEvent) => {
     if (isDragging) return
-    const target = e.target as HTMLElement
-    if (target.closest('[data-no-click]')) return
+    if ((e.target as HTMLElement).closest('button')) return
     onEdit(task)
   }
 
@@ -74,7 +73,6 @@ export function KanbanCard({ task, onEdit, onDelete }: KanbanCardProps) {
       </div>
       <button
         type="button"
-        data-no-click
         aria-label={`Delete ${task.title}`}
         className="opacity-0 group-hover:opacity-100 mt-0.5 text-muted-foreground hover:text-destructive transition-opacity pointer-events-auto"
         onClick={(e) => {

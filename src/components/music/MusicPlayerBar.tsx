@@ -3,17 +3,10 @@ import { Volume2, VolumeX, Music, ChevronUp, ChevronDown, Shuffle, Repeat, Repea
 import { Button } from '@/components/ui/button'
 import { useMusicStore } from '@/store/musicStore'
 import { useYouTubePlayer } from '@/hooks/useYouTubePlayer'
-import { cn } from '@/lib/utils'
+import { cn, formatTime } from '@/lib/utils'
 
 interface MusicPlayerBarProps {
   onOpenSearch: () => void
-}
-
-function formatTime(seconds: number): string {
-  if (!seconds || seconds < 0) return '0:00'
-  const mins = Math.floor(seconds / 60)
-  const secs = Math.floor(seconds % 60)
-  return `${mins}:${secs.toString().padStart(2, '0')}`
 }
 
 export function MusicPlayerBar({ onOpenSearch }: MusicPlayerBarProps) {
@@ -262,7 +255,7 @@ export function MusicPlayerBar({ onOpenSearch }: MusicPlayerBarProps) {
                 className="h-7 px-2.5 text-[11px] font-mono bg-primary text-primary-foreground hover:bg-primary/90 shrink-0"
               >
                 <Music className="h-3 w-3 mr-1" />
-                Ganti
+                Change
               </Button>
             </div>
           </div>

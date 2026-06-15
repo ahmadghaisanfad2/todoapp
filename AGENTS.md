@@ -18,15 +18,6 @@ The test runner is a Node-based harness in `tests/run.mjs`. Playwright is used b
 
 Run a single test suite: `node tests/run.mjs <filter>` (substring match on filename, e.g., `node tests/run.mjs smoke`).
 
-## Two Domains
-
-The app has two feature modules switched via a tab bar in AppPage:
-
-- **Tasks** — task management with categories, priorities, due dates, search, and filters.
-- **Hafalan** — Quran/study memorization tracking for managing santri (students) and their memorization tasks.
-
-Each domain has its own stores, hooks, and component subtree.
-
 ## Project Structure
 
 ```
@@ -35,34 +26,37 @@ src/
 ├── main.tsx                       # React 19 bootstrap + minimal pathname router (`/` and `/app`)
 ├── pages/
 │   ├── LandingPage.tsx            # Marketing landing page (`/`)
-│   └── AppPage.tsx                # Main task+hafalan app (`/app`)
+│   └── AppPage.tsx                # Main task app (`/app`)
 ├── types/
-│   ├── index.ts                   # Shared interfaces (Task, Category, AppSettings) + re-exports
-│   └── hafalan.ts                 # HafalanTask, Santri, HafalanLog, LogType, HafalanStatus
+│   └── index.ts                   # Shared interfaces (Task, Category, AppSettings, KanbanColumn)
 ├── lib/
-│   ├── utils.ts                   # cn() + generateId() (crypto.randomUUID)
-│   ├── constants.ts               # STORAGE_KEYS and APP_COLORS
-│   └── migrate.ts                 # One-time localStorage migration (todoflow → wazheefa)
-├── store/                         # Zustand stores (6 total, all persisted to localStorage)
+│   ├── utils.ts                   # cn(), generateId(), formatTime()
+│   ├── safeStorage.ts             # try/catch localStorage adapter for Zustand persist
+│   ├── constants.ts               # STORAGE_KEYS, DEFAULT_COLUMNS
+│   ├── migrate.ts                 # One-time localStorage migration (todoflow → wazheefa)
+│   └── musicPresets.ts            # Preset lofi YouTube tracks
+├── store/                         # Zustand stores (5 total, all persisted to localStorage)
 │   ├── taskStore.ts               # wazheefa-tasks
 │   ├── categoryStore.ts           # wazheefa-categories
 │   ├── settingsStore.ts           # wazheefa-settings
-│   ├── hafalanTaskStore.ts        # wazheefa-hafalan-tasks
-│   ├── santriStore.ts             # wazheefa-santri
-│   └── hafalanLogStore.ts         # wazheefa-hafalan-logs
+│   ├── kanbanStore.ts             # wazheefa-kanban
+│   └── musicStore.ts              # wazheefa-music
 ├── hooks/                         # Custom hooks (bridge stores → components)
 │   ├── useTasks.ts
 │   ├── useCategories.ts
 │   ├── useTheme.ts
-│   └── useHafalan.ts             # Cross-store derived data for hafalan domain
+│   ├── useTimer.ts
+│   └── useYouTubePlayer.ts
 ├── components/
 │   ├── ui/                        # shadcn/ui primitives — DO NOT edit manually
-│   ├── common/                     # EmptyState, PriorityBadge, ThemeProvider
-│   ├── layout/                     # Header, Layout
-│   ├── landing/                    # LandingNav, LandingHero, LandingFeatures, LandingShowcase, LandingTestimonials, LandingCTA, LandingFooter
-│   ├── task/                       # TaskCard, TaskFilter, TaskForm, TaskList
-│   ├── category/                   # CategorySheet, CategoryForm
-│   └── hafalan/                    # HafalanTab, SantriList, SantriCard, SantriDetail, SantriForm, HafalanTaskList, HafalanTaskCard, HafalanTaskForm, AssignTaskSheet, CreateTaskForSantriSheet, SetoranSheet
+│   ├── common/                    # EmptyState, Logo, PriorityBadge, ErrorBoundary
+│   ├── layout/                    # Header, Layout
+│   ├── landing/                   # LandingNav, LandingHero
+│   ├── task/                      # TaskCard, TaskFilter, TaskForm, TaskList
+│   ├── category/                  # CategorySheet, CategoryForm
+│   ├── kanban/                    # KanbanBoard, KanbanCard, KanbanColumn, ColumnForm
+│   ├── timer/                     # TimerWidget, TimerSetup, TimerRunning, TimerComplete
+│   └── music/                     # MusicPlayerBar, MusicSearchSheet
 ```
 
 ## Path Aliases
@@ -123,7 +117,7 @@ export function TaskCard({ task, onEdit }: TaskCardProps) {
 
 ## State Management (Zustand)
 
-All stores use `create` with `persist` middleware wrapping a `safeStorage` adapter (try/catch on localStorage reads/writes). Each store has a typed interface.
+All stores use `create` with `persist` middleware wrapping a shared `safeStorage` adapter from `lib/safeStorage.ts` (try/catch on localStorage reads/writes). Each store has a typed interface.
 
 ```typescript
 interface TaskStore {
@@ -174,7 +168,7 @@ className={cn(
 
 ## Types
 
-All shared types live in `src/types/index.ts` (task domain) and `src/types/hafalan.ts` (hafalan domain, re-exported from index.ts). Keep domain types there. Component-specific props interfaces stay colocated with their component.
+All shared types live in `src/types/index.ts`. Keep domain types there. Component-specific props interfaces stay colocated with their component.
 
 - Interfaces for object shapes: `interface Task { ... }`
 - Union types over enums: `'high' | 'medium' | 'low'`
@@ -184,8 +178,8 @@ All shared types live in `src/types/index.ts` (task domain) and `src/types/hafal
 ## Error Handling
 
 - Form validation: guard with early returns (`if (!title.trim()) return`)
-- Stores use try/catch in the safeStorage adapter; hooks and components do not catch
-- No error boundaries yet
+- Stores use try/catch in the shared `safeStorage` adapter; hooks and components do not catch
+- `ErrorBoundary` component wraps the router to prevent white-screen crashes
 
 ## Key Libraries
 

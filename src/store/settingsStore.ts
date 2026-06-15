@@ -2,31 +2,7 @@ import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import type { AppSettings } from '@/types'
 import { STORAGE_KEYS } from '@/lib/constants'
-
-const safeStorage = {
-  getItem: (name: string): string | null => {
-    try {
-      return localStorage.getItem(name)
-    } catch {
-      console.warn(`[settingsStore] Failed to read from localStorage: ${name}`)
-      return null
-    }
-  },
-  setItem: (name: string, value: string): void => {
-    try {
-      localStorage.setItem(name, value)
-    } catch (e) {
-      console.error(`[settingsStore] Failed to write to localStorage: ${name}`, e)
-    }
-  },
-  removeItem: (name: string): void => {
-    try {
-      localStorage.removeItem(name)
-    } catch {
-      console.warn(`[settingsStore] Failed to remove from localStorage: ${name}`)
-    }
-  },
-}
+import { safeStorage } from '@/lib/safeStorage'
 
 interface SettingsStore extends AppSettings {
   setTheme: (theme: AppSettings['theme']) => void

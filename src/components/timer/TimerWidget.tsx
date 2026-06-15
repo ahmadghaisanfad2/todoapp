@@ -37,11 +37,13 @@ export function TimerWidget() {
 
   if (timer.state === 'complete') {
     return (
-      <TimerComplete
-        isMuted={timer.isMuted}
-        onToggleMute={timer.toggleMute}
-        onDismiss={timer.dismiss}
-      />
+      <div aria-live="assertive">
+        <TimerComplete
+          isMuted={timer.isMuted}
+          onToggleMute={timer.toggleMute}
+          onDismiss={timer.dismiss}
+        />
+      </div>
     )
   }
 
@@ -77,7 +79,7 @@ export function TimerWidget() {
         <div className="relative">
           {showHint && (
             <div className="absolute bottom-full right-0 mb-3 px-3 py-2 rounded-lg bg-foreground text-background text-xs font-medium shadow-lg whitespace-nowrap animate-hero-fade-1">
-              Ada timer fokus di sini!
+              Focus timer is here!
               <div className="absolute top-full right-4 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-foreground" />
             </div>
           )}

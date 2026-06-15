@@ -33,6 +33,8 @@
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-brand: 'Syne', system-ui, sans-serif;
+  --font-serif: 'Cormorant Garamond', 'Times New Roman', 'Georgia', serif;
+  --font-grotesk: 'DM Sans', 'Helvetica Neue', 'Arial', sans-serif;
 }
 
 @layer base {

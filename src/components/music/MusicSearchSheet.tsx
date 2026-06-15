@@ -73,15 +73,15 @@ export function MusicSearchSheet({ open, onOpenChange }: MusicSearchSheetProps) 
         if (info) {
           setSearchResult({ videoId, title: info.title, channel: info.channel })
         } else {
-          setError('Video tidak ditemukan. Cek URL.')
+          setError('Video not found. Check the URL.')
         }
       } catch {
-        setError('Gagal mengambil info video.')
+        setError('Failed to fetch video info.')
       } finally {
         setIsSearching(false)
       }
     } else {
-      setError('Tempel URL YouTube atau video ID')
+      setError('Paste a YouTube URL or video ID')
     }
   }, [query])
 
@@ -102,7 +102,7 @@ export function MusicSearchSheet({ open, onOpenChange }: MusicSearchSheetProps) 
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="bottom" className="h-[80vh] rounded-t-2xl overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>Cari Musik</SheetTitle>
+          <SheetTitle>Music Search</SheetTitle>
         </SheetHeader>
 
         <div className="mt-4">
@@ -110,7 +110,7 @@ export function MusicSearchSheet({ open, onOpenChange }: MusicSearchSheetProps) 
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder="Tempel URL YouTube atau video ID..."
+                placeholder="Paste YouTube URL or video ID..."
                 value={query}
                 onChange={(e) => { setQuery(e.target.value); setError(''); setSearchResult(null) }}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -122,14 +122,14 @@ export function MusicSearchSheet({ open, onOpenChange }: MusicSearchSheetProps) 
             </Button>
           </div>
           {error && <p className="mt-2 text-xs text-destructive">{error}</p>}
-          <p className="mt-2 text-xs text-muted-foreground">Mendukung URL video YouTube apa pun</p>
+          <p className="mt-2 text-xs text-muted-foreground">Supports any YouTube video URL</p>
         </div>
 
         {searchResult && (
           <div className="mt-4">
-            <p className="mb-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Ditemukan</p>
+            <p className="mb-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Found</p>
             <div className="relative flex items-center gap-3 rounded-lg border border-primary bg-primary/5 p-3">
-              <img src={`https://img.youtube.com/vi/${searchResult.videoId}/mqdefault.jpg`} alt={searchResult.title} className="h-12 w-16 rounded object-cover" />
+              <img src={`https://img.youtube.com/vi/${searchResult.videoId}/mqdefault.jpg`} alt={searchResult.title} className="h-12 w-16 rounded object-cover" loading="lazy" />
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium">{searchResult.title}</p>
                 <p className="truncate text-xs text-muted-foreground">{searchResult.channel}</p>
@@ -156,11 +156,11 @@ export function MusicSearchSheet({ open, onOpenChange }: MusicSearchSheetProps) 
 
         {history.length > 0 && (
           <div className="mt-6">
-            <p className="mb-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Terakhir Diputar</p>
+            <p className="mb-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Recently Played</p>
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               {history.slice(0, 8).map((track) => (
                 <div key={track.videoId} className="relative flex items-center gap-3 rounded-lg border border-border bg-card p-3">
-                  <img src={`https://img.youtube.com/vi/${track.videoId}/mqdefault.jpg`} alt={track.title} className="h-12 w-16 rounded object-cover" />
+                  <img src={`https://img.youtube.com/vi/${track.videoId}/mqdefault.jpg`} alt={track.title} className="h-12 w-16 rounded object-cover" loading="lazy" />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium">{track.title}</p>
                     <p className="truncate text-xs text-muted-foreground">{track.channel}</p>
@@ -189,17 +189,17 @@ export function MusicSearchSheet({ open, onOpenChange }: MusicSearchSheetProps) 
         )}
 
         <div className="mt-6">
-          <p className="mb-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Playlist</p>
+          <p className="mb-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Playlists</p>
           <div className="flex gap-2 mb-3">
-            <Input placeholder="Nama playlist baru..." value={newPlaylistName} onChange={(e) => setNewPlaylistName(e.target.value)} className="h-8 text-sm" />
-            <Button size="sm" onClick={() => { if (newPlaylistName.trim()) { createPlaylist(newPlaylistName.trim()); setNewPlaylistName('') } }} disabled={!newPlaylistName.trim()} className="h-8 px-3">Buat</Button>
+            <Input placeholder="New playlist name..." value={newPlaylistName} onChange={(e) => setNewPlaylistName(e.target.value)} className="h-8 text-sm" />
+            <Button size="sm" onClick={() => { if (newPlaylistName.trim()) { createPlaylist(newPlaylistName.trim()); setNewPlaylistName('') } }} disabled={!newPlaylistName.trim()} className="h-8 px-3">Create</Button>
           </div>
           {playlists.map((pl) => (
             <div key={pl.id} className="mb-2 rounded-lg border border-border bg-card p-3">
               <div className="flex items-center justify-between">
                 <p className="text-sm font-medium">{pl.name}</p>
                 <div className="flex items-center gap-1">
-                  <span className="text-xs text-muted-foreground">{pl.tracks.length} lagu</span>
+                  <span className="text-xs text-muted-foreground">{pl.tracks.length} {pl.tracks.length === 1 ? 'track' : 'tracks'}</span>
                   {pl.tracks.length > 0 && (
                     <button onClick={() => playPlaylist(pl.id)} className="p-1 text-primary hover:text-primary/80"><Play className="h-3.5 w-3.5" /></button>
                   )}
@@ -215,7 +215,7 @@ export function MusicSearchSheet({ open, onOpenChange }: MusicSearchSheetProps) 
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             {filteredPresets.map((preset) => (
               <div key={preset.videoId} className="relative flex items-center gap-3 rounded-lg border border-border bg-card p-3 transition-colors hover:border-primary hover:bg-primary/5">
-                <img src={preset.thumbnail} alt={preset.title} className="h-12 w-16 rounded object-cover" />
+                <img src={preset.thumbnail} alt={preset.title} className="h-12 w-16 rounded object-cover" loading="lazy" />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">{preset.title}</p>
                   <p className="truncate text-xs text-muted-foreground">{preset.channel}</p>
@@ -240,7 +240,7 @@ export function MusicSearchSheet({ open, onOpenChange }: MusicSearchSheetProps) 
             ))}
           </div>
           {filteredPresets.length === 0 && !searchResult && (
-            <p className="text-center text-sm text-muted-foreground py-8">Tidak ada lagu ditemukan</p>
+            <p className="text-center text-sm text-muted-foreground py-8">No songs found</p>
           )}
         </div>
       </SheetContent>

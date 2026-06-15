@@ -6,9 +6,15 @@ import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import type { Category } from '@/types'
 
-const PRESET_COLORS = [
-  '#3B82F6', '#EF4444', '#22C55E', '#F59E0B',
-  '#8B5CF6', '#EC4899', '#06B6D4', '#F97316',
+const PRESET_COLORS: { hex: string; name: string }[] = [
+  { hex: '#3B82F6', name: 'Blue' },
+  { hex: '#EF4444', name: 'Red' },
+  { hex: '#22C55E', name: 'Green' },
+  { hex: '#F59E0B', name: 'Amber' },
+  { hex: '#8B5CF6', name: 'Purple' },
+  { hex: '#EC4899', name: 'Pink' },
+  { hex: '#06B6D4', name: 'Cyan' },
+  { hex: '#F97316', name: 'Orange' },
 ]
 
 interface CategoryFormProps {
@@ -20,7 +26,7 @@ interface CategoryFormProps {
 
 export function CategoryForm({ open, onOpenChange, category, onSave }: CategoryFormProps) {
   const [name, setName] = useState(category?.name ?? '')
-  const [color, setColor] = useState(category?.color ?? PRESET_COLORS[0])
+  const [color, setColor] = useState(category?.color ?? PRESET_COLORS[0].hex)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -54,15 +60,15 @@ export function CategoryForm({ open, onOpenChange, category, onSave }: CategoryF
             <div className="flex flex-wrap gap-2.5">
               {PRESET_COLORS.map((c) => (
                 <button
-                  key={c}
+                  key={c.hex}
                   type="button"
-                  onClick={() => setColor(c)}
+                  onClick={() => setColor(c.hex)}
                   className={cn(
                     'h-9 w-9 rounded-full transition-all duration-150',
-                    color === c && 'ring-2 ring-offset-2 ring-primary scale-110'
+                    color === c.hex && 'ring-2 ring-offset-2 ring-primary scale-110'
                   )}
-                  style={{ backgroundColor: c }}
-                  aria-label={c}
+                  style={{ backgroundColor: c.hex }}
+                  aria-label={c.name}
                 />
               ))}
             </div>

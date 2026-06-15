@@ -38,50 +38,27 @@ node tests/run.mjs task-crud    # Runs only test files matching "task-crud"
 The app uses a **minimal pathname-based router** in `src/main.tsx` — no React Router or TanStack Router. A `Router` component reads `window.location.pathname` and listens for `popstate`:
 
 - `/` → `LandingPage` (marketing)
-- `/app` → `AppPage` (main task + hafalan app)
+- `/app` → `AppPage` (main task app)
 
 Navigation uses `window.history.pushState({}, '', to)` + `setPath`. Keep this lightweight — don't introduce a routing library without clear need.
 
-### Two Domains: Tasks + Hafalan
-
-The app has two independent feature modules, switched via a tab bar in `AppPage`:
-
-**Tasks** (original module) — task management with categories, priorities, due dates, filters, and search.
-
-**Hafalan** (memorization tracking) — a Quran/study memorization tracker for managing santri (students) and their memorization tasks. Added in `d24ccbe`.
-
-### Hafalan Domain Model
-
-The hafalan module tracks students memorizing assigned passages:
-
-- **HafalanTask** — a memorization passage/target (e.g., "Surah Al-Fatihah"). Can be `personalFor: null` (shared to all santri) or `personalFor: santriId` (assigned to one student).
-- **Santri** — a student with a list of `targetTaskIds` they're working on. When a new santri is created, they auto-inherit all shared (`personalFor: null`) tasks.
-- **HafalanLog** — a single memorization event/attempt with type `setor` (recitation to teacher), `murajaah` (review), or `ziyadah` (new memorization). A task is considered "completed" for a santri when they have at least one `setor` log.
-
-Stores: `hafalanTaskStore`, `santriStore`, `hafalanLogStore` — all follow the same Zustand + persist + safeStorage pattern as the task stores.
-
-Hook: `useHafalan()` in `src/hooks/useHafalan.ts` bridges all three stores with derived data — progress calculations, task status per santri, and cross-store cascade deletes (deleting a hafalan task removes it from all santri and deletes related logs).
-
 ### State Management (Zustand)
 
-All stores use `create` with `persist` middleware wrapping a `safeStorage` adapter (try/catch on localStorage reads/writes). Each store has a typed interface. There are **six stores** total:
+All stores use `create` with `persist` middleware wrapping a shared `safeStorage` adapter from `lib/safeStorage.ts` (try/catch on localStorage reads/writes). Each store has a typed interface. There are **five stores** total:
 
 | Store | Storage Key | Purpose |
 |-------|-------------|---------|
 | `taskStore` | `wazheefa-tasks` | CRUD for tasks |
 | `categoryStore` | `wazheefa-categories` | CRUD for categories |
 | `settingsStore` | `wazheefa-settings` | Theme, sort, filter preferences |
-| `hafalanTaskStore` | `wazheefa-hafalan-tasks` | CRUD for memorization tasks |
-| `santriStore` | `wazheefa-santri` | CRUD for students |
-| `hafalanLogStore` | `wazheefa-hafalan-logs` | Memorization event logs with query methods |
+| `kanbanStore` | `wazheefa-kanban` | Kanban column management |
+| `musicStore` | `wazheefa-music` | Music player state |
 
 **Selectors**: Always use individual selectors to avoid unnecessary re-renders:
 ```typescript
 const tasks = useTaskStore((s) => s.tasks)
 const addTask = useTaskStore((s) => s.addTask)
 ```
-
-The `useHafalan` hook is an exception — it uses `setState` directly for cross-store cascade operations (e.g., deleting a task cascades to santri targetTaskIds and logs).
 
 ### Custom Hooks Layer
 
@@ -90,7 +67,8 @@ Hooks in `src/hooks/` bridge stores to components, providing derived data and co
 - `useTasks()` — filtering, sorting, search, overdue detection
 - `useCategories()` — CRUD + lookup helpers
 - `useTheme()` — theme application with `prefers-color-scheme` media query listener for `system` mode
-- `useHafalan()` — progress computation, task status, cascade deletes, santri-task cross-references
+- `useTimer()` — focus timer with Web Audio chime and browser notifications
+- `useYouTubePlayer()` — YouTube IFrame API integration for the music player
 
 ### Test Runner Architecture
 
@@ -148,7 +126,7 @@ See `AGENTS.md` for comprehensive coding guidelines. Key points:
 ## Branding
 
 - App name: **Wazheefa**
-- Storage keys: `wazheefa-tasks`, `wazheefa-categories`, `wazheefa-settings`, `wazheefa-hafalan-tasks`, `wazheefa-santri`, `wazheefa-hafalan-logs`
+- Storage keys: `wazheefa-tasks`, `wazheefa-categories`, `wazheefa-settings`, `wazheefa-kanban`, `wazheefa-music`
 - Old keys (`todoflow-*`) are migrated automatically on first load via `src/lib/migrate.ts`
 
 ## Code Review

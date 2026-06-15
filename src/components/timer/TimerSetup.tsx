@@ -36,7 +36,7 @@ export function TimerSetup({ onStart }: TimerSetupProps) {
   return (
     <div className="flex flex-col gap-3 p-4">
       <p className="text-xs font-mono text-muted-foreground uppercase tracking-wider">
-        Pilih durasi
+        Choose duration
       </p>
       <div className="flex flex-wrap gap-2">
         {PRESETS.map((preset) => (
@@ -64,7 +64,7 @@ export function TimerSetup({ onStart }: TimerSetupProps) {
             onChange={(e) => setCustomHours(e.target.value)}
             className="h-9 text-sm w-14 text-center"
           />
-          <span className="text-xs text-muted-foreground">jam</span>
+          <span className="text-xs text-muted-foreground">hrs</span>
           <Input
             type="number"
             min={0}
@@ -75,7 +75,7 @@ export function TimerSetup({ onStart }: TimerSetupProps) {
             onKeyDown={(e) => e.key === 'Enter' && handleCustomStart()}
             className="h-9 text-sm w-14 text-center"
           />
-          <span className="text-xs text-muted-foreground">mnt</span>
+          <span className="text-xs text-muted-foreground">min</span>
         </div>
         <Button
           size="sm"

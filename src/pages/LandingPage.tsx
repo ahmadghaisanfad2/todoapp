@@ -19,7 +19,7 @@ export function LandingPage({ onNavigateApp }: LandingPageProps) {
   }, [isEntering, onNavigateApp])
 
   return (
-    <div className="min-h-[100dvh] bg-background text-foreground">
+    <div className="h-[100dvh] overflow-hidden bg-background text-foreground">
       {isEntering && (
         <div className="fixed inset-0 z-[60] flex animate-lp-entering flex-col items-center justify-center gap-5 bg-background/90 backdrop-blur-sm">
           <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
@@ -32,8 +32,14 @@ export function LandingPage({ onNavigateApp }: LandingPageProps) {
         </div>
       )}
 
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-primary-foreground focus:shadow-lg"
+      >
+        Skip to content
+      </a>
       <LandingNav onNavigateApp={() => setIsEntering(true)} />
-      <main>
+      <main id="main-content">
         <LandingHero onNavigateApp={() => setIsEntering(true)} />
       </main>
     </div>

@@ -118,10 +118,10 @@ export function KanbanColumnComponent({
           size="sm"
           className="w-full gap-1.5 text-muted-foreground hover:text-foreground"
           onClick={() => onAddTask(column.id)}
-          aria-label={`Tambah tugas di ${column.name}`}
+          aria-label={`Add task in ${column.name}`}
         >
           <Plus className="h-4 w-4" />
-          Tambah tugas
+          Add task
         </Button>
 
         <SortableContext items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>

@@ -25,12 +25,6 @@ export const LOFI_PRESETS: MusicPreset[] = [
     thumbnail: 'https://img.youtube.com/vi/HuFYqnbVbzY/mqdefault.jpg',
   },
   {
-    videoId: '5qap5aO4i9A',
-    title: 'Lofi Beats',
-    channel: 'Trap City',
-    thumbnail: 'https://img.youtube.com/vi/5qap5aO4i9A/mqdefault.jpg',
-  },
-  {
     videoId: 'rUxyKA_-grg',
     title: 'Jazz Lofi',
     channel: 'Jazz Lofi',

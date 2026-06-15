@@ -1,6 +1,6 @@
 import { Pause, Play, Square } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { cn, formatTime } from '@/lib/utils'
 
 interface TimerRunningProps {
   timeRemaining: number
@@ -9,12 +9,6 @@ interface TimerRunningProps {
   onPause: () => void
   onResume: () => void
   onStop: () => void
-}
-
-function formatTime(seconds: number): string {
-  const mins = Math.floor(seconds / 60)
-  const secs = seconds % 60
-  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
 }
 
 function getProgressColor(progress: number): string {

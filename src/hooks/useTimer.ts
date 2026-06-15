@@ -83,20 +83,22 @@ export function useTimer(): UseTimerReturn {
   }, [])
 
   useEffect(() => {
-    if (state === 'running' && timeRemaining > 0) {
-      intervalRef.current = setInterval(() => {
-        setTimeRemaining((prev) => {
-          if (prev <= 1) {
-            setState('complete')
-            playChime()
-            startChimeInterval()
-            showNotification()
-            return 0
-          }
-          return prev - 1
-        })
-      }, 1000)
-    }
+    if (state !== 'running') return
+
+    intervalRef.current = setInterval(() => {
+      setTimeRemaining((prev) => {
+        if (prev <= 1) {
+          clearInterval(intervalRef.current!)
+          intervalRef.current = null
+          setState('complete')
+          playChime()
+          startChimeInterval()
+          showNotification()
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
 
     return () => {
       if (intervalRef.current) {
@@ -104,7 +106,7 @@ export function useTimer(): UseTimerReturn {
         intervalRef.current = null
       }
     }
-  }, [state, timeRemaining, playChime, startChimeInterval, showNotification])
+  }, [state, playChime, startChimeInterval, showNotification])
 
   const start = useCallback((seconds: number) => {
     requestNotificationPermission()
