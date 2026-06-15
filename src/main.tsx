@@ -5,6 +5,8 @@ import './index.css'
 import { runMigration, migrateTaskStatus, migrateWorkspaceIds } from '@/lib/migrate'
 import { AppPage } from '@/pages/AppPage'
 import { LandingPage } from '@/pages/LandingPage'
+import { useUndoKeyboard } from '@/hooks/useUndoKeyboard'
+import { UndoToast } from '@/components/common/UndoToast'
 
 runMigration()
 migrateTaskStatus()
@@ -12,6 +14,8 @@ migrateWorkspaceIds()
 
 export function Router() {
   const [path, setPath] = useState(window.location.pathname)
+
+  useUndoKeyboard()
 
   useEffect(() => {
     const handlePopState = () => setPath(window.location.pathname)
@@ -25,7 +29,12 @@ export function Router() {
   }
 
   if (path === '/app') {
-    return <AppPage onNavigateHome={() => navigate('/')} />
+    return (
+      <>
+        <AppPage onNavigateHome={() => navigate('/')} />
+        <UndoToast />
+      </>
+    )
   }
 
   return <LandingPage onNavigateApp={() => navigate('/app')} />

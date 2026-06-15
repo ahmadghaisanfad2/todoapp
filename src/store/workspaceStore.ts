@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware'
 import type { Workspace } from '@/types'
 import { generateId } from '@/lib/utils'
 import { STORAGE_KEYS, DEFAULT_WORKSPACE_NAME, DEFAULT_WORKSPACE_COLOR } from '@/lib/constants'
+import { useUndoStore } from '@/store/undoStore'
 
 const safeStorage = {
   getItem: (name: string): string | null => {
@@ -64,7 +65,18 @@ export const useWorkspaceStore = create<WorkspaceStore>()(
             w.id === id ? { ...w, ...updates } : w
           ),
         })),
-      deleteWorkspace: (id) =>
+      deleteWorkspace: (id) => {
+        const state = get()
+        const workspace = state.workspaces.find((w) => w.id === id)
+        const prevActiveId = state.activeWorkspaceId
+        if (workspace) {
+          useUndoStore.getState().pushUndo('Workspace deleted', () => {
+            useWorkspaceStore.setState((s) => ({
+              workspaces: [...s.workspaces, workspace],
+              activeWorkspaceId: prevActiveId,
+            }))
+          })
+        }
         set((state) => {
           const remaining = state.workspaces.filter((w) => w.id !== id)
           const needsSwitch = state.activeWorkspaceId === id
@@ -74,7 +86,8 @@ export const useWorkspaceStore = create<WorkspaceStore>()(
               ? (remaining[0]?.id ?? '')
               : state.activeWorkspaceId,
           }
-        }),
+        })
+      },
       setActiveWorkspace: (id) => set({ activeWorkspaceId: id }),
       getActiveWorkspace: () => {
         const state = get()

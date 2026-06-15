@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware'
 import type { Task } from '@/types'
 import { generateId } from '@/lib/utils'
 import { STORAGE_KEYS } from '@/lib/constants'
+import { useUndoStore } from '@/store/undoStore'
 
 const safeStorage = {
   getItem: (name: string): string | null => {
@@ -41,7 +42,7 @@ interface TaskStore {
 
 export const useTaskStore = create<TaskStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       tasks: [],
       addTask: (task) =>
         set((state) => ({
@@ -57,36 +58,80 @@ export const useTaskStore = create<TaskStore>()(
             },
           ],
         })),
-      updateTask: (id, updates) =>
+      updateTask: (id, updates) => {
+        const task = get().tasks.find((t) => t.id === id)
+        if (task) {
+          useUndoStore.getState().pushUndo('Task updated', () => {
+            useTaskStore.setState((s) => ({
+              tasks: s.tasks.map((t) => (t.id === id ? task : t)),
+            }))
+          })
+        }
         set((state) => ({
           tasks: state.tasks.map((t) =>
             t.id === id ? { ...t, ...updates, updatedAt: new Date().toISOString() } : t
           ),
-        })),
-      deleteTask: (id) =>
+        }))
+      },
+      deleteTask: (id) => {
+        const task = get().tasks.find((t) => t.id === id)
+        if (task) {
+          useUndoStore.getState().pushUndo('Task deleted', () => {
+            useTaskStore.setState((s) => ({ tasks: [...s.tasks, task] }))
+          })
+        }
         set((state) => ({
           tasks: state.tasks.filter((t) => t.id !== id),
-        })),
-      toggleTask: (id) =>
+        }))
+      },
+      toggleTask: (id) => {
+        const task = get().tasks.find((t) => t.id === id)
+        if (task) {
+          useUndoStore.getState().pushUndo('Task toggled', () => {
+            useTaskStore.setState((s) => ({
+              tasks: s.tasks.map((t) => (t.id === id ? task : t)),
+            }))
+          })
+        }
         set((state) => ({
           tasks: state.tasks.map((t) =>
             t.id === id
               ? { ...t, completed: !t.completed, updatedAt: new Date().toISOString() }
               : t
           ),
-        })),
-      moveTask: (id, status, order) =>
+        }))
+      },
+      moveTask: (id, status, order) => {
+        const task = get().tasks.find((t) => t.id === id)
+        if (task) {
+          useUndoStore.getState().pushUndo('Task moved', () => {
+            useTaskStore.setState((s) => ({
+              tasks: s.tasks.map((t) => (t.id === id ? task : t)),
+            }))
+          })
+        }
         set((state) => ({
           tasks: state.tasks.map((t) =>
             t.id === id
               ? { ...t, status, order, completed: status === 'done', updatedAt: new Date().toISOString() }
               : t
           ),
-        })),
-      deleteTasksByWorkspace: (workspaceId) =>
+        }))
+      },
+      deleteTasksByWorkspace: (workspaceId) => {
+        const deleted = get().tasks.filter((t) => t.workspaceId === workspaceId)
+        if (deleted.length > 0) {
+          useUndoStore.getState().pushUndo(
+            `${deleted.length} task${deleted.length > 1 ? 's' : ''} deleted`,
+            () => {
+              useTaskStore.setState((s) => ({ tasks: [...s.tasks, ...deleted] }))
+            }
+          )
+        }
         set((state) => ({
           tasks: state.tasks.filter((t) => t.workspaceId !== workspaceId),
-        })),
+        }))
+      },
     }),
     { name: STORAGE_KEYS.TASKS, storage: createJSONStorage(() => safeStorage) }
   )

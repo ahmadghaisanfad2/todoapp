@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware'
 import type { Category } from '@/types'
 import { generateId } from '@/lib/utils'
 import { STORAGE_KEYS } from '@/lib/constants'
+import { useUndoStore } from '@/store/undoStore'
 
 const safeStorage = {
   getItem: (name: string): string | null => {
@@ -39,7 +40,7 @@ interface CategoryStore {
 
 export const useCategoryStore = create<CategoryStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       categories: [],
       addCategory: (category) =>
         set((state) => ({
@@ -58,14 +59,35 @@ export const useCategoryStore = create<CategoryStore>()(
             c.id === id ? { ...c, ...updates } : c
           ),
         })),
-      deleteCategory: (id) =>
+      deleteCategory: (id) => {
+        const category = get().categories.find((c) => c.id === id)
+        if (category) {
+          useUndoStore.getState().pushUndo('Category deleted', () => {
+            useCategoryStore.setState((s) => ({
+              categories: [...s.categories, category],
+            }))
+          })
+        }
         set((state) => ({
           categories: state.categories.filter((c) => c.id !== id),
-        })),
-      deleteCategoriesByWorkspace: (workspaceId) =>
+        }))
+      },
+      deleteCategoriesByWorkspace: (workspaceId) => {
+        const deleted = get().categories.filter((c) => c.workspaceId === workspaceId)
+        if (deleted.length > 0) {
+          useUndoStore.getState().pushUndo(
+            `${deleted.length} categor${deleted.length > 1 ? 'ies' : 'y'} deleted`,
+            () => {
+              useCategoryStore.setState((s) => ({
+                categories: [...s.categories, ...deleted],
+              }))
+            }
+          )
+        }
         set((state) => ({
           categories: state.categories.filter((c) => c.workspaceId !== workspaceId),
-        })),
+        }))
+      },
     }),
     { name: STORAGE_KEYS.CATEGORIES, storage: createJSONStorage(() => safeStorage) }
   )

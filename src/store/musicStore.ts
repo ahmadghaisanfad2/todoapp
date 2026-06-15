@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware'
 import { LOFI_PRESETS } from '@/lib/musicPresets'
 import { STORAGE_KEYS } from '@/lib/constants'
 import { safeStorage } from '@/lib/safeStorage'
+import { useUndoStore } from '@/store/undoStore'
 
 interface MusicTrack {
   videoId: string
@@ -145,6 +146,14 @@ export const useMusicStore = create<MusicStore>()(
         set({ playlists: [...playlists, { id: crypto.randomUUID(), name, tracks: [] }] })
       },
       deletePlaylist: (id) => {
+        const playlist = get().playlists.find((p) => p.id === id)
+        if (playlist) {
+          useUndoStore.getState().pushUndo('Playlist deleted', () => {
+            useMusicStore.setState((s) => ({
+              playlists: [...s.playlists, playlist],
+            }))
+          })
+        }
         set((s) => ({ playlists: s.playlists.filter(p => p.id !== id) }))
       },
       addTrackToPlaylist: (playlistId, track) => {
@@ -157,6 +166,16 @@ export const useMusicStore = create<MusicStore>()(
         }))
       },
       removeTrackFromPlaylist: (playlistId, videoId) => {
+        const playlist = get().playlists.find((p) => p.id === playlistId)
+        if (playlist) {
+          useUndoStore.getState().pushUndo('Track removed', () => {
+            useMusicStore.setState((s) => ({
+              playlists: s.playlists.map((p) =>
+                p.id === playlistId ? playlist : p
+              ),
+            }))
+          })
+        }
         set((s) => ({
           playlists: s.playlists.map(p =>
             p.id === playlistId
@@ -166,9 +185,15 @@ export const useMusicStore = create<MusicStore>()(
         }))
       },
       playPlaylist: (playlistId) => {
-        const { playlists, history } = get()
+        const { playlists, history, playlist: prevPlaylist, currentTrack: prevTrack } = get()
         const playlist = playlists.find(p => p.id === playlistId)
         if (!playlist || playlist.tracks.length === 0) return
+        useUndoStore.getState().pushUndo('Playlist changed', () => {
+          useMusicStore.setState({
+            playlist: prevPlaylist,
+            currentTrack: prevTrack,
+          })
+        })
         const firstTrack = playlist.tracks[0]
         const filtered = history.filter(t => t.videoId !== firstTrack.videoId)
         set({
