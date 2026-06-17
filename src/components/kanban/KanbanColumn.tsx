@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useDroppable } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
-import { Plus, Trash2, Pencil, Check, X } from 'lucide-react'
+import { Plus, Trash2, Pencil, Check, X, Strikethrough } from 'lucide-react'
 import { KanbanCard } from './KanbanCard'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -15,6 +15,7 @@ interface KanbanColumnProps {
   onAddTask: (columnId: string) => void
   onUpdateColumn: (id: string, name: string) => void
   onDeleteColumn: (id: string) => void
+  onToggleCrossTasks: (id: string) => void
 }
 
 export function KanbanColumnComponent({
@@ -25,6 +26,7 @@ export function KanbanColumnComponent({
   onAddTask,
   onUpdateColumn,
   onDeleteColumn,
+  onToggleCrossTasks,
 }: KanbanColumnProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [editName, setEditName] = useState(column.name)
@@ -90,6 +92,15 @@ export function KanbanColumnComponent({
               <Button
                 size="icon"
                 variant="ghost"
+                className={cn('h-7 w-7', column.crossTasks && 'text-primary bg-primary/10')}
+                onClick={() => onToggleCrossTasks(column.id)}
+                aria-label={`Toggle cross tasks for ${column.name}`}
+              >
+                <Strikethrough className="h-3.5 w-3.5" />
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
                 className="h-7 w-7"
                 onClick={() => setIsEditing(true)}
               >
@@ -126,7 +137,7 @@ export function KanbanColumnComponent({
 
         <SortableContext items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
           {tasks.map((task) => (
-            <KanbanCard key={task.id} task={task} onEdit={onEdit} onDelete={onDelete} />
+            <KanbanCard key={task.id} task={task} onEdit={onEdit} onDelete={onDelete} crossTasks={column.crossTasks} />
           ))}
         </SortableContext>
       </div>

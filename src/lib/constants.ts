@@ -14,7 +14,7 @@ export const DEFAULT_COLUMNS = [
   { id: 'backlog', name: 'Backlog', order: 0 },
   { id: 'todo', name: 'To Do', order: 1 },
   { id: 'inprogress', name: 'In Progress', order: 2 },
-  { id: 'done', name: 'Done', order: 3 },
+  { id: 'done', name: 'Done', order: 3, crossTasks: true },
 ] as const
 
 const OLD_STORAGE_KEYS = {

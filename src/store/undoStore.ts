@@ -14,6 +14,7 @@ interface UndoState {
   lastUndone: string | null
   pushUndo: (description: string, undo: () => void) => void
   popUndo: () => void
+  dismiss: () => void
 }
 
 export const useUndoStore = create<UndoState>()((set, get) => ({
@@ -39,5 +40,9 @@ export const useUndoStore = create<UndoState>()((set, get) => ({
     setTimeout(() => {
       set({ lastUndone: null })
     }, CONFIRMATION_MS)
+  },
+
+  dismiss: () => {
+    set({ stack: [], lastUndone: null })
   },
 }))

@@ -9,6 +9,7 @@ interface KanbanCardProps {
   task: Task
   onEdit: (task: Task) => void
   onDelete: (id: string) => void
+  crossTasks?: boolean
 }
 
 const priorityColors: Record<Priority, string> = {
@@ -17,7 +18,7 @@ const priorityColors: Record<Priority, string> = {
   low: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400',
 }
 
-export function KanbanCard({ task, onEdit, onDelete }: KanbanCardProps) {
+export function KanbanCard({ task, onEdit, onDelete, crossTasks }: KanbanCardProps) {
   const {
     attributes,
     listeners,
@@ -56,7 +57,7 @@ export function KanbanCard({ task, onEdit, onDelete }: KanbanCardProps) {
     >
       <GripVertical className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground/50" />
       <div className="flex-1 min-w-0 pointer-events-none">
-        <p className={cn('text-sm font-medium leading-snug', task.completed && 'line-through opacity-60')}>
+        <p className={cn('text-sm font-medium leading-snug', (task.completed || crossTasks) && 'line-through opacity-60')}>
           {task.title}
         </p>
         <div className="mt-1.5 flex flex-wrap items-center gap-1.5">

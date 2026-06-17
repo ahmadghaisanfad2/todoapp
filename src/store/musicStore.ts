@@ -109,7 +109,7 @@ export const useMusicStore = create<MusicStore>()(
         set({ currentTrack: nextTrackItem, isPlaying: true, history: [nextTrackItem, ...filtered].slice(0, 50) })
       },
       prevTrack: () => {
-        const { currentTrack, playlist, history, isShuffle } = get()
+        const { currentTrack, playlist, history, isShuffle, repeatMode } = get()
         if (!currentTrack || playlist.length === 0) return
         const currentIndex = playlist.findIndex(t => t.videoId === currentTrack.videoId)
         if (currentIndex === -1) return
@@ -120,7 +120,10 @@ export const useMusicStore = create<MusicStore>()(
           } while (prevIndex === currentIndex && playlist.length > 1)
         } else {
           prevIndex = currentIndex - 1
-          if (prevIndex < 0) prevIndex = playlist.length - 1
+          if (prevIndex < 0) {
+            if (repeatMode === 'all') prevIndex = playlist.length - 1
+            else return
+          }
         }
         const prevTrackItem = playlist[prevIndex]
         const filtered = history.filter(t => t.videoId !== prevTrackItem.videoId)

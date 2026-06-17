@@ -9,7 +9,7 @@ import { useUndoStore } from '@/store/undoStore'
 interface KanbanStore {
   columns: KanbanColumn[]
   addColumn: (name: string) => void
-  updateColumn: (id: string, updates: Partial<Pick<KanbanColumn, 'name'>>) => void
+  updateColumn: (id: string, updates: Partial<Pick<KanbanColumn, 'name' | 'crossTasks'>>) => void
   deleteColumn: (id: string) => void
   reorderColumns: (columns: KanbanColumn[]) => void
 }

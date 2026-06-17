@@ -40,6 +40,7 @@ export interface KanbanColumn {
   id: string
   name: string
   order: number
+  crossTasks?: boolean
 }
 
 export type Priority = Task['priority']

@@ -113,6 +113,13 @@ export function KanbanBoard({ onEditTask, onAddTask }: KanbanBoardProps) {
     updateColumn(id, { name })
   }
 
+  const handleToggleCrossTasks = (id: string) => {
+    const column = columns.find((c) => c.id === id)
+    if (column) {
+      updateColumn(id, { crossTasks: !column.crossTasks })
+    }
+  }
+
   const handleDeleteColumn = (columnId: string) => {
     const remaining = columns.filter((col) => col.id !== columnId)
     if (remaining.length === 0) return
@@ -145,6 +152,7 @@ export function KanbanBoard({ onEditTask, onAddTask }: KanbanBoardProps) {
             onAddTask={onAddTask}
             onUpdateColumn={handleUpdateColumn}
             onDeleteColumn={handleDeleteColumn}
+            onToggleCrossTasks={handleToggleCrossTasks}
           />
         ))}
         <ColumnForm onAdd={addColumn} />
@@ -152,7 +160,12 @@ export function KanbanBoard({ onEditTask, onAddTask }: KanbanBoardProps) {
 
       <DragOverlay>
         {activeTask ? (
-          <KanbanCard task={activeTask} onEdit={() => {}} onDelete={() => {}} />
+          <KanbanCard
+            task={activeTask}
+            onEdit={() => {}}
+            onDelete={() => {}}
+            crossTasks={columns.find((c) => c.id === activeTask.status)?.crossTasks}
+          />
         ) : null}
       </DragOverlay>
     </DndContext>

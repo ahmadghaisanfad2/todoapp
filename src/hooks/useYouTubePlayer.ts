@@ -43,6 +43,7 @@ export function useYouTubePlayer() {
   const isPlaying = useMusicStore((s) => s.isPlaying)
   const volume = useMusicStore((s) => s.volume)
   const setIsPlaying = useMusicStore((s) => s.setIsPlaying)
+  const endedRef = useRef(false)
   const [playerState, setPlayerState] = useState<YouTubePlayerState>({
     currentTime: 0,
     duration: 0,
@@ -53,6 +54,7 @@ export function useYouTubePlayer() {
     if (!containerRef.current) return
 
     if (playerRef.current) {
+      endedRef.current = false
       playerRef.current.loadVideoById(currentTrack.videoId)
       return
     }
@@ -83,13 +85,26 @@ export function useYouTubePlayer() {
           onReady: () => {
             if (playerRef.current) {
               playerRef.current.setVolume(volume)
-              setIsPlaying(false)
+              const { isPlaying: storePlaying } = useMusicStore.getState()
+              if (!storePlaying) {
+                setIsPlaying(false)
+              }
               startPolling()
             }
           },
           onStateChange: (event: { data: number }) => {
             if (event.data === 0) {
-              setIsPlaying(false)
+              endedRef.current = true
+              stopPolling()
+              const { nextTrack, repeatMode } = useMusicStore.getState()
+              if (repeatMode !== 'off') {
+                nextTrack()
+              } else {
+                setIsPlaying(false)
+              }
+            } else if (event.data === 1) {
+              startPolling()
+            } else if (event.data === 2 || event.data === 3) {
               stopPolling()
             }
           },
@@ -130,6 +145,10 @@ export function useYouTubePlayer() {
   useEffect(() => {
     if (!playerRef.current || !currentTrack) return
     if (isPlaying) {
+      if (endedRef.current) {
+        endedRef.current = false
+        playerRef.current.seekTo(0, true)
+      }
       playerRef.current.playVideo()
       startPolling()
     } else {
