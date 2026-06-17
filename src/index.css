@@ -442,6 +442,105 @@
   }
 }
 
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--muted-foreground) / 0.3) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(var(--muted-foreground) / 0.5);
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 16px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+@keyframes toast-out {
+  from {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, 16px) scale(0.95);
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+@utility animate-card-in {
+  animation: card-in 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@utility animate-toast-in {
+  animation: toast-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@utility animate-toast-out {
+  animation: toast-out 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@utility animate-fade-in-up {
+  animation: fade-in-up 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@utility animate-scale-pop {
+  animation: scale-pop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@utility active-scale {
+  &:active {
+    transform: scale(0.97);
+    transition: transform 0.1s;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-lp-fade-up,
   .animate-lp-fade-in,
@@ -460,7 +559,11 @@
   .animate-shimmer,
   .animate-pulse-glow,
   .animate-scroll-reveal,
-  .animate-hero-panel-breathe {
+  .animate-hero-panel-breathe,
+  .animate-card-in,
+  .animate-toast-in,
+  .animate-fade-in-up,
+  .animate-scale-pop {
     animation: none;
   }
 }

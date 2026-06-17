@@ -13,7 +13,7 @@ export function UndoToast() {
   const isUndoConfirmation = lastUndone !== null
 
   return (
-    <div className="group fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 rounded-lg border bg-card px-4 py-3 shadow-lg">
+    <div className="group fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 rounded-lg border bg-card px-4 py-3 shadow-lg animate-toast-in">
       <button
         onClick={dismiss}
         aria-label="Dismiss"

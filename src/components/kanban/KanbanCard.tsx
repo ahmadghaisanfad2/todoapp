@@ -47,7 +47,7 @@ export function KanbanCard({ task, onEdit, onDelete, crossTasks }: KanbanCardPro
       style={style}
       data-kanban-card
       className={cn(
-        'group flex items-start gap-2 rounded-lg border bg-card px-3 py-2.5 shadow-sm cursor-grab active:cursor-grabbing hover:border-primary/30 transition-colors select-none',
+        'group flex items-start gap-2 rounded-lg border bg-card px-3 py-2.5 shadow-sm cursor-grab active:cursor-grabbing hover:border-primary/30 transition-colors select-none animate-card-in',
         isDragging && 'opacity-50 shadow-lg z-50',
         isOverdue && 'border-red-300 dark:border-red-800'
       )}

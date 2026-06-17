@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import {
   DndContext,
   DragOverlay,
@@ -43,6 +43,36 @@ export function KanbanBoard({ onEditTask, onAddTask }: KanbanBoardProps) {
   )
 
   const [activeTask, setActiveTask] = useState<Task | null>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const scrollbarRef = useRef<HTMLDivElement>(null)
+  const isSyncing = useRef(false)
+
+  useEffect(() => {
+    const scroll = scrollRef.current
+    const scrollbar = scrollbarRef.current
+    if (!scroll || !scrollbar) return
+
+    const syncFromContent = () => {
+      if (isSyncing.current) return
+      isSyncing.current = true
+      scrollbar.scrollLeft = scroll.scrollLeft
+      isSyncing.current = false
+    }
+
+    const syncFromScrollbar = () => {
+      if (isSyncing.current) return
+      isSyncing.current = true
+      scroll.scrollLeft = scrollbar.scrollLeft
+      isSyncing.current = false
+    }
+
+    scroll.addEventListener('scroll', syncFromContent, { passive: true })
+    scrollbar.addEventListener('scroll', syncFromScrollbar, { passive: true })
+    return () => {
+      scroll.removeEventListener('scroll', syncFromContent)
+      scrollbar.removeEventListener('scroll', syncFromScrollbar)
+    }
+  }, [])
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -141,7 +171,14 @@ export function KanbanBoard({ onEditTask, onAddTask }: KanbanBoardProps) {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex gap-4 overflow-x-auto pb-4" style={{ minHeight: 'calc(100dvh - 200px)' }}>
+      <div
+        ref={scrollbarRef}
+        className="flex gap-4 overflow-x-auto scrollbar-thin"
+        style={{ scrollbarGutter: 'stable' }}
+      >
+        <div style={{ minWidth: sortedColumns.length * 288 + 280, height: 0 }} />
+      </div>
+      <div ref={scrollRef} className="flex gap-4 overflow-x-auto pb-4" style={{ minHeight: 'calc(100dvh - 200px)' }}>
         {sortedColumns.map((column) => (
           <KanbanColumnComponent
             key={column.id}
