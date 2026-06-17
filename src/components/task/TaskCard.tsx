@@ -24,7 +24,7 @@ export function TaskCard({ task, onEdit, onToggle, onDelete }: TaskCardProps) {
   return (
     <div
       className={cn(
-        'group relative flex items-start gap-3.5 rounded-2xl border border-border/70 bg-card px-4 py-3.5 shadow-sm transition-all duration-150 animate-card-in',
+        'group relative flex items-start gap-3.5 rounded-2xl border border-border/70 bg-card px-4 py-3.5 shadow-sm transition-all duration-150 animate-card-in cursor-pointer active:scale-[0.98]',
         task.completed && 'opacity-55',
         overdue && !task.completed && 'border-red-200 dark:border-red-900/60 shadow-red-100/30 dark:shadow-red-900/10'
       )}
