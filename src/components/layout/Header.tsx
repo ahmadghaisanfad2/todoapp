@@ -23,7 +23,7 @@ export function Header({ onCategoryOpen, onAddTask, onMusicOpen }: HeaderProps) 
   const themeLabel = theme === 'dark' ? 'Dark' : theme === 'light' ? 'Light' : 'System'
 
   return (
-    <header className="sticky top-0 z-10 border-b border-border/60 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/70">
+    <header className="sticky top-0 z-10 border-b border-border/60 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/70 animate-fade-in-up">
       <div className="mx-auto flex h-16 items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <Logo className="h-7 w-7" />

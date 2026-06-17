@@ -37,7 +37,7 @@ export function TimerWidget() {
 
   if (timer.state === 'complete') {
     return (
-      <div aria-live="assertive">
+      <div aria-live="assertive" className="animate-card-in">
         <TimerComplete
           isMuted={timer.isMuted}
           onToggleMute={timer.toggleMute}
@@ -49,7 +49,7 @@ export function TimerWidget() {
 
   if (timer.state === 'running' || timer.state === 'paused') {
     return (
-      <div ref={widgetRef} className="fixed bottom-6 right-6 z-[60]"
+      <div ref={widgetRef} className="fixed bottom-6 right-6 z-[60] animate-card-in"
            style={{ bottom: 'max(1.5rem, env(safe-area-inset-bottom, 1.5rem))' }}>
         <div className="rounded-2xl border border-border bg-card shadow-2xl">
           <TimerRunning
@@ -69,7 +69,7 @@ export function TimerWidget() {
     <div ref={widgetRef} className="fixed bottom-6 right-6 z-[60]"
          style={{ bottom: 'max(1.5rem, env(safe-area-inset-bottom, 1.5rem))' }}>
       {isExpanded ? (
-        <div className="rounded-2xl border border-border bg-card shadow-2xl">
+        <div className="rounded-2xl border border-border bg-card shadow-2xl animate-card-in">
           <TimerSetup onStart={(seconds) => {
             timer.start(seconds)
             setIsExpanded(false)

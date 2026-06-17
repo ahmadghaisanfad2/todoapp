@@ -88,7 +88,7 @@ export function AppPage({ onNavigateHome }: AppPageProps) {
 
       <Layout>
         <Header onCategoryOpen={() => setCategorySheetOpen(true)} onAddTask={handleAddTask} onMusicOpen={toggleSearch} />
-        <main className="pt-6">
+        <main className="pt-6 animate-fade-in-up">
           <KanbanBoard onEditTask={handleEditTask} onAddTask={handleAddTask} />
         </main>
       </Layout>

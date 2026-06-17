@@ -46,7 +46,7 @@ export function MusicPlayerBar({ onOpenSearch }: MusicPlayerBarProps) {
   if (!currentTrack) return null
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50">
+    <div className="fixed bottom-0 left-0 right-0 z-50 animate-card-in">
       <div ref={containerRef} style={{ position: 'absolute', width: '1px', height: '1px', opacity: 0, top: -9999, left: -9999 }} />
 
       {!isPlayerOpen && (
