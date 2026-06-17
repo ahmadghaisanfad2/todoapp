@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
 import { cn } from '@/lib/utils'
+import { NotesEditor } from '@/components/task/NotesEditor'
 import { useTaskStore } from '@/store/taskStore'
 import { useKanbanStore } from '@/store/kanbanStore'
 import { useWorkspaceStore } from '@/store/workspaceStore'
@@ -40,6 +41,7 @@ export function TaskForm({ open, onOpenChange, task, defaultStatus }: TaskFormPr
   const [categoryId, setCategoryId] = useState<string>(task?.categoryId ?? 'none')
   const [dueDate, setDueDate] = useState<Date | undefined>(task?.dueDate ? parseISO(task.dueDate) : undefined)
   const [status, setStatus] = useState(task?.status || defaultStatus || 'todo')
+  const [notes, setNotes] = useState(task?.notes ?? '')
   const [calOpen, setCalOpen] = useState(false)
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -47,6 +49,7 @@ export function TaskForm({ open, onOpenChange, task, defaultStatus }: TaskFormPr
     if (!title.trim()) return
     const payload = {
       title: title.trim(),
+      notes: notes.trim() || null,
       priority,
       categoryId: categoryId === 'none' ? null : categoryId,
       workspaceId: task?.workspaceId ?? activeWorkspaceId,
@@ -79,6 +82,11 @@ export function TaskForm({ open, onOpenChange, task, defaultStatus }: TaskFormPr
               autoFocus
               className="h-10 rounded-xl"
             />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="task-notes" className="text-sm font-medium text-foreground">Notes</Label>
+            <NotesEditor value={notes} onChange={setNotes} />
           </div>
 
           <div className="flex flex-col gap-2">

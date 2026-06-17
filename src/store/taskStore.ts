@@ -50,6 +50,7 @@ export const useTaskStore = create<TaskStore>()(
             ...state.tasks,
             {
               ...task,
+              notes: task.notes ?? null,
               id: generateId(),
               status: task.status || 'todo',
               createdAt: new Date().toISOString(),

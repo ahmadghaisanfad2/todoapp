@@ -8,6 +8,7 @@ export interface Workspace {
 export interface Task {
   id: string
   title: string
+  notes: string | null
   completed: boolean
   priority: 'high' | 'medium' | 'low'
   categoryId: string | null

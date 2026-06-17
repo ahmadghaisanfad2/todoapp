@@ -45,6 +45,11 @@ export function TaskCard({ task, onEdit, onToggle, onDelete }: TaskCardProps) {
         >
           {task.title}
         </label>
+        {task.notes && (
+          <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2 whitespace-pre-wrap">
+            {task.notes}
+          </p>
+        )}
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
           {category && (
             <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
