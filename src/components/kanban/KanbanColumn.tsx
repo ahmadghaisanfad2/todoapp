@@ -121,7 +121,7 @@ export function KanbanColumnComponent({
 
       <div
         data-kanban-column-body
-        className="flex flex-1 flex-col gap-2 overflow-y-auto p-2"
+        className="kanban-scroll-y flex flex-1 flex-col gap-2 overflow-y-auto p-2"
         style={{ minHeight: 100 }}
       >
         <Button

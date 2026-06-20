@@ -465,6 +465,18 @@
   background-color: hsl(var(--muted-foreground) / 0.5);
 }
 
+.kanban-scroll-x {
+  touch-action: pan-x;
+}
+
+.kanban-scroll-y {
+  touch-action: pan-y;
+}
+
+.kanban-drag-handle {
+  touch-action: none;
+}
+
 @keyframes card-in {
   from {
     opacity: 0;

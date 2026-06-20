@@ -3,7 +3,7 @@ import {
   DndContext,
   DragOverlay,
   KeyboardSensor,
-  PointerSensor,
+  MouseSensor,
   TouchSensor,
   useSensor,
   useSensors,
@@ -14,7 +14,7 @@ import {
 } from '@dnd-kit/core'
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { KanbanColumnComponent } from './KanbanColumn'
-import { KanbanCard } from './KanbanCard'
+import { KanbanCardOverlay } from './KanbanCard'
 import { ColumnForm } from './ColumnForm'
 import { useKanbanStore } from '@/store/kanbanStore'
 import { useTaskStore } from '@/store/taskStore'
@@ -75,8 +75,8 @@ export function KanbanBoard({ onEditTask, onAddTask }: KanbanBoardProps) {
   }, [])
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
-    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 8 } }),
+    useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 12 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   )
 
@@ -89,17 +89,22 @@ export function KanbanBoard({ onEditTask, onAddTask }: KanbanBoardProps) {
   )
 
   const columnIds = useMemo(() => new Set(columns.map((c) => c.id)), [columns])
+  const taskIds = useMemo(() => new Set(tasks.map((t) => t.id)), [tasks])
 
   const customCollisionDetection: CollisionDetection = useCallback(
     (args) => {
-      const pointerCollisions = rectIntersection(args)
-      if (pointerCollisions.length > 0) {
-        const columnCollision = pointerCollisions.find((c) => columnIds.has(c.id as string))
-        if (columnCollision) return [columnCollision]
-      }
-      return pointerCollisions
+      const collisions = rectIntersection(args)
+      if (collisions.length === 0) return collisions
+
+      const taskCollision = collisions.find((c) => taskIds.has(c.id as string))
+      if (taskCollision) return [taskCollision]
+
+      const columnCollision = collisions.find((c) => columnIds.has(c.id as string))
+      if (columnCollision) return [columnCollision]
+
+      return collisions
     },
-    [columnIds]
+    [columnIds, taskIds]
   )
 
   const handleDragStart = (event: DragStartEvent) => {
@@ -173,12 +178,16 @@ export function KanbanBoard({ onEditTask, onAddTask }: KanbanBoardProps) {
     >
       <div
         ref={scrollbarRef}
-        className="flex gap-4 overflow-x-auto scrollbar-thin"
+        className="kanban-scroll-x flex gap-4 overflow-x-auto scrollbar-thin"
         style={{ scrollbarGutter: 'stable' }}
       >
         <div style={{ minWidth: sortedColumns.length * 288 + 280, height: 0 }} />
       </div>
-      <div ref={scrollRef} className="flex gap-4 overflow-x-auto pb-4" style={{ minHeight: 'calc(100dvh - 200px)' }}>
+      <div
+        ref={scrollRef}
+        className="kanban-scroll-x flex gap-4 overflow-x-auto pb-4"
+        style={{ minHeight: 'calc(100dvh - 200px)' }}
+      >
         {sortedColumns.map((column) => (
           <KanbanColumnComponent
             key={column.id}
@@ -195,12 +204,10 @@ export function KanbanBoard({ onEditTask, onAddTask }: KanbanBoardProps) {
         <ColumnForm onAdd={addColumn} />
       </div>
 
-      <DragOverlay>
+      <DragOverlay dropAnimation={null}>
         {activeTask ? (
-          <KanbanCard
+          <KanbanCardOverlay
             task={activeTask}
-            onEdit={() => {}}
-            onDelete={() => {}}
             crossTasks={columns.find((c) => c.id === activeTask.status)?.crossTasks}
           />
         ) : null}
