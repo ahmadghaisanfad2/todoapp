@@ -485,6 +485,10 @@
   touch-action: none;
 }
 
+[data-kanban-card-touch-drag='true'] {
+  touch-action: pan-y;
+}
+
 @keyframes card-in {
   from {
     opacity: 0;

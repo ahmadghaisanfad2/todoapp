@@ -3,6 +3,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { GripVertical, Calendar, Trash2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { format, parseISO, isPast } from 'date-fns'
+import { useCoarsePointer } from '@/hooks/useCoarsePointer'
 import type { Task, Priority } from '@/types'
 
 interface KanbanCardProps {
@@ -55,6 +56,7 @@ function KanbanCardContent({ task, crossTasks, onDelete, showDelete = true }: Ka
             e.stopPropagation()
             onDelete(task.id)
           }}
+          onPointerDown={(e) => e.stopPropagation()}
         >
           <Trash2 className="h-3.5 w-3.5" />
         </button>
@@ -64,6 +66,7 @@ function KanbanCardContent({ task, crossTasks, onDelete, showDelete = true }: Ka
 }
 
 export function KanbanCard({ task, onEdit, onDelete, crossTasks }: KanbanCardProps) {
+  const dragFromWholeCard = useCoarsePointer()
   const {
     attributes,
     listeners,
@@ -87,26 +90,42 @@ export function KanbanCard({ task, onEdit, onDelete, crossTasks }: KanbanCardPro
     onEdit(task)
   }
 
+  const mobileListeners = dragFromWholeCard
+    ? {
+        ...listeners,
+        onPointerDown: (e: React.PointerEvent<HTMLDivElement>) => {
+          if ((e.target as HTMLElement).closest('button')) return
+          listeners?.onPointerDown?.(e)
+        },
+      }
+    : {}
+
   return (
     <div
       ref={setNodeRef}
       style={style}
       data-kanban-card
+      data-kanban-card-touch-drag={dragFromWholeCard ? 'true' : undefined}
       className={cn(
         'group flex items-start gap-2 rounded-lg border bg-card px-3 py-2.5 shadow-sm hover:border-primary/30 transition-all duration-150 select-none animate-card-in',
         isDragging && 'opacity-50 shadow-lg z-50',
-        isOverdue && 'border-red-300 dark:border-red-800'
+        isOverdue && 'border-red-300 dark:border-red-800',
+        dragFromWholeCard && 'cursor-grab active:cursor-grabbing'
       )}
       {...attributes}
+      {...mobileListeners}
       onClick={handleClick}
     >
       <button
-        ref={setActivatorNodeRef}
+        ref={dragFromWholeCard ? undefined : setActivatorNodeRef}
         type="button"
         aria-label={`Drag ${task.title}`}
         data-kanban-drag-handle
-        className="kanban-drag-handle -ml-1 shrink-0 rounded p-0.5 text-muted-foreground/50 hover:text-muted-foreground cursor-grab active:cursor-grabbing touch-none"
-        {...listeners}
+        className={cn(
+          'kanban-drag-handle -ml-1 shrink-0 rounded p-0.5 text-muted-foreground/50 hover:text-muted-foreground',
+          dragFromWholeCard ? 'pointer-events-none' : 'cursor-grab active:cursor-grabbing touch-none'
+        )}
+        {...(!dragFromWholeCard ? listeners : {})}
         onClick={(e) => e.stopPropagation()}
       >
         <GripVertical className="h-4 w-4" />

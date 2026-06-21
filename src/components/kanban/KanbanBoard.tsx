@@ -145,6 +145,7 @@ export function KanbanBoard({ onEditTask, onAddTask }: KanbanBoardProps) {
     <DndContext
       sensors={sensors}
       collisionDetection={customCollisionDetection}
+      autoScroll={{ threshold: { x: 0.12, y: 0.2 }, acceleration: 12 }}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
