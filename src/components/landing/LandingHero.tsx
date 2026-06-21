@@ -28,7 +28,7 @@ export function LandingHero({ onNavigateApp }: LandingHeroProps) {
           height={1024}
           className="hidden h-full w-full object-cover object-center dark:block"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/85 to-background dark:from-background/40 dark:via-background/65 dark:to-background" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/92 via-background/96 to-background dark:from-background/40 dark:via-background/65 dark:to-background" />
       </div>
 
       {/* Grain texture */}
@@ -39,23 +39,25 @@ export function LandingHero({ onNavigateApp }: LandingHeroProps) {
           {/* Left — Copy */}
           <div className="flex flex-col gap-5">
             <div className="animate-hero-fade-1">
-              <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-[11px] font-mono font-medium uppercase tracking-[0.2em] text-primary">
-                <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+              <span
+                className="inline-flex items-center gap-2 rounded-full border border-[hsl(158_62%_28%)]/40 bg-background/95 px-4 py-1.5 text-[11px] font-mono font-semibold uppercase tracking-[0.2em] text-[hsl(158_65%_24%)] shadow-sm backdrop-blur-sm dark:border-primary/20 dark:bg-primary/5 dark:font-medium dark:text-primary dark:shadow-none"
+              >
+                <span className="h-1.5 w-1.5 rounded-full bg-[hsl(158_65%_24%)] animate-pulse dark:bg-primary" />
                 Produktivitas tanpa distraksi
               </span>
             </div>
 
             <div className="animate-hero-fade-2">
               <h1 className="font-serif max-w-[18ch] text-[2.25rem] leading-[1.05] tracking-tight text-foreground sm:text-[2.75rem] md:text-5xl xl:text-[4rem]" style={{ fontWeight: 700 }}>
-                <span className="text-primary italic" style={{ fontWeight: 600 }}>Fokus</span> pada yang penting,
+                <span className="text-[hsl(158_62%_28%)] italic dark:text-primary" style={{ fontWeight: 600 }}>Fokus</span> pada yang penting,
               </h1>
-              <p className="font-grotesk mt-1.5 max-w-[18ch] text-[2rem] leading-[1.1] tracking-[-0.02em] text-muted-foreground sm:text-[2.25rem] md:text-[2.75rem] xl:text-[3.5rem]" style={{ fontWeight: 300 }}>
+              <p className="font-grotesk mt-1.5 max-w-[18ch] text-[2rem] leading-[1.1] tracking-[-0.02em] text-foreground/90 dark:text-muted-foreground sm:text-[2.25rem] md:text-[2.75rem] xl:text-[3.5rem]" style={{ fontWeight: 300 }}>
                 selesaikan dengan tenang.
               </p>
-              <div className="mt-3 h-px w-16 bg-gradient-to-r from-primary/60 to-transparent" />
+              <div className="mt-3 h-px w-16 bg-gradient-to-r from-[hsl(158_62%_28%)]/70 to-transparent dark:from-primary/60" />
             </div>
 
-            <p className="animate-hero-fade-3 max-w-[42ch] text-sm leading-relaxed text-muted-foreground sm:text-base">
+            <p className="animate-hero-fade-3 max-w-[42ch] text-sm leading-relaxed text-foreground/80 dark:text-muted-foreground sm:text-base">
               Kelola tugas, atur timer fokus, dan putar musik favorit — semuanya dalam satu ruang kerja yang bersih dan efisien.
             </p>
 
@@ -68,7 +70,7 @@ export function LandingHero({ onNavigateApp }: LandingHeroProps) {
                 Mulai Sekarang
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
-              <span className="text-sm font-mono text-muted-foreground">
+              <span className="text-sm font-mono text-foreground/75 dark:text-muted-foreground">
                 Gratis. Tidak perlu registrasi.
               </span>
             </div>
@@ -76,7 +78,7 @@ export function LandingHero({ onNavigateApp }: LandingHeroProps) {
 
           {/* Right — Mock card */}
           <div className="animate-hero-fade-3 lg:justify-self-end">
-            <div className="relative mx-auto max-w-lg rounded-2xl border border-border/60 bg-card/80 p-4 shadow-2xl shadow-primary/5 backdrop-blur-xl">
+            <div className="relative mx-auto max-w-lg rounded-2xl border border-border/60 bg-card/95 p-4 shadow-2xl shadow-primary/5 backdrop-blur-xl dark:bg-card/80">
               {/* Top accent line */}
               <div className="absolute inset-x-8 -top-px h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
 
@@ -85,7 +87,7 @@ export function LandingHero({ onNavigateApp }: LandingHeroProps) {
                 <div className="h-3 w-3 rounded-full bg-[#FF5F57]" />
                 <div className="h-3 w-3 rounded-full bg-[#FEBC2E]" />
                 <div className="h-3 w-3 rounded-full bg-[#28C840]" />
-                <span className="ml-2 font-brand text-xs text-muted-foreground" style={{ fontWeight: 600 }}>Wazheefa</span>
+                <span className="ml-2 font-brand text-xs text-foreground/80 dark:text-muted-foreground" style={{ fontWeight: 600 }}>Wazheefa</span>
               </div>
 
               {/* Task list */}
@@ -97,7 +99,7 @@ export function LandingHero({ onNavigateApp }: LandingHeroProps) {
                 ].map((t, i) => (
                   <div
                     key={i}
-                    className={`flex items-center gap-3 rounded-xl border border-border/50 px-3.5 py-3 transition-colors ${t.done ? 'opacity-50' : ''}`}
+                    className={`flex items-center gap-3 rounded-xl border border-border/50 px-3.5 py-3 transition-colors ${t.done ? 'opacity-70 dark:opacity-50' : ''}`}
                   >
                     <div className={`h-4 w-4 rounded border-2 shrink-0 flex items-center justify-center ${t.done ? 'bg-primary border-primary' : 'border-border'}`}>
                       {t.done && (
@@ -106,8 +108,8 @@ export function LandingHero({ onNavigateApp }: LandingHeroProps) {
                         </svg>
                       )}
                     </div>
-                    <span className={`text-sm flex-1 ${t.done ? 'line-through text-muted-foreground' : 'text-foreground'}`}>{t.title}</span>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-primary/10 text-primary">{t.tag}</span>
+                    <span className={`text-sm flex-1 ${t.done ? 'line-through text-foreground/60 dark:text-muted-foreground' : 'text-foreground'}`}>{t.title}</span>
+                    <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-primary/15 text-primary dark:bg-primary/10">{t.tag}</span>
                   </div>
                 ))}
               </div>
@@ -128,7 +130,7 @@ export function LandingHero({ onNavigateApp }: LandingHeroProps) {
                     <circle cx="6" cy="18" r="3" stroke="currentColor" strokeWidth="2" />
                     <circle cx="18" cy="16" r="3" stroke="currentColor" strokeWidth="2" />
                   </svg>
-                  <span className="text-xs text-muted-foreground truncate">Ambient Focus Session</span>
+                  <span className="text-xs text-foreground/75 dark:text-muted-foreground truncate">Ambient Focus Session</span>
                 </div>
               </div>
             </div>

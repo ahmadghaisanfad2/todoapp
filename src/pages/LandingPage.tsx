@@ -27,7 +27,7 @@ export function LandingPage({ onNavigateApp }: LandingPageProps) {
           </div>
           <div className="text-center">
             <p className="text-base font-semibold text-foreground font-brand" style={{ fontWeight: 600 }}>Menyiapkan ruang kerja Anda</p>
-            <p className="mt-0.5 font-mono text-sm text-muted-foreground">Sebentar...</p>
+            <p className="mt-0.5 font-mono text-sm text-foreground/75 dark:text-muted-foreground">Sebentar...</p>
           </div>
         </div>
       )}

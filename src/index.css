@@ -469,6 +469,14 @@
   touch-action: pan-x;
 }
 
+.kanban-scroll-x-content {
+  scrollbar-width: none;
+}
+
+.kanban-scroll-x-content::-webkit-scrollbar {
+  display: none;
+}
+
 .kanban-scroll-y {
   touch-action: pan-y;
 }

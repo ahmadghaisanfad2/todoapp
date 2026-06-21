@@ -112,4 +112,46 @@ export default async function themeResponsiveTests({ page, test, assert, BASE_UR
     assert.ok(box, 'To Do column should have a bounding box')
     assert.ok(box.width <= 320, `Column width (${box.width}) should fit within the horizontal board scroller`)
   })
+
+  test('custom top scrollbar enables reaching all columns at mobile width', async () => {
+    await page.setViewportSize({ width: 375, height: 812 })
+    await page.waitForTimeout(300)
+
+    const board = page.locator('[data-kanban-board]')
+    assert.ok(await board.isVisible(), 'Kanban board container should be visible')
+
+    const scrollbarTrack = board.locator('[data-kanban-scrollbar-track]')
+    assert.ok(
+      await scrollbarTrack.isVisible(),
+      'Custom horizontal scrollbar track should be visible when columns overflow'
+    )
+
+    const doneReachableBefore = await page.evaluate(() => {
+      const headings = [...document.querySelectorAll('[data-kanban-column] h3')]
+      const done = headings.find((h) => h.textContent === 'Done')
+      if (!done) return false
+      const rect = done.getBoundingClientRect()
+      return rect.left < window.innerWidth && rect.right > 0
+    })
+    assert.ok(!doneReachableBefore, 'Done column should start off-screen on mobile')
+
+    await page.evaluate(() => {
+      const scrollEl = document.getElementById('kanban-board-scroll')
+      const column = [...document.querySelectorAll('[data-kanban-column]')].find(
+        (c) => c.querySelector('h3')?.textContent === 'Done'
+      )
+      if (!scrollEl || !column) return
+      scrollEl.scrollLeft = column.offsetLeft
+    })
+    await page.waitForTimeout(200)
+
+    const doneReachableAfter = await page.evaluate(() => {
+      const headings = [...document.querySelectorAll('[data-kanban-column] h3')]
+      const done = headings.find((h) => h.textContent === 'Done')
+      if (!done) return false
+      const rect = done.getBoundingClientRect()
+      return rect.left < window.innerWidth && rect.right > 0
+    })
+    assert.ok(doneReachableAfter, 'Done column should be reachable after horizontal scroll')
+  })
 }

@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
+import { useState, useCallback, useMemo, useRef } from 'react'
 import {
   DndContext,
   DragOverlay,
@@ -16,6 +16,7 @@ import { sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { KanbanColumnComponent } from './KanbanColumn'
 import { KanbanCardOverlay } from './KanbanCard'
 import { ColumnForm } from './ColumnForm'
+import { KanbanHorizontalScrollbar } from './KanbanHorizontalScrollbar'
 import { useKanbanStore } from '@/store/kanbanStore'
 import { useTaskStore } from '@/store/taskStore'
 import { useWorkspaceStore } from '@/store/workspaceStore'
@@ -44,35 +45,6 @@ export function KanbanBoard({ onEditTask, onAddTask }: KanbanBoardProps) {
 
   const [activeTask, setActiveTask] = useState<Task | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
-  const scrollbarRef = useRef<HTMLDivElement>(null)
-  const isSyncing = useRef(false)
-
-  useEffect(() => {
-    const scroll = scrollRef.current
-    const scrollbar = scrollbarRef.current
-    if (!scroll || !scrollbar) return
-
-    const syncFromContent = () => {
-      if (isSyncing.current) return
-      isSyncing.current = true
-      scrollbar.scrollLeft = scroll.scrollLeft
-      isSyncing.current = false
-    }
-
-    const syncFromScrollbar = () => {
-      if (isSyncing.current) return
-      isSyncing.current = true
-      scroll.scrollLeft = scrollbar.scrollLeft
-      isSyncing.current = false
-    }
-
-    scroll.addEventListener('scroll', syncFromContent, { passive: true })
-    scrollbar.addEventListener('scroll', syncFromScrollbar, { passive: true })
-    return () => {
-      scroll.removeEventListener('scroll', syncFromContent)
-      scrollbar.removeEventListener('scroll', syncFromScrollbar)
-    }
-  }, [])
 
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
@@ -176,32 +148,28 @@ export function KanbanBoard({ onEditTask, onAddTask }: KanbanBoardProps) {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div
-        ref={scrollbarRef}
-        className="kanban-scroll-x flex gap-4 overflow-x-auto scrollbar-thin"
-        style={{ scrollbarGutter: 'stable' }}
-      >
-        <div style={{ minWidth: sortedColumns.length * 288 + 280, height: 0 }} />
-      </div>
-      <div
-        ref={scrollRef}
-        className="kanban-scroll-x flex gap-4 overflow-x-auto pb-4"
-        style={{ minHeight: 'calc(100dvh - 200px)' }}
-      >
-        {sortedColumns.map((column) => (
-          <KanbanColumnComponent
-            key={column.id}
-            column={column}
-            tasks={getTasksByColumn(column.id)}
-            onEdit={onEditTask}
-            onDelete={deleteTask}
-            onAddTask={onAddTask}
-            onUpdateColumn={handleUpdateColumn}
-            onDeleteColumn={handleDeleteColumn}
-            onToggleCrossTasks={handleToggleCrossTasks}
-          />
-        ))}
-        <ColumnForm onAdd={addColumn} />
+      <div data-kanban-board className="w-full min-w-0">
+        <KanbanHorizontalScrollbar scrollRef={scrollRef} />
+        <div
+          id="kanban-board-scroll"
+          ref={scrollRef}
+          className="kanban-scroll-x kanban-scroll-x-content flex items-start gap-4 overflow-x-auto pb-4"
+        >
+          {sortedColumns.map((column) => (
+            <KanbanColumnComponent
+              key={column.id}
+              column={column}
+              tasks={getTasksByColumn(column.id)}
+              onEdit={onEditTask}
+              onDelete={deleteTask}
+              onAddTask={onAddTask}
+              onUpdateColumn={handleUpdateColumn}
+              onDeleteColumn={handleDeleteColumn}
+              onToggleCrossTasks={handleToggleCrossTasks}
+            />
+          ))}
+          <ColumnForm onAdd={addColumn} />
+        </div>
       </div>
 
       <DragOverlay dropAnimation={null}>
