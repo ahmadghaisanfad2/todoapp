@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import type { AnimationEvent } from 'react'
 import { X } from 'lucide-react'
 import { useUndoStore } from '@/store/undoStore'
 import { cn } from '@/lib/utils'
@@ -37,7 +38,7 @@ export function UndoToast() {
     }
   }, [shouldShow, lastUndone, stack[0]?.id, stack[0]?.description])
 
-  function handleAnimationEnd(e: AnimationEvent) {
+  function handleAnimationEnd(e: AnimationEvent<HTMLDivElement>) {
     if (e.animationName !== 'toast-out') return
     wasVisibleRef.current = false
     setDisplay(null)
