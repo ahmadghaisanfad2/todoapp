@@ -10,6 +10,7 @@ import type { Task, KanbanColumn as KanbanColumnType } from '@/types'
 interface KanbanColumnProps {
   column: KanbanColumnType
   tasks: Task[]
+  activeTaskId: string | null
   onEdit: (task: Task) => void
   onDelete: (id: string) => void
   onAddTask: (columnId: string) => void
@@ -21,6 +22,7 @@ interface KanbanColumnProps {
 export function KanbanColumnComponent({
   column,
   tasks,
+  activeTaskId,
   onEdit,
   onDelete,
   onAddTask,
@@ -137,7 +139,14 @@ export function KanbanColumnComponent({
 
         <SortableContext items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
           {tasks.map((task) => (
-            <KanbanCard key={task.id} task={task} onEdit={onEdit} onDelete={onDelete} crossTasks={column.crossTasks} />
+            <KanbanCard
+              key={task.id}
+              task={task}
+              activeTaskId={activeTaskId}
+              onEdit={onEdit}
+              onDelete={onDelete}
+              crossTasks={column.crossTasks}
+            />
           ))}
         </SortableContext>
       </div>

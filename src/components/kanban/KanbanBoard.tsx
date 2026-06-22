@@ -148,6 +148,7 @@ export function KanbanBoard({ onEditTask, onAddTask }: KanbanBoardProps) {
       autoScroll={{ threshold: { x: 0.12, y: 0.2 }, acceleration: 12 }}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
+      onDragCancel={() => setActiveTask(null)}
     >
       <div data-kanban-board className="w-full min-w-0">
         <KanbanHorizontalScrollbar scrollRef={scrollRef} />
@@ -161,6 +162,7 @@ export function KanbanBoard({ onEditTask, onAddTask }: KanbanBoardProps) {
               key={column.id}
               column={column}
               tasks={getTasksByColumn(column.id)}
+              activeTaskId={activeTask?.id ?? null}
               onEdit={onEditTask}
               onDelete={deleteTask}
               onAddTask={onAddTask}

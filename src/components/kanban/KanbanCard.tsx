@@ -8,6 +8,7 @@ import type { Task, Priority } from '@/types'
 
 interface KanbanCardProps {
   task: Task
+  activeTaskId: string | null
   onEdit: (task: Task) => void
   onDelete: (id: string) => void
   crossTasks?: boolean
@@ -65,7 +66,7 @@ function KanbanCardContent({ task, crossTasks, onDelete, showDelete = true }: Ka
   )
 }
 
-export function KanbanCard({ task, onEdit, onDelete, crossTasks }: KanbanCardProps) {
+export function KanbanCard({ task, activeTaskId, onEdit, onDelete, crossTasks }: KanbanCardProps) {
   const dragFromWholeCard = useCoarsePointer()
   const {
     attributes,
@@ -77,15 +78,19 @@ export function KanbanCard({ task, onEdit, onDelete, crossTasks }: KanbanCardPro
     isDragging,
   } = useSortable({ id: task.id })
 
+  const isBeingDragged = isDragging || activeTaskId === task.id
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+    opacity: isBeingDragged ? 0 : undefined,
+    animation: isBeingDragged ? 'none' : undefined,
   }
 
   const isOverdue = task.dueDate && isPast(parseISO(task.dueDate)) && !task.completed
 
   const handleClick = (e: React.MouseEvent) => {
-    if (isDragging) return
+    if (isBeingDragged) return
     if ((e.target as HTMLElement).closest('button')) return
     onEdit(task)
   }
@@ -108,9 +113,9 @@ export function KanbanCard({ task, onEdit, onDelete, crossTasks }: KanbanCardPro
       data-kanban-card-touch-drag={dragFromWholeCard ? 'true' : undefined}
       className={cn(
         'group flex items-start gap-2 rounded-lg border bg-card px-3 py-2.5 shadow-sm hover:border-primary/30 transition-all duration-150 select-none animate-card-in',
-        isDragging && 'opacity-50 shadow-lg z-50',
+        isBeingDragged && 'pointer-events-none',
         isOverdue && 'border-red-300 dark:border-red-800',
-        dragFromWholeCard && 'cursor-grab active:cursor-grabbing'
+        dragFromWholeCard ? 'cursor-grab touch-none active:cursor-grabbing' : undefined
       )}
       {...attributes}
       {...mobileListeners}
@@ -147,7 +152,7 @@ export function KanbanCardOverlay({ task, crossTasks }: KanbanCardOverlayProps) 
     <div
       data-kanban-card-overlay
       className={cn(
-        'group flex items-start gap-2 rounded-lg border bg-card px-3 py-2.5 shadow-lg cursor-grabbing select-none rotate-1 scale-[1.02]',
+        'group flex items-start gap-2 rounded-lg border bg-card px-3 py-2.5 shadow-lg cursor-grabbing select-none',
         isOverdue && 'border-red-300 dark:border-red-800'
       )}
     >

@@ -1,46 +1,88 @@
+import { useEffect, useRef, useState } from 'react'
 import { X } from 'lucide-react'
 import { useUndoStore } from '@/store/undoStore'
+import { cn } from '@/lib/utils'
+
+interface ToastDisplay {
+  key: string
+  mode: 'undo' | 'confirmation'
+  description: string
+}
 
 export function UndoToast() {
   const stack = useUndoStore((s) => s.stack)
   const lastUndone = useUndoStore((s) => s.lastUndone)
+  const toastHidden = useUndoStore((s) => s.toastHidden)
   const popUndo = useUndoStore((s) => s.popUndo)
-  const dismiss = useUndoStore((s) => s.dismiss)
+  const hideToast = useUndoStore((s) => s.hideToast)
 
-  const shouldShow = stack.length > 0 || lastUndone !== null
-  if (!shouldShow) return null
+  const contentKey = lastUndone ?? stack[0]?.id ?? null
+  const shouldShow = !toastHidden && contentKey !== null
 
-  const isUndoConfirmation = lastUndone !== null
+  const wasVisibleRef = useRef(false)
+  const isExiting = wasVisibleRef.current && !shouldShow
+  const showToast = shouldShow || isExiting
+
+  const [display, setDisplay] = useState<ToastDisplay | null>(null)
+
+  useEffect(() => {
+    if (!shouldShow) return
+    wasVisibleRef.current = true
+    if (lastUndone !== null) {
+      setDisplay({ key: `done-${lastUndone}`, mode: 'confirmation', description: lastUndone })
+      return
+    }
+    if (stack[0]) {
+      setDisplay({ key: stack[0].id, mode: 'undo', description: stack[0].description })
+    }
+  }, [shouldShow, lastUndone, stack[0]?.id, stack[0]?.description])
+
+  function handleAnimationEnd(e: AnimationEvent) {
+    if (e.animationName !== 'toast-out') return
+    wasVisibleRef.current = false
+    setDisplay(null)
+  }
+
+  if (!showToast || !display) return null
 
   return (
-    <div className="group fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 rounded-lg border bg-card px-4 py-3 shadow-lg animate-toast-in">
-      <button
-        onClick={dismiss}
-        aria-label="Dismiss"
-        className="absolute -left-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full border bg-background text-muted-foreground shadow-sm opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+    <div className="pointer-events-none fixed bottom-6 left-1/2 z-50 -translate-x-1/2">
+      <div
+        key={display.key}
+        onAnimationEnd={handleAnimationEnd}
+        className={cn(
+          'pointer-events-auto group relative flex items-center gap-3 rounded-lg border bg-card px-4 py-3 shadow-lg',
+          isExiting ? 'animate-toast-out' : 'animate-toast-in'
+        )}
       >
-        <X className="h-3 w-3" />
-      </button>
-      {isUndoConfirmation ? (
-        <span className="text-sm text-muted-foreground">
-          Undone: {lastUndone}
-        </span>
-      ) : (
-        <>
-          <span className="text-sm text-foreground">
-            {stack[0]?.description}
+        <button
+          onClick={hideToast}
+          aria-label="Dismiss"
+          className="absolute -left-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full border bg-background text-muted-foreground shadow-sm opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+        >
+          <X className="h-3 w-3" />
+        </button>
+        {display.mode === 'confirmation' ? (
+          <span className="text-sm text-muted-foreground">
+            Undone: {display.description}
           </span>
-          <button
-            onClick={popUndo}
-            className="rounded-md bg-primary px-3 py-1 text-xs font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
-          >
-            Undo
-          </button>
-          <span className="text-xs text-muted-foreground hidden sm:inline">
-            ⌘Z
-          </span>
-        </>
-      )}
+        ) : (
+          <>
+            <span className="text-sm text-foreground">
+              {display.description}
+            </span>
+            <button
+              onClick={popUndo}
+              className="rounded-md bg-primary px-3 py-1 text-xs font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+            >
+              Undo
+            </button>
+            <span className="text-xs text-muted-foreground hidden sm:inline">
+              ⌘Z
+            </span>
+          </>
+        )}
+      </div>
     </div>
   )
 }
