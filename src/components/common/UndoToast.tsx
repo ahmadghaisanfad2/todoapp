@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { AnimationEvent } from 'react'
 import { X } from 'lucide-react'
 import { useUndoStore } from '@/store/undoStore'
@@ -19,31 +19,42 @@ export function UndoToast() {
 
   const contentKey = lastUndone ?? stack[0]?.id ?? null
   const shouldShow = !toastHidden && contentKey !== null
-
-  const wasVisibleRef = useRef(false)
-  const isExiting = wasVisibleRef.current && !shouldShow
-  const showToast = shouldShow || isExiting
+  const topStackItem = stack[0]
 
   const [display, setDisplay] = useState<ToastDisplay | null>(null)
+  const [isExiting, setIsExiting] = useState(false)
 
   useEffect(() => {
     if (!shouldShow) return
-    wasVisibleRef.current = true
-    if (lastUndone !== null) {
-      setDisplay({ key: `done-${lastUndone}`, mode: 'confirmation', description: lastUndone })
-      return
-    }
-    if (stack[0]) {
-      setDisplay({ key: stack[0].id, mode: 'undo', description: stack[0].description })
-    }
-  }, [shouldShow, lastUndone, stack[0]?.id, stack[0]?.description])
+
+    queueMicrotask(() => {
+      setIsExiting(false)
+      if (lastUndone !== null) {
+        setDisplay({ key: `done-${lastUndone}`, mode: 'confirmation', description: lastUndone })
+        return
+      }
+      if (topStackItem) {
+        setDisplay({
+          key: topStackItem.id,
+          mode: 'undo',
+          description: topStackItem.description,
+        })
+      }
+    })
+  }, [shouldShow, lastUndone, topStackItem])
+
+  useEffect(() => {
+    if (shouldShow || !display) return
+    queueMicrotask(() => setIsExiting(true))
+  }, [shouldShow, display])
 
   function handleAnimationEnd(e: AnimationEvent<HTMLDivElement>) {
     if (e.animationName !== 'toast-out') return
-    wasVisibleRef.current = false
+    setIsExiting(false)
     setDisplay(null)
   }
 
+  const showToast = (shouldShow && display !== null) || (isExiting && display !== null)
   if (!showToast || !display) return null
 
   return (

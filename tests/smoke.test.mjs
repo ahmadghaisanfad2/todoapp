@@ -20,14 +20,14 @@ export default async function smokeTest({ page, test, assert, BASE_URL }) {
   })
 
   test('FAB (Add task) button is visible', async () => {
-    const fab = page.getByRole('button', { name: 'Add task' })
-    await fab.waitFor({ state: 'visible', timeout: 5000 })
-    assert.ok(await fab.isVisible(), 'FAB should be visible')
+    const addTaskBtn = page.getByRole('button', { name: 'Add task', exact: true })
+    await addTaskBtn.waitFor({ state: 'visible', timeout: 5000 })
+    assert.ok(await addTaskBtn.isVisible(), 'Add task button should be visible in header')
   })
 
-  test('clicking FAB opens task dialog', async () => {
-    const fab = page.getByRole('button', { name: 'Add task' })
-    await fab.click()
+  test('clicking Add task opens task dialog', async () => {
+    const addTaskBtn = page.getByRole('button', { name: 'Add task', exact: true })
+    await addTaskBtn.click()
     const dialog = page.locator('[role="dialog"]')
     await dialog.waitFor({ state: 'visible', timeout: 5000 })
     assert.ok(await dialog.isVisible(), 'Task dialog should open after FAB click')
