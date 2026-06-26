@@ -191,7 +191,18 @@ export function MusicSearchSheet({ open, onOpenChange }: MusicSearchSheetProps) 
         <div className="mt-6">
           <p className="mb-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Playlists</p>
           <div className="flex gap-2 mb-3">
-            <Input placeholder="New playlist name..." value={newPlaylistName} onChange={(e) => setNewPlaylistName(e.target.value)} className="h-8 text-sm" />
+            <Input
+              placeholder="New playlist name..."
+              value={newPlaylistName}
+              onChange={(e) => setNewPlaylistName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && newPlaylistName.trim()) {
+                  createPlaylist(newPlaylistName.trim())
+                  setNewPlaylistName('')
+                }
+              }}
+              className="h-8 text-sm"
+            />
             <Button size="sm" onClick={() => { if (newPlaylistName.trim()) { createPlaylist(newPlaylistName.trim()); setNewPlaylistName('') } }} disabled={!newPlaylistName.trim()} className="h-8 px-3">Create</Button>
           </div>
           {playlists.map((pl) => (
@@ -224,7 +235,14 @@ export function MusicSearchSheet({ open, onOpenChange }: MusicSearchSheetProps) 
                   {playlists.length > 0 && (
                     <button onClick={() => setAddToPlaylistFor(addToPlaylistFor === preset.videoId ? null : preset.videoId)} className="p-1 text-muted-foreground hover:text-primary"><Plus className="h-4 w-4" /></button>
                   )}
-                  <button onClick={() => handleSelect(preset)} className="p-1 text-primary hover:text-primary/80"><Play className="h-4 w-4" /></button>
+                  <button
+                    type="button"
+                    aria-label={`Play ${preset.title}`}
+                    onClick={() => handleSelect(preset)}
+                    className="p-1 text-primary hover:text-primary/80"
+                  >
+                    <Play className="h-4 w-4" />
+                  </button>
                 </div>
                 {addToPlaylistFor === preset.videoId && playlists.length > 0 && (
                   <div className="absolute right-0 top-full z-10 mt-1 min-w-[160px] rounded-lg border border-border bg-card p-1 shadow-lg">

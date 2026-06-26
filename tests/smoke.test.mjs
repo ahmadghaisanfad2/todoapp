@@ -5,18 +5,28 @@ export default async function smokeTest({ page, test, assert, BASE_URL }) {
   await page.setViewportSize({ width: 1280, height: 800 })
   await page.goto(BASE_URL + '/app')
   await page.waitForLoadState('networkidle')
-  await page.waitForSelector('h1', { timeout: 10000 })
+  await page.waitForSelector('header', { timeout: 10000 })
 
-  test('header shows Wazheefa title', async () => {
-    const title = page.locator('h1', { hasText: 'Wazheefa' })
-    await title.waitFor({ state: 'visible', timeout: 5000 })
-    assert.ok(await title.isVisible(), 'Wazheefa title should be visible')
+  test('app shell shows navigation chrome', async () => {
+    const backBtn = page.getByRole('button', { name: /Back to home/i })
+    await backBtn.waitFor({ state: 'visible', timeout: 5000 })
+    assert.ok(await backBtn.isVisible(), 'Back to home control should be visible in app shell')
   })
 
-  test('Kanban board columns are visible', async () => {
-    const todo = page.getByRole('heading', { name: 'To Do' })
-    await todo.waitFor({ state: 'visible', timeout: 5000 })
-    assert.ok(await todo.isVisible(), 'To Do column should be visible')
+  test('empty board shows focus session invitation or kanban columns', async () => {
+    const emptyHeading = page.getByText('Ready for a focus session?')
+    const todoColumn = page.getByRole('heading', { name: 'To Do' })
+
+    const emptyVisible = await emptyHeading.isVisible().catch(() => false)
+    if (emptyVisible) {
+      assert.ok(await emptyHeading.isVisible(), 'Empty board should invite a focus session')
+      const addFirst = page.getByRole('button', { name: 'Add first task' })
+      assert.ok(await addFirst.isVisible(), 'Add first task CTA should be visible on empty board')
+      return
+    }
+
+    await todoColumn.waitFor({ state: 'visible', timeout: 5000 })
+    assert.ok(await todoColumn.isVisible(), 'To Do column should be visible when tasks exist')
   })
 
   test('FAB (Add task) button is visible', async () => {

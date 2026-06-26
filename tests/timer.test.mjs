@@ -5,7 +5,7 @@ export default async function timerTest({ page, test, assert, BASE_URL }) {
   await page.setViewportSize({ width: 1280, height: 800 })
   await page.goto(BASE_URL + '/app')
   await page.waitForLoadState('networkidle')
-  await page.waitForSelector('h1', { timeout: 10000 })
+  await page.waitForSelector('header', { timeout: 10000 })
 
   test('timer FAB is visible', async () => {
     const timerBtn = page.locator('button[aria-label="Open focus timer"]')
@@ -17,17 +17,17 @@ export default async function timerTest({ page, test, assert, BASE_URL }) {
     const timerBtn = page.locator('button[aria-label="Open focus timer"]')
     await timerBtn.click()
 
-    const preset = page.locator('button', { hasText: '5 min' })
+    const preset = page.getByRole('button', { name: '5 min', exact: true })
     await preset.waitFor({ state: 'visible', timeout: 3000 })
     assert.ok(await preset.isVisible(), 'Preset buttons should appear')
   })
 
   test('starting a timer shows countdown', async () => {
-    const preset = page.locator('button', { hasText: '2 min' })
+    const preset = page.getByRole('button', { name: '2 min', exact: true })
     await preset.click()
 
     // Timer should show running state with a time display
-    const timeDisplay = page.locator('span.font-mono.font-bold', { hasText: /\d{2}:\d{2}/ })
+    const timeDisplay = page.locator('span.font-mono.font-bold', { hasText: /\d{1,2}:\d{2}/ })
     await timeDisplay.waitFor({ state: 'visible', timeout: 3000 })
     assert.ok(await timeDisplay.isVisible(), 'Timer countdown should be visible')
   })

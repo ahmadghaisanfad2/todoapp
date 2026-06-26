@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-25T00:00:00.000Z",
+  "title": "Design System: Wazheefa",
+  "extensions": {
+    "colorMeta": {
+      "focus-emerald": {
+        "role": "primary",
+        "displayName": "Focus Emerald",
+        "canonical": "oklch(58% 0.14 163)",
+        "tonalRamp": ["#0d3d2e", "#145a42", "#1a7756", "#20946a", "#29a37a", "#3dbf94", "#6fd4b0", "#a8e8d0", "#e6f7f0"]
+      },
+      "ink-forest": {
+        "role": "neutral",
+        "displayName": "Ink Forest",
+        "canonical": "oklch(18% 0.03 163)",
+        "tonalRamp": ["#050a08", "#0a1210", "#0f1a16", "#13201b", "#1e332c", "#2a463d", "#4a6b5f", "#7a9a8d", "#c2d4cc"]
+      },
+      "surface-cream": {
+        "role": "neutral",
+        "displayName": "Surface Cream",
+        "canonical": "oklch(98% 0.006 80)",
+        "tonalRamp": ["#8a8580", "#a8a39e", "#c4c0bc", "#dbd8d5", "#ebe9e7", "#f3f2f0", "#f7f6f5", "#fbfaf9", "#ffffff"]
+      },
+      "surface-card": {
+        "role": "neutral",
+        "displayName": "Surface Card",
+        "canonical": "oklch(100% 0 0)",
+        "tonalRamp": ["#666666", "#888888", "#aaaaaa", "#cccccc", "#e0e0e0", "#eeeeee", "#f5f5f5", "#fafafa", "#ffffff"]
+      },
+      "border-mist": {
+        "role": "neutral",
+        "displayName": "Border Mist",
+        "canonical": "oklch(92% 0.008 163)",
+        "tonalRamp": ["#5a6561", "#6e7874", "#828b88", "#a0a8a5", "#b8bfbc", "#ccd2d0", "#dbe0de", "#e3e8e6", "#f1f4f2"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Landing hero headlines only — Cormorant Garamond." },
+      "headline": { "displayName": "Headline", "purpose": "App titles and section headers — Syne or Inter semibold." },
+      "body": { "displayName": "Body", "purpose": "Task copy, forms, descriptions — Inter 14px." },
+      "label": { "displayName": "Label", "purpose": "Mono kickers and technical labels — JetBrains Mono uppercase." }
+    },
+    "shadows": [
+      { "name": "card-rest", "value": "0 1px 2px 0 rgba(0, 0, 0, 0.05)", "purpose": "Task and kanban cards at rest." },
+      { "name": "hero-panel", "value": "0 28px 90px rgba(3, 8, 20, 0.34)", "purpose": "Landing preview mockup only." },
+      { "name": "pulse-glow", "value": "0 0 20px hsl(160 60% 40% / 0.15)", "purpose": "Accent glow on landing elements — rare." }
+    ],
+    "motion": [
+      { "name": "ease-standard", "value": "cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Default state transitions on buttons and cards." },
+      { "name": "duration-fast", "value": "150ms", "purpose": "Card hover, button active scale." },
+      { "name": "hero-fade-up", "value": "translateY(16px) → 0, opacity 0 → 1", "purpose": "Landing hero staggered entrance." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main call-to-action — start app, add task, confirm.",
+      "html": "<button class=\"ds-btn-primary\">Mulai fokus<svg class=\"ds-btn-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M5 12h14M12 5l7 7-7 7\"/></svg></button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 8px 16px; background: #29a37a; color: #ffffff; font-family: Inter, system-ui, sans-serif; font-size: 14px; font-weight: 500; border: none; border-radius: 8px; cursor: pointer; transition: background 150ms ease, transform 150ms ease; } .ds-btn-primary:hover { background: #248f6b; } .ds-btn-primary:focus-visible { outline: 2px solid #29a37a; outline-offset: 2px; } .ds-btn-primary:active { transform: scale(0.97); } .ds-btn-icon { width: 16px; height: 16px; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Toolbar and icon actions — theme toggle, overflow menu.",
+      "html": "<button class=\"ds-btn-ghost\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" width=\"16\" height=\"16\"><circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41\"/></svg></button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; padding: 8px; background: transparent; color: #13201b; border: none; border-radius: 8px; cursor: pointer; transition: background 150ms ease; } .ds-btn-ghost:hover { background: #f1f4f2; } .ds-btn-ghost:focus-visible { outline: 2px solid #29a37a; outline-offset: 2px; }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Secondary actions — cancel, alternate paths.",
+      "html": "<button class=\"ds-btn-outline\">Batal</button>",
+      "css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; height: 40px; padding: 8px 16px; background: #fbfaf9; color: #13201b; font-family: Inter, system-ui, sans-serif; font-size: 14px; font-weight: 500; border: 1px solid #e3e8e6; border-radius: 8px; cursor: pointer; transition: background 150ms ease; } .ds-btn-outline:hover { background: #f1f4f2; } .ds-btn-outline:focus-visible { outline: 2px solid #29a37a; outline-offset: 2px; }"
+    },
+    {
+      "name": "Task Card",
+      "kind": "card",
+      "refersTo": "task-card",
+      "description": "Primary task unit in list and kanban views.",
+      "html": "<div class=\"ds-task-card\"><div class=\"ds-checkbox\"></div><div class=\"ds-task-body\"><div class=\"ds-task-title\">Review client brief</div><div class=\"ds-task-meta\"><span class=\"ds-category\"><span class=\"ds-dot\"></span>Design</span><span class=\"ds-due\">Jun 25 · 3:00 PM</span></div></div></div>",
+      "css": ".ds-task-card { display: flex; align-items: flex-start; gap: 14px; padding: 14px 16px; background: #ffffff; border: 1px solid rgba(227, 232, 230, 0.7); border-radius: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); cursor: pointer; transition: box-shadow 150ms ease, transform 150ms ease; } .ds-task-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); } .ds-task-card:active { transform: scale(0.98); } .ds-checkbox { width: 16px; height: 16px; border: 1px solid #e3e8e6; border-radius: 4px; margin-top: 2px; flex-shrink: 0; } .ds-task-title { font-family: Inter, system-ui, sans-serif; font-size: 14px; font-weight: 500; color: #13201b; line-height: 1.4; } .ds-task-meta { display: flex; gap: 12px; margin-top: 6px; font-size: 12px; color: #5a6b64; } .ds-category { display: flex; align-items: center; gap: 6px; } .ds-dot { width: 8px; height: 8px; border-radius: 50%; background: #29a37a; }"
+    },
+    {
+      "name": "App Header",
+      "kind": "nav",
+      "refersTo": "app-header",
+      "description": "Sticky top bar in the task app.",
+      "html": "<header class=\"ds-header\"><div class=\"ds-header-brand\"><span class=\"ds-logo\"></span><span class=\"ds-brand-name\">Wazheefa</span></div><nav class=\"ds-header-actions\"><button class=\"ds-header-btn\">+ Task</button></nav></header>",
+      "css": ".ds-header { display: flex; align-items: center; justify-content: space-between; height: 64px; padding: 0 16px; background: rgba(251, 250, 249, 0.8); backdrop-filter: blur(24px); border-bottom: 1px solid rgba(227, 232, 230, 0.6); } .ds-header-brand { display: flex; align-items: center; gap: 12px; } .ds-logo { width: 28px; height: 28px; border-radius: 8px; background: rgba(41, 163, 122, 0.1); } .ds-brand-name { font-family: Inter, system-ui, sans-serif; font-size: 24px; font-weight: 700; color: #13201b; letter-spacing: -0.02em; } .ds-header-btn { height: 36px; padding: 0 12px; background: transparent; border: none; border-radius: 8px; font-family: Inter, system-ui, sans-serif; font-size: 14px; font-weight: 500; color: #13201b; cursor: pointer; } .ds-header-btn:hover { background: #f1f4f2; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input-default",
+      "description": "Task title and form fields.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Apa yang perlu diselesaikan?\" />",
+      "css": ".ds-input { width: 100%; height: 40px; padding: 8px 12px; background: #fbfaf9; color: #13201b; font-family: Inter, system-ui, sans-serif; font-size: 14px; border: 1px solid #e3e8e6; border-radius: 12px; outline: none; transition: border-color 150ms ease, box-shadow 150ms ease; } .ds-input::placeholder { color: #5a6b64; } .ds-input:focus { border-color: #29a37a; box-shadow: 0 0 0 2px rgba(41, 163, 122, 0.2); }"
+    },
+    {
+      "name": "Priority Badge",
+      "kind": "chip",
+      "refersTo": "chip-priority",
+      "description": "Task priority indicator — high, medium, low.",
+      "html": "<span class=\"ds-chip ds-chip-high\">High</span>",
+      "css": ".ds-chip { display: inline-flex; align-items: center; padding: 2px 8px; font-family: Inter, system-ui, sans-serif; font-size: 11px; font-weight: 500; border-radius: 9999px; } .ds-chip-high { background: rgba(220, 40, 40, 0.1); color: #dc2828; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Focus Studio",
+    "overview": "Wazheefa's visual system is a calm, opinionated workspace for creators entering a focus session. It borrows Linear's fast, modern SaaS craft — crisp hierarchy, confident defaults, minimal chrome — but trades corporate coolness for warmth and editorial restraint on the landing surface. The app shell is utilitarian and quiet; the marketing layer may carry serif drama and atmospheric imagery, but the product register always wins inside /app.",
+    "keyCharacteristics": [
+      "Emerald accent on tinted cool-green neutrals",
+      "Dual register: editorial landing vs. tool-grade app",
+      "Tonal layering over heavy shadows",
+      "12px base radius — softly rounded, never pill-everything",
+      "Local-first calm: no gamification visuals"
+    ],
+    "rules": [
+      { "name": "The One Voice Rule", "body": "Focus Emerald appears on ≤10% of any app screen — CTAs, active focus, selection. Its rarity signals intent.", "section": "colors" },
+      { "name": "The No-Cream-Default Rule", "body": "Do not reach for warm sand/cream/paper body backgrounds as a shorthand for friendly. Carry warmth through typography, imagery, or a committed color strategy.", "section": "colors" },
+      { "name": "The Register Split Rule", "body": "Serif display is forbidden inside /app. App surfaces use Inter + Syne only.", "section": "typography" },
+      { "name": "The Kicker Restraint Rule", "body": "Uppercase tracked mono labels are a landing accent, not section scaffolding. One kicker per page.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "Surfaces are flat at rest. Shadows appear as a response to elevation or hover — never as default decoration.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do use semantic tokens (bg-card, text-muted-foreground, border-border) — never raw hex in components.",
+      "Do keep Focus Emerald for actions and focus states only.",
+      "Do respect prefers-reduced-motion.",
+      "Do use text-wrap: balance on landing h1–h3.",
+      "Do test muted text contrast on cream and card surfaces."
+    ],
+    "donts": [
+      "Don't use AI-default aesthetics: warm cream/sand body backgrounds, gradient text, decorative glassmorphism, identical icon-card grids, uppercase eyebrow kickers on every section.",
+      "Don't use generic SaaS patterns: hero metrics, purple gradients, startup-template card grids.",
+      "Don't apply border-left greater than 1px as a colored stripe on cards or alerts.",
+      "Don't use background-clip: text with gradients for headings.",
+      "Don't stack nested cards or default every list item into identical card containers.",
+      "Don't bring Cormorant serif display type into the /app task shell."
+    ]
+  }
+}

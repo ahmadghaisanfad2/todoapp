@@ -17,6 +17,7 @@ import { KanbanColumnComponent } from './KanbanColumn'
 import { KanbanCardOverlay } from './KanbanCard'
 import { ColumnForm } from './ColumnForm'
 import { KanbanHorizontalScrollbar } from './KanbanHorizontalScrollbar'
+import { EmptyState } from '@/components/common/EmptyState'
 import { useKanbanStore } from '@/store/kanbanStore'
 import { useTaskStore } from '@/store/taskStore'
 import { useWorkspaceStore } from '@/store/workspaceStore'
@@ -25,9 +26,10 @@ import type { Task } from '@/types'
 interface KanbanBoardProps {
   onEditTask: (task: Task) => void
   onAddTask: (columnId?: string) => void
+  onStartFocus?: () => void
 }
 
-export function KanbanBoard({ onEditTask, onAddTask }: KanbanBoardProps) {
+export function KanbanBoard({ onEditTask, onAddTask, onStartFocus }: KanbanBoardProps) {
   const columns = useKanbanStore((s) => s.columns)
   const addColumn = useKanbanStore((s) => s.addColumn)
   const updateColumn = useKanbanStore((s) => s.updateColumn)
@@ -140,6 +142,22 @@ export function KanbanBoard({ onEditTask, onAddTask }: KanbanBoardProps) {
   }
 
   const sortedColumns = [...columns].sort((a, b) => a.order - b.order)
+  const isBoardEmpty = tasks.length === 0
+
+  if (isBoardEmpty) {
+    return (
+      <EmptyState
+        message="Ready for a focus session?"
+        description="Add your first task to get started, or jump straight into a timed focus block."
+        primaryAction={{ label: 'Add first task', onClick: () => onAddTask() }}
+        secondaryAction={
+          onStartFocus
+            ? { label: 'Start focus timer', onClick: onStartFocus }
+            : undefined
+        }
+      />
+    )
+  }
 
   return (
     <DndContext

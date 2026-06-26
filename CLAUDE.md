@@ -129,6 +129,15 @@ See `AGENTS.md` for comprehensive coding guidelines. Key points:
 - Storage keys: `wazheefa-tasks`, `wazheefa-categories`, `wazheefa-settings`, `wazheefa-kanban`, `wazheefa-music`
 - Old keys (`todoflow-*`) are migrated automatically on first load via `src/lib/migrate.ts`
 
+## Design Context
+
+Strategic and visual design context lives in root-level Impeccable files. Read these before any UI work:
+
+- **`PRODUCT.md`** — Register: `product`. Users: creators/freelancers entering focus sessions. Personality: Calm · Refined · Focused. Anti-references: AI-default aesthetics, generic SaaS, gamification, enterprise heaviness.
+- **`DESIGN.md`** — Visual system (Stitch format). North star: "The Focus Studio". Emerald accent (`#29a37a`) on cool-tinted neutrals. Landing = editorial serif; `/app` = Inter utility. Key rules: One Voice (accent ≤10%), No-Cream-Default, Register Split (no serif in app).
+
+Run `/impeccable <command>` for design iteration (`critique`, `polish`, `live`, etc.).
+
 ## Code Review
 
 When reviewing PRs, check for:

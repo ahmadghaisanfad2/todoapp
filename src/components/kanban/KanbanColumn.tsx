@@ -85,7 +85,7 @@ export function KanbanColumnComponent({
         ) : (
           <>
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-semibold">{column.name}</h3>
+              <h2 className="text-sm font-semibold">{column.name}</h2>
               <span className="flex h-5 w-5 items-center justify-center rounded-full bg-muted text-[10px] font-medium text-muted-foreground">
                 {tasks.length}
               </span>
@@ -96,7 +96,16 @@ export function KanbanColumnComponent({
                 variant="ghost"
                 className={cn('h-7 w-7', column.crossTasks && 'text-primary bg-primary/10')}
                 onClick={() => onToggleCrossTasks(column.id)}
-                aria-label={`Toggle cross tasks for ${column.name}`}
+                title={
+                  column.crossTasks
+                    ? 'Strikethrough on — tasks in this column appear crossed out'
+                    : 'Strikethrough off — show tasks without crossing out'
+                }
+                aria-label={
+                  column.crossTasks
+                    ? `Disable strikethrough for ${column.name}`
+                    : `Enable strikethrough for ${column.name}`
+                }
               >
                 <Strikethrough className="h-3.5 w-3.5" />
               </Button>

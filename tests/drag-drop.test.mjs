@@ -5,10 +5,25 @@ export default async function dragDropTest({ page, test, assert, BASE_URL }) {
   await page.setViewportSize({ width: 1280, height: 800 })
   await page.goto(BASE_URL + '/app')
   await page.waitForLoadState('networkidle')
-  await page.waitForSelector('h1', { timeout: 10000 })
+  await page.waitForSelector('header', { timeout: 10000 })
+
+  async function ensureKanbanVisible() {
+    const hasColumns = (await page.locator('[data-kanban-column]').count()) > 0
+    if (hasColumns) return
+
+    const addFirst = page.getByRole('button', { name: 'Add first task' })
+    await addFirst.click()
+    const dialog = page.getByRole('dialog', { name: /Add task/i })
+    await dialog.waitFor({ state: 'visible', timeout: 5000 })
+    await dialog.locator('#task-title').fill('Board seed')
+    await dialog.locator('button[type="submit"]').click()
+    await dialog.waitFor({ state: 'hidden', timeout: 3000 })
+  }
+
+  await ensureKanbanVisible()
 
   async function createTask(title, columnHeading) {
-    const column = page.locator('[data-kanban-column]', { has: page.locator('h3', { hasText: columnHeading }) })
+    const column = page.locator('[data-kanban-column]', { has: page.locator('h2', { hasText: columnHeading }) })
     const addBtn = column.locator('button', { hasText: 'Add task' })
     await addBtn.click()
 
@@ -29,13 +44,13 @@ export default async function dragDropTest({ page, test, assert, BASE_URL }) {
   })
 
   test('task exists in Backlog column', async () => {
-    const backlogCol = page.locator('[data-kanban-column]', { has: page.locator('h3', { hasText: 'Backlog' }) })
+    const backlogCol = page.locator('[data-kanban-column]', { has: page.locator('h2', { hasText: 'Backlog' }) })
     const card = backlogCol.locator('[data-kanban-card]', { hasText: 'Drag me' })
     assert.ok(await card.isVisible(), 'Task should be in Backlog column')
   })
 
   test('kanban card exposes drag handle for touch and pointer input', async () => {
-    const backlogCol = page.locator('[data-kanban-column]', { has: page.locator('h3', { hasText: 'Backlog' }) })
+    const backlogCol = page.locator('[data-kanban-column]', { has: page.locator('h2', { hasText: 'Backlog' }) })
     const card = backlogCol.locator('[data-kanban-card]', { hasText: 'Drag me' })
     const handle = card.locator('[data-kanban-drag-handle]')
 
@@ -59,7 +74,7 @@ export default async function dragDropTest({ page, test, assert, BASE_URL }) {
     await dialog.locator('button[type="submit"]').click()
     await dialog.waitFor({ state: 'hidden', timeout: 3000 })
 
-    const doneCol = page.locator('[data-kanban-column]', { has: page.locator('h3', { hasText: 'Done' }) })
+    const doneCol = page.locator('[data-kanban-column]', { has: page.locator('h2', { hasText: 'Done' }) })
     const movedCard = doneCol.locator('[data-kanban-card]', { hasText: 'Drag me' })
     await movedCard.waitFor({ state: 'visible', timeout: 3000 })
     assert.ok(await movedCard.isVisible(), 'Task should now be in Done column')
@@ -69,6 +84,11 @@ export default async function dragDropTest({ page, test, assert, BASE_URL }) {
     const card = page.locator('[data-kanban-card]', { hasText: 'Drag me' })
     const deleteBtn = card.locator('button[aria-label^="Delete"]')
     await deleteBtn.click()
+
+    const dialog = page.getByRole('dialog', { name: /Delete task/i })
+    await dialog.waitFor({ state: 'visible', timeout: 3000 })
+    await dialog.getByRole('button', { name: 'Delete task' }).click()
+    await dialog.waitFor({ state: 'hidden', timeout: 3000 })
 
     await card.waitFor({ state: 'hidden', timeout: 3000 })
     assert.ok(true, 'Task deleted successfully')

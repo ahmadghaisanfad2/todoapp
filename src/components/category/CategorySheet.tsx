@@ -61,6 +61,7 @@ export function CategorySheet({ open, onOpenChange }: CategorySheetProps) {
               categories.map((category) => (
                 <div
                   key={category.id}
+                  data-category-row
                   className="flex items-center gap-3 rounded-xl border border-border/60 bg-card px-4 py-3 shadow-sm"
                 >
                   <span
@@ -72,7 +73,8 @@ export function CategorySheet({ open, onOpenChange }: CategorySheetProps) {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                      aria-label={`Edit ${category.name}`}
+                      className="h-9 w-9 text-muted-foreground hover:text-foreground"
                       onClick={() => handleEdit(category)}
                     >
                       <Pencil className="h-3.5 w-3.5" />
@@ -80,7 +82,8 @@ export function CategorySheet({ open, onOpenChange }: CategorySheetProps) {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-destructive/60 hover:text-destructive"
+                      aria-label={`Delete ${category.name}`}
+                      className="h-9 w-9 text-destructive/60 hover:text-destructive"
                       onClick={() => handleDelete(category.id)}
                     >
                       <Trash2 className="h-3.5 w-3.5" />

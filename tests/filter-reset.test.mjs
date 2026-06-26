@@ -16,7 +16,7 @@ export default async function kanbanBoardTests({ page, test, assert, BASE_URL })
   await page.waitForLoadState('networkidle')
 
   async function createTask(title, priority) {
-    await page.getByRole('button', { name: 'Add task' }).click()
+    await page.locator('header').getByRole('button', { name: 'Add task', exact: true }).click()
     const dialog = page.getByRole('dialog', { name: /Add task/i })
     await dialog.waitFor({ state: 'visible', timeout: 5000 })
     await dialog.locator('#task-title').fill(title)
@@ -35,13 +35,13 @@ export default async function kanbanBoardTests({ page, test, assert, BASE_URL })
     }
   })
 
-  test('new header tasks appear in To Do by default', async () => {
-    const todoColumn = page.locator('[data-kanban-column]').filter({
-      has: page.getByRole('heading', { name: 'To Do' }),
+  test('new header tasks appear in Backlog by default', async () => {
+    const backlogColumn = page.locator('[data-kanban-column]').filter({
+      has: page.getByRole('heading', { name: 'Backlog' }),
     })
 
-    assert.ok(await todoColumn.locator('text=Important meeting').isVisible(), 'High-priority task should appear in To Do')
-    assert.ok(await todoColumn.locator('text=Casual reading').isVisible(), 'Low-priority task should appear in To Do')
+    assert.ok(await backlogColumn.locator('text=Important meeting').isVisible(), 'High-priority task should appear in Backlog')
+    assert.ok(await backlogColumn.locator('text=Casual reading').isVisible(), 'Low-priority task should appear in Backlog')
   })
 
   test('priority badges render on task cards', async () => {
@@ -73,6 +73,6 @@ export default async function kanbanBoardTests({ page, test, assert, BASE_URL })
     })
     const firstActionLabel = await todoColumn.locator('[data-kanban-column-body] > *').first().getAttribute('aria-label')
 
-    assert.equal(firstActionLabel, 'Tambah tugas di To Do', 'To Do add button should stay first after tasks exist')
+    assert.equal(firstActionLabel, 'Add task in To Do', 'To Do add button should stay first after tasks exist')
   })
 }

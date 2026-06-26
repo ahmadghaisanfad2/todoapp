@@ -13,6 +13,25 @@ export default async function themeResponsiveTests({ page, test, assert, BASE_UR
   await page.reload()
   await page.waitForLoadState('networkidle')
 
+  async function mobileAddTaskFab() {
+    return page.locator('button.fixed.sm\\:hidden[aria-label="Add task"]')
+  }
+
+  async function ensureKanbanVisible() {
+    const hasColumns = (await page.locator('[data-kanban-column]').count()) > 0
+    if (hasColumns) return
+
+    const addFirst = page.getByRole('button', { name: 'Add first task' })
+    if (await addFirst.isVisible()) {
+      await addFirst.click()
+      const dialog = page.getByRole('dialog', { name: /Add task/i })
+      await dialog.waitFor({ state: 'visible', timeout: 5000 })
+      await dialog.locator('#task-title').fill('Mobile layout seed')
+      await dialog.locator('button[type="submit"]').click()
+      await dialog.waitFor({ state: 'hidden', timeout: 3000 })
+    }
+  }
+
   test('theme toggle cycles through system → light → dark', async () => {
     const themeBtn = page.locator('button[aria-label^="Switch theme"]')
 
@@ -51,25 +70,27 @@ export default async function themeResponsiveTests({ page, test, assert, BASE_UR
   test('app renders correctly at mobile width (375px)', async () => {
     await page.setViewportSize({ width: 375, height: 812 })
     await page.waitForTimeout(500)
+    await ensureKanbanVisible()
 
     // Core elements should still be visible
-    const title = page.locator('h1', { hasText: 'Wazheefa' })
-    assert.ok(await title.isVisible(), 'Title should be visible on mobile')
+    const backBtn = page.getByRole('button', { name: /Back to home/i })
+    assert.ok(await backBtn.isVisible(), 'App shell back control should be visible on mobile')
 
     const board = page.locator('[data-kanban-column]').filter({
       has: page.getByRole('heading', { name: 'To Do' }),
     })
     assert.ok(await board.isVisible(), 'Kanban board should be visible on mobile')
 
-    const fab = page.getByRole('button', { name: 'Tambah tugas', exact: true })
+    const fab = await mobileAddTaskFab()
     assert.ok(await fab.isVisible(), 'FAB should be visible on mobile')
   })
 
   test('FAB is visible and clickable on mobile', async () => {
     await page.setViewportSize({ width: 375, height: 812 })
     await page.waitForTimeout(300)
+    await ensureKanbanVisible()
 
-    const fab = page.getByRole('button', { name: 'Tambah tugas', exact: true })
+    const fab = await mobileAddTaskFab()
     const box = await fab.boundingBox()
     assert.ok(box, 'FAB should have a bounding box on mobile')
     assert.ok(box.x + box.width <= 375, 'FAB should be within mobile viewport')
@@ -87,8 +108,9 @@ export default async function themeResponsiveTests({ page, test, assert, BASE_UR
   test('task dialog fits within mobile viewport', async () => {
     await page.setViewportSize({ width: 375, height: 812 })
     await page.waitForTimeout(300)
+    await ensureKanbanVisible()
 
-    const fab = page.getByRole('button', { name: 'Tambah tugas', exact: true })
+    const fab = await mobileAddTaskFab()
     await fab.click()
     const dialog = page.locator('[role="dialog"]')
     await dialog.waitFor({ state: 'visible', timeout: 5000 })
@@ -104,6 +126,7 @@ export default async function themeResponsiveTests({ page, test, assert, BASE_UR
   test('Kanban columns remain reachable at mobile width', async () => {
     await page.setViewportSize({ width: 375, height: 812 })
     await page.waitForTimeout(300)
+    await ensureKanbanVisible()
 
     const column = page.locator('[data-kanban-column]').filter({
       has: page.getByRole('heading', { name: 'To Do' }),
@@ -116,6 +139,7 @@ export default async function themeResponsiveTests({ page, test, assert, BASE_UR
   test('custom top scrollbar enables reaching all columns at mobile width', async () => {
     await page.setViewportSize({ width: 375, height: 812 })
     await page.waitForTimeout(300)
+    await ensureKanbanVisible()
 
     const board = page.locator('[data-kanban-board]')
     assert.ok(await board.isVisible(), 'Kanban board container should be visible')
@@ -127,7 +151,7 @@ export default async function themeResponsiveTests({ page, test, assert, BASE_UR
     )
 
     const doneReachableBefore = await page.evaluate(() => {
-      const headings = [...document.querySelectorAll('[data-kanban-column] h3')]
+      const headings = [...document.querySelectorAll('[data-kanban-column] h2')]
       const done = headings.find((h) => h.textContent === 'Done')
       if (!done) return false
       const rect = done.getBoundingClientRect()
@@ -138,7 +162,7 @@ export default async function themeResponsiveTests({ page, test, assert, BASE_UR
     await page.evaluate(() => {
       const scrollEl = document.getElementById('kanban-board-scroll')
       const column = [...document.querySelectorAll('[data-kanban-column]')].find(
-        (c) => c.querySelector('h3')?.textContent === 'Done'
+        (c) => c.querySelector('h2')?.textContent === 'Done'
       )
       if (!scrollEl || !column) return
       scrollEl.scrollLeft = column.offsetLeft
@@ -146,7 +170,7 @@ export default async function themeResponsiveTests({ page, test, assert, BASE_UR
     await page.waitForTimeout(200)
 
     const doneReachableAfter = await page.evaluate(() => {
-      const headings = [...document.querySelectorAll('[data-kanban-column] h3')]
+      const headings = [...document.querySelectorAll('[data-kanban-column] h2')]
       const done = headings.find((h) => h.textContent === 'Done')
       if (!done) return false
       const rect = done.getBoundingClientRect()

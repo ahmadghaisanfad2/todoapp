@@ -4,9 +4,15 @@ import { useTimer } from '@/hooks/useTimer'
 import { TimerSetup } from './TimerSetup'
 import { TimerRunning } from './TimerRunning'
 import { TimerComplete } from './TimerComplete'
+import { useMusicStore } from '@/store/musicStore'
 import { cn } from '@/lib/utils'
+import { getMobileFabBottomStyle, getMobileFabRightStyle } from '@/lib/fabPosition'
 
-export function TimerWidget() {
+interface TimerWidgetProps {
+  openRequest?: number
+}
+
+export function TimerWidget({ openRequest = 0 }: TimerWidgetProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [showHint, setShowHint] = useState(() => {
     try { return !localStorage.getItem('wazheefa-timer-hint-seen') }
@@ -14,6 +20,8 @@ export function TimerWidget() {
   })
   const timer = useTimer()
   const widgetRef = useRef<HTMLDivElement>(null)
+  const hasMusicBar = useMusicStore((s) => s.currentTrack !== null)
+  const fabPosition = { ...getMobileFabBottomStyle(hasMusicBar), ...getMobileFabRightStyle() }
 
   useEffect(() => {
     if (!isExpanded) return
@@ -35,6 +43,15 @@ export function TimerWidget() {
     return () => clearTimeout(t)
   }, [showHint])
 
+  useEffect(() => {
+    if (openRequest === 0) return
+    queueMicrotask(() => {
+      setIsExpanded(true)
+      setShowHint(false)
+      try { localStorage.setItem('wazheefa-timer-hint-seen', 'true') } catch { /* ignore */ }
+    })
+  }, [openRequest])
+
   if (timer.state === 'complete') {
     return (
       <div aria-live="assertive" className="animate-card-in">
@@ -49,8 +66,7 @@ export function TimerWidget() {
 
   if (timer.state === 'running' || timer.state === 'paused') {
     return (
-      <div ref={widgetRef} className="fixed bottom-6 right-6 z-[60] animate-card-in"
-           style={{ bottom: 'max(1.5rem, env(safe-area-inset-bottom, 1.5rem))' }}>
+      <div ref={widgetRef} className="fixed z-[60] animate-card-in" style={fabPosition}>
         <div className="rounded-2xl border border-border bg-card shadow-2xl">
           <TimerRunning
             timeRemaining={timer.timeRemaining}
@@ -66,8 +82,7 @@ export function TimerWidget() {
   }
 
   return (
-    <div ref={widgetRef} className="fixed bottom-6 right-6 z-[60]"
-         style={{ bottom: 'max(1.5rem, env(safe-area-inset-bottom, 1.5rem))' }}>
+    <div ref={widgetRef} className="fixed z-[60]" style={fabPosition}>
       {isExpanded ? (
         <div className="rounded-2xl border border-border bg-card shadow-2xl animate-card-in">
           <TimerSetup onStart={(seconds) => {
@@ -79,7 +94,7 @@ export function TimerWidget() {
         <div className="relative">
           {showHint && (
             <div className="absolute bottom-full right-0 mb-3 px-3 py-2 rounded-lg bg-foreground text-background text-xs font-medium shadow-lg whitespace-nowrap animate-hero-fade-1">
-              Focus timer is here!
+              Start a focus session here
               <div className="absolute top-full right-4 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-foreground" />
             </div>
           )}

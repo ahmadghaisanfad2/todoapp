@@ -1,6 +1,9 @@
+import { useState } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { GripVertical, Calendar, Trash2 } from 'lucide-react'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { format, parseISO, isPast } from 'date-fns'
 import { useCoarsePointer } from '@/hooks/useCoarsePointer'
@@ -18,6 +21,7 @@ interface KanbanCardContentProps {
   task: Task
   crossTasks?: boolean
   onDelete?: (id: string) => void
+  onRequestDelete?: () => void
   showDelete?: boolean
 }
 
@@ -27,7 +31,7 @@ const priorityColors: Record<Priority, string> = {
   low: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400',
 }
 
-function KanbanCardContent({ task, crossTasks, onDelete, showDelete = true }: KanbanCardContentProps) {
+function KanbanCardContent({ task, crossTasks, onDelete, onRequestDelete, showDelete = true }: KanbanCardContentProps) {
   const isOverdue = task.dueDate && isPast(parseISO(task.dueDate)) && !task.completed
 
   return (
@@ -48,14 +52,18 @@ function KanbanCardContent({ task, crossTasks, onDelete, showDelete = true }: Ka
           )}
         </div>
       </div>
-      {showDelete && onDelete && (
+      {showDelete && (onDelete || onRequestDelete) && (
         <button
           type="button"
           aria-label={`Delete ${task.title}`}
           className="mt-0.5 text-muted-foreground opacity-100 transition-opacity hover:text-destructive sm:opacity-0 sm:group-hover:opacity-100 pointer-events-auto"
           onClick={(e) => {
             e.stopPropagation()
-            onDelete(task.id)
+            if (onRequestDelete) {
+              onRequestDelete()
+              return
+            }
+            onDelete?.(task.id)
           }}
           onPointerDown={(e) => e.stopPropagation()}
         >
@@ -67,6 +75,7 @@ function KanbanCardContent({ task, crossTasks, onDelete, showDelete = true }: Ka
 }
 
 export function KanbanCard({ task, activeTaskId, onEdit, onDelete, crossTasks }: KanbanCardProps) {
+  const [deleteOpen, setDeleteOpen] = useState(false)
   const dragFromWholeCard = useCoarsePointer()
   const {
     attributes,
@@ -135,7 +144,37 @@ export function KanbanCard({ task, activeTaskId, onEdit, onDelete, crossTasks }:
       >
         <GripVertical className="h-4 w-4" />
       </button>
-      <KanbanCardContent task={task} crossTasks={crossTasks} onDelete={onDelete} />
+      <KanbanCardContent
+        task={task}
+        crossTasks={crossTasks}
+        onDelete={onDelete}
+        onRequestDelete={() => setDeleteOpen(true)}
+      />
+      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <DialogContent className="sm:max-w-[380px] rounded-2xl">
+          <DialogHeader>
+            <DialogTitle>Delete task</DialogTitle>
+            <DialogDescription>
+              Delete &ldquo;{task.title}&rdquo;? You can undo from the toast or with your keyboard.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteOpen(false)} className="rounded-xl h-10">
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                onDelete(task.id)
+                setDeleteOpen(false)
+              }}
+              className="rounded-xl h-10"
+            >
+              Delete task
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -11,12 +11,16 @@ export default async function taskCrudTests({ page, test, assert, BASE_URL }) {
     localStorage.removeItem('wazheefa-settings')
     localStorage.removeItem('wazheefa-categories')
     localStorage.removeItem('wazheefa-kanban')
+    localStorage.removeItem('wazheefa-workspaces')
   })
   await page.reload()
   await page.waitForLoadState('networkidle')
 
+  const headerAddTask = () =>
+    page.locator('header').getByRole('button', { name: 'Add task', exact: true })
+
   async function addTaskFromHeader(title, priority = 'Low') {
-    await page.getByRole('button', { name: 'Add task' }).click()
+    await headerAddTask().click()
     const dialog = page.getByRole('dialog', { name: /Add task/i })
     await dialog.waitFor({ state: 'visible', timeout: 5000 })
     await dialog.locator('#task-title').fill(title)
@@ -29,7 +33,7 @@ export default async function taskCrudTests({ page, test, assert, BASE_URL }) {
     const column = page.locator('[data-kanban-column]').filter({
       has: page.getByRole('heading', { name: columnName }),
     })
-    await column.getByRole('button', { name: `Tambah tugas di ${columnName}` }).click()
+    await column.getByRole('button', { name: `Add task in ${columnName}` }).click()
 
     const dialog = page.getByRole('dialog', { name: /Add task/i })
     await dialog.waitFor({ state: 'visible', timeout: 5000 })
@@ -38,15 +42,10 @@ export default async function taskCrudTests({ page, test, assert, BASE_URL }) {
     await dialog.waitFor({ state: 'hidden', timeout: 3000 })
   }
 
-  test('empty Kanban columns render add buttons before task cards', async () => {
-    const columns = page.locator('[data-kanban-column]')
-    assert.equal(await columns.count(), 4, 'Default Kanban should render four columns')
-
-    for (const columnName of ['Backlog', 'To Do', 'In Progress', 'Done']) {
-      const column = columns.filter({ has: page.getByRole('heading', { name: columnName }) })
-      const firstActionLabel = await column.locator('[data-kanban-column-body] > *').first().getAttribute('aria-label')
-      assert.equal(firstActionLabel, `Tambah tugas di ${columnName}`, `${columnName} add button should be first in the column body`)
-    }
+  test('empty board shows focus session invitation', async () => {
+    const emptyHeading = page.getByText('Ready for a focus session?')
+    assert.ok(await emptyHeading.isVisible(), 'Empty board should invite a focus session')
+    assert.equal(await page.locator('[data-kanban-column]').count(), 0, 'Kanban columns should be hidden when board is empty')
   })
 
   test('can create a task from the header add button', async () => {
@@ -54,6 +53,17 @@ export default async function taskCrudTests({ page, test, assert, BASE_URL }) {
 
     const task = page.locator('text=Buy groceries')
     assert.ok(await task.isVisible(), 'Created task should appear in the board')
+  })
+
+  test('Kanban columns render add buttons before task cards', async () => {
+    const columns = page.locator('[data-kanban-column]')
+    assert.equal(await columns.count(), 4, 'Kanban should render four columns once tasks exist')
+
+    for (const columnName of ['Backlog', 'To Do', 'In Progress', 'Done']) {
+      const column = columns.filter({ has: page.getByRole('heading', { name: columnName }) })
+      const firstActionLabel = await column.locator('[data-kanban-column-body] > *').first().getAttribute('aria-label')
+      assert.equal(firstActionLabel, `Add task in ${columnName}`, `${columnName} add button should be first in the column body`)
+    }
   })
 
   test('can create a task in a specific column from the first column action', async () => {
@@ -66,7 +76,7 @@ export default async function taskCrudTests({ page, test, assert, BASE_URL }) {
   })
 
   test('task dialog is wider than baseline', async () => {
-    await page.getByRole('button', { name: 'Add task' }).click()
+    await headerAddTask().click()
     const dialog = page.getByRole('dialog', { name: /Add task/i })
     await dialog.waitFor({ state: 'visible', timeout: 5000 })
 
@@ -110,12 +120,17 @@ export default async function taskCrudTests({ page, test, assert, BASE_URL }) {
     const card = page.locator('[data-kanban-card]').filter({ hasText: 'Plan release' })
     await card.getByRole('button', { name: 'Delete Plan release' }).click()
 
+    const dialog = page.getByRole('dialog', { name: /Delete task/i })
+    await dialog.waitFor({ state: 'visible', timeout: 3000 })
+    await dialog.getByRole('button', { name: 'Delete task' }).click()
+    await dialog.waitFor({ state: 'hidden', timeout: 3000 })
+
     await page.waitForTimeout(300)
     assert.equal(await page.locator('text=Plan release').count(), 0, 'Deleted task should no longer appear')
   })
 
   test('priority buttons have large touch targets', async () => {
-    await page.getByRole('button', { name: 'Add task' }).click()
+    await headerAddTask().click()
     const dialog = page.getByRole('dialog', { name: /Add task/i })
     await dialog.waitFor({ state: 'visible', timeout: 5000 })
 

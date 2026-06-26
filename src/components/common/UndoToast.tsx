@@ -10,6 +10,11 @@ interface ToastDisplay {
   description: string
 }
 
+function undoShortcutLabel(): string {
+  if (typeof navigator === 'undefined') return 'Ctrl+Z'
+  return /Mac|iPhone|iPad|iPod/i.test(navigator.platform) ? '⌘Z' : 'Ctrl+Z'
+}
+
 export function UndoToast() {
   const stack = useUndoStore((s) => s.stack)
   const lastUndone = useUndoStore((s) => s.lastUndone)
@@ -23,6 +28,7 @@ export function UndoToast() {
 
   const [display, setDisplay] = useState<ToastDisplay | null>(null)
   const [isExiting, setIsExiting] = useState(false)
+  const shortcut = undoShortcutLabel()
 
   useEffect(() => {
     if (!shouldShow) return
@@ -82,6 +88,7 @@ export function UndoToast() {
           <>
             <span className="text-sm text-foreground">
               {display.description}
+              <span className="text-muted-foreground"> — press Undo or {shortcut}</span>
             </span>
             <button
               onClick={popUndo}
@@ -89,9 +96,6 @@ export function UndoToast() {
             >
               Undo
             </button>
-            <span className="text-xs text-muted-foreground hidden sm:inline">
-              ⌘Z
-            </span>
           </>
         )}
       </div>
