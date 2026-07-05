@@ -64,6 +64,10 @@
     --cream: 155 8% 98%;
     --cream-foreground: 155 25% 10%;
     --radius: 0.75rem;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
   }
 
   .dark {
@@ -348,6 +352,23 @@
 }
 
 @layer utilities {
+  .pt-safe-top {
+    padding-top: var(--safe-top);
+  }
+
+  .pt-nav-safe {
+    padding-top: calc(3.5rem + var(--safe-top) + 1rem);
+  }
+
+  .pb-safe {
+    padding-bottom: max(1.5rem, calc(var(--safe-bottom) + 1rem));
+  }
+
+  .px-safe {
+    padding-left: max(1.5rem, var(--safe-left));
+    padding-right: max(1.5rem, var(--safe-right));
+  }
+
   .animate-lp-fade-up {
     animation: lp-fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
   }

@@ -7,8 +7,8 @@ interface LandingNavProps {
 
 export function LandingNav({ onNavigateApp }: LandingNavProps) {
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/90 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80 dark:border-border/40 dark:bg-background/70 dark:supports-[backdrop-filter]:bg-background/50">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
+    <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/90 pt-safe-top backdrop-blur-xl supports-[backdrop-filter]:bg-background/80 dark:border-border/40 dark:bg-background/70 dark:supports-[backdrop-filter]:bg-background/50">
+      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-safe lg:px-6">
         <div className="flex items-center gap-2.5">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
             <Logo className="h-5 w-5" />
