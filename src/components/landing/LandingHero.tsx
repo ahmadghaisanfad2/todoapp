@@ -9,7 +9,7 @@ interface LandingHeroProps {
 
 export function LandingHero({ onNavigateApp }: LandingHeroProps) {
   return (
-    <section className="relative isolate h-[100dvh] overflow-hidden bg-background text-foreground">
+    <section className="relative isolate min-h-[100dvh] overflow-x-hidden bg-background text-foreground lg:h-[100dvh] lg:overflow-hidden">
       {/* Background atmosphere */}
       <div className="absolute inset-0 -z-10">
         <img
@@ -34,8 +34,8 @@ export function LandingHero({ onNavigateApp }: LandingHeroProps) {
       {/* Grain texture */}
       <div className="grain-overlay absolute inset-0 -z-10 pointer-events-none" />
 
-      <div className="relative z-10 mx-auto flex h-[100dvh] max-w-6xl items-center px-6 pt-14 pb-8">
-        <div className="grid w-full items-center gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-10">
+      <div className="relative z-10 mx-auto flex min-h-[100dvh] max-w-6xl items-start px-safe pt-nav-safe pb-safe lg:items-center lg:px-6 lg:py-8">
+        <div className="grid w-full items-center gap-6 py-4 sm:gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-10 lg:py-0">
           {/* Left — Copy */}
           <div className="flex flex-col gap-5">
             <div className="animate-hero-fade-1">
@@ -48,10 +48,10 @@ export function LandingHero({ onNavigateApp }: LandingHeroProps) {
             </div>
 
             <div className="animate-hero-fade-2">
-              <h1 className="font-serif max-w-[18ch] text-[2.25rem] leading-[1.05] tracking-tight text-foreground sm:text-[2.75rem] md:text-5xl xl:text-[4rem]" style={{ fontWeight: 700 }}>
+              <h1 className="font-serif max-w-[18ch] text-[1.875rem] leading-[1.08] tracking-tight text-foreground sm:text-[2.75rem] sm:leading-[1.05] md:text-5xl xl:text-[4rem]" style={{ fontWeight: 700 }}>
                 <span className="text-[hsl(158_62%_28%)] italic dark:text-primary" style={{ fontWeight: 600 }}>Fokus</span> pada yang penting,
               </h1>
-              <p className="font-grotesk mt-1.5 max-w-[18ch] text-[2rem] leading-[1.1] tracking-[-0.02em] text-foreground/90 dark:text-muted-foreground sm:text-[2.25rem] md:text-[2.75rem] xl:text-[3.5rem]" style={{ fontWeight: 300 }}>
+              <p className="font-grotesk mt-1.5 max-w-[18ch] text-[1.625rem] leading-[1.12] tracking-[-0.02em] text-foreground/90 dark:text-muted-foreground sm:text-[2.25rem] sm:leading-[1.1] md:text-[2.75rem] xl:text-[3.5rem]" style={{ fontWeight: 300 }}>
                 selesaikan dengan tenang.
               </p>
               <div className="mt-3 h-px w-16 bg-gradient-to-r from-[hsl(158_62%_28%)]/70 to-transparent dark:from-primary/60" />
@@ -77,8 +77,8 @@ export function LandingHero({ onNavigateApp }: LandingHeroProps) {
           </div>
 
           {/* Right — Mock card */}
-          <div className="animate-hero-fade-3 lg:justify-self-end">
-            <div className="relative mx-auto max-w-lg rounded-2xl border border-border/60 bg-card/95 p-4 shadow-2xl shadow-primary/5 backdrop-blur-xl dark:bg-card/80">
+          <div className="animate-hero-fade-3 w-full lg:justify-self-end">
+            <div className="relative mx-auto w-full max-w-lg rounded-2xl border border-border/60 bg-card/95 p-3 shadow-2xl shadow-primary/5 backdrop-blur-xl sm:p-4 dark:bg-card/80">
               {/* Top accent line */}
               <div className="absolute inset-x-8 -top-px h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
 
@@ -99,7 +99,7 @@ export function LandingHero({ onNavigateApp }: LandingHeroProps) {
                 ].map((t, i) => (
                   <div
                     key={i}
-                    className={`flex items-center gap-3 rounded-xl border border-border/50 px-3.5 py-3 transition-colors ${t.done ? 'opacity-70 dark:opacity-50' : ''}`}
+                    className={`flex items-center gap-2.5 rounded-xl border border-border/50 px-3 py-2.5 transition-colors sm:gap-3 sm:px-3.5 sm:py-3 ${t.done ? 'opacity-70 dark:opacity-50' : ''}`}
                   >
                     <div className={`h-4 w-4 rounded border-2 shrink-0 flex items-center justify-center ${t.done ? 'bg-primary border-primary' : 'border-border'}`}>
                       {t.done && (

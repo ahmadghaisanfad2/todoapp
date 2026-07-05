@@ -19,9 +19,9 @@ export function LandingPage({ onNavigateApp }: LandingPageProps) {
   }, [isEntering, onNavigateApp])
 
   return (
-    <div className="h-[100dvh] overflow-hidden bg-background text-foreground">
+    <div className="min-h-[100dvh] bg-background text-foreground">
       {isEntering && (
-        <div className="fixed inset-0 z-[60] flex animate-lp-entering flex-col items-center justify-center gap-5 bg-background/90 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[60] flex animate-lp-entering flex-col items-center justify-center gap-5 bg-background/90 px-safe pb-safe pt-safe-top backdrop-blur-sm">
           <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
             <Logo className="h-8 w-8 animate-lp-spin" />
           </div>
