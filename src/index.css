@@ -499,14 +499,11 @@
 }
 
 .kanban-scroll-y {
-  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
 }
 
 .kanban-drag-handle {
-  touch-action: none;
-}
-
-[data-kanban-card-touch-drag='true'] {
   touch-action: none;
 }
 

@@ -178,4 +178,47 @@ export default async function themeResponsiveTests({ page, test, assert, BASE_UR
     })
     assert.ok(doneReachableAfter, 'Done column should be reachable after horizontal scroll')
   })
+
+  test('horizontal board scroll works from card surface on mobile', async () => {
+    await page.setViewportSize({ width: 375, height: 812 })
+    await page.waitForTimeout(300)
+    await ensureKanbanVisible()
+
+    await page.evaluate(() => {
+      const scroll = document.getElementById('kanban-board-scroll')
+      if (scroll) scroll.scrollLeft = 0
+    })
+
+    const canScroll = await page.evaluate(() => {
+      const scroll = document.getElementById('kanban-board-scroll')
+      return Boolean(scroll && scroll.scrollWidth > scroll.clientWidth)
+    })
+    assert.ok(canScroll, 'Kanban board should overflow horizontally on mobile')
+
+    const before = await page.evaluate(() => document.getElementById('kanban-board-scroll')?.scrollLeft ?? 0)
+
+    const card = page.locator('[data-kanban-card]').first()
+    await card.waitFor({ state: 'visible', timeout: 5000 })
+    const box = await card.boundingBox()
+    assert.ok(box, 'Card should have a bounding box')
+
+    await page.evaluate(({ x, y }) => {
+      const main = document.querySelector('main')
+      const card = document.querySelector('[data-kanban-card]')
+      if (!main || !card) return
+
+      const startX = x
+      const startY = y
+      const touchStart = new Touch({ identifier: 1, target: card, clientX: startX, clientY: startY })
+      const touchMove = new Touch({ identifier: 1, target: card, clientX: startX - 120, clientY: startY })
+      main.dispatchEvent(new TouchEvent('touchstart', { touches: [touchStart], targetTouches: [touchStart], changedTouches: [touchStart], bubbles: true, cancelable: true }))
+      main.dispatchEvent(new TouchEvent('touchmove', { touches: [touchMove], targetTouches: [touchMove], changedTouches: [touchMove], bubbles: true, cancelable: true }))
+      main.dispatchEvent(new TouchEvent('touchend', { touches: [], targetTouches: [], changedTouches: [touchMove], bubbles: true, cancelable: true }))
+    }, { x: box.x + box.width / 2, y: box.y + box.height / 2 })
+
+    await page.waitForTimeout(200)
+
+    const after = await page.evaluate(() => document.getElementById('kanban-board-scroll')?.scrollLeft ?? 0)
+    assert.ok(after > before, `Board should scroll horizontally after swiping on a card (before=${before}, after=${after})`)
+  })
 }

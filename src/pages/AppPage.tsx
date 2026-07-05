@@ -14,6 +14,7 @@ import { useMusicStore } from '@/store/musicStore'
 import { ensureDefaultWorkspace, useWorkspaceStore } from '@/store/workspaceStore'
 import { useTaskStore } from '@/store/taskStore'
 import { getMobileFabBottomStyle, getMobileFabLeftStyle } from '@/lib/fabPosition'
+import { useTouchHorizontalScroll } from '@/hooks/useTouchHorizontalScroll'
 import type { Task } from '@/types'
 
 interface AppPageProps {
@@ -28,6 +29,7 @@ export function AppPage({ onNavigateHome }: AppPageProps) {
   const [showWelcomeBadge, setShowWelcomeBadge] = useState(false)
   const [focusTimerRequest, setFocusTimerRequest] = useState(0)
   const hasShownBadge = useRef(false)
+  const mainRef = useRef<HTMLElement>(null)
 
   const isSearchOpen = useMusicStore((s) => s.isSearchOpen)
   const toggleSearch = useMusicStore((s) => s.toggleSearch)
@@ -51,6 +53,8 @@ export function AppPage({ onNavigateHome }: AppPageProps) {
       }, 1200)
     })
   }, [])
+
+  useTouchHorizontalScroll(mainRef, hasTasks ? 'kanban-board-scroll' : null, { enabled: hasTasks })
 
   const handleEditTask = (task: Task) => {
     setEditingTask(task)
@@ -88,7 +92,7 @@ export function AppPage({ onNavigateHome }: AppPageProps) {
       )}
 
       <Layout>
-        <main className="pt-6">
+        <main ref={mainRef} className="pt-6">
           <h1 className="sr-only">Tasks</h1>
           <KanbanBoard
             onEditTask={handleEditTask}

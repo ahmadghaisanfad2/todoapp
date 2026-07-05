@@ -46,7 +46,9 @@ export function KanbanBoard({ onEditTask, onAddTask, onStartFocus }: KanbanBoard
   )
 
   const [activeTask, setActiveTask] = useState<Task | null>(null)
-  const scrollRef = useRef<HTMLDivElement>(null)
+  const scrollElRef = useRef<HTMLDivElement | null>(null)
+  const boardRef = useRef<HTMLDivElement>(null)
+  const isDraggingRef = useRef(false)
 
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
@@ -82,11 +84,13 @@ export function KanbanBoard({ onEditTask, onAddTask, onStartFocus }: KanbanBoard
   )
 
   const handleDragStart = (event: DragStartEvent) => {
+    isDraggingRef.current = true
     const task = tasks.find((t) => t.id === event.active.id)
     if (task) setActiveTask(task)
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
+    isDraggingRef.current = false
     const { active, over } = event
     setActiveTask(null)
 
@@ -166,13 +170,17 @@ export function KanbanBoard({ onEditTask, onAddTask, onStartFocus }: KanbanBoard
       autoScroll={{ threshold: { x: 0.12, y: 0.2 }, acceleration: 12 }}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
-      onDragCancel={() => setActiveTask(null)}
+      onDragCancel={() => { isDraggingRef.current = false; setActiveTask(null) }}
     >
-      <div data-kanban-board className="w-full min-w-0">
-        <KanbanHorizontalScrollbar scrollRef={scrollRef} />
+      <div
+        ref={boardRef}
+        data-kanban-board
+        className="w-full min-w-0 max-sm:-mx-4 max-sm:w-[calc(100%+2rem)] max-sm:px-4"
+      >
+        <KanbanHorizontalScrollbar scrollRef={scrollElRef} />
         <div
           id="kanban-board-scroll"
-          ref={scrollRef}
+          ref={scrollElRef}
           className="kanban-scroll-x kanban-scroll-x-content flex items-start gap-4 overflow-x-auto pb-4"
         >
           {sortedColumns.map((column) => (
