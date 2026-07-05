@@ -47,6 +47,8 @@ export function KanbanBoard({ onEditTask, onAddTask, onStartFocus }: KanbanBoard
 
   const [activeTask, setActiveTask] = useState<Task | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
+  const isDraggingRef = useRef(false)
+  const cardScrollRelay = useRef<{ pointerId: number; startX: number; startScrollLeft: number } | null>(null)
 
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
@@ -82,11 +84,14 @@ export function KanbanBoard({ onEditTask, onAddTask, onStartFocus }: KanbanBoard
   )
 
   const handleDragStart = (event: DragStartEvent) => {
+    isDraggingRef.current = true
+    cardScrollRelay.current = null
     const task = tasks.find((t) => t.id === event.active.id)
     if (task) setActiveTask(task)
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
+    isDraggingRef.current = false
     const { active, over } = event
     setActiveTask(null)
 
@@ -166,7 +171,7 @@ export function KanbanBoard({ onEditTask, onAddTask, onStartFocus }: KanbanBoard
       autoScroll={{ threshold: { x: 0.12, y: 0.2 }, acceleration: 12 }}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
-      onDragCancel={() => setActiveTask(null)}
+      onDragCancel={() => { isDraggingRef.current = false; setActiveTask(null) }}
     >
       <div data-kanban-board className="w-full min-w-0">
         <KanbanHorizontalScrollbar scrollRef={scrollRef} />
@@ -174,6 +179,29 @@ export function KanbanBoard({ onEditTask, onAddTask, onStartFocus }: KanbanBoard
           id="kanban-board-scroll"
           ref={scrollRef}
           className="kanban-scroll-x kanban-scroll-x-content flex items-start gap-4 overflow-x-auto pb-4"
+          onPointerDown={(e) => {
+            if (!(e.target as HTMLElement).closest('[data-kanban-card]')) return
+            if (!scrollRef.current) return
+            cardScrollRelay.current = {
+              pointerId: e.pointerId,
+              startX: e.clientX,
+              startScrollLeft: scrollRef.current.scrollLeft,
+            }
+          }}
+          onPointerMove={(e) => {
+            if (!cardScrollRelay.current || isDraggingRef.current) return
+            if (cardScrollRelay.current.pointerId !== e.pointerId) return
+            const dx = e.clientX - cardScrollRelay.current.startX
+            if (Math.abs(dx) > 12 && scrollRef.current) {
+              scrollRef.current.scrollLeft = cardScrollRelay.current.startScrollLeft - dx
+            }
+          }}
+          onPointerUp={(e) => {
+            if (cardScrollRelay.current?.pointerId === e.pointerId) cardScrollRelay.current = null
+          }}
+          onPointerCancel={(e) => {
+            if (cardScrollRelay.current?.pointerId === e.pointerId) cardScrollRelay.current = null
+          }}
         >
           {sortedColumns.map((column) => (
             <KanbanColumnComponent
