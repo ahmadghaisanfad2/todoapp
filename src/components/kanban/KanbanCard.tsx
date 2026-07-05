@@ -6,7 +6,6 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { format, parseISO, isPast } from 'date-fns'
-import { useCoarsePointer } from '@/hooks/useCoarsePointer'
 import type { Task, Priority } from '@/types'
 
 interface KanbanCardProps {
@@ -76,7 +75,7 @@ function KanbanCardContent({ task, crossTasks, onDelete, onRequestDelete, showDe
 
 export function KanbanCard({ task, activeTaskId, onEdit, onDelete, crossTasks }: KanbanCardProps) {
   const [deleteOpen, setDeleteOpen] = useState(false)
-  const dragFromWholeCard = useCoarsePointer()
+  const dragFromWholeCard = false
   const {
     attributes,
     listeners,
