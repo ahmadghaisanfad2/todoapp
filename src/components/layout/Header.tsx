@@ -1,6 +1,7 @@
 import { ArrowLeft, Sun, Moon, Monitor, Tags, Plus, Music } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { WorkspaceSwitcher } from '@/components/workspace/WorkspaceSwitcher'
+import { AuthButton } from '@/components/auth/AuthButton'
 import { useTheme } from '@/hooks/useTheme'
 import { cn } from '@/lib/utils'
 
@@ -79,6 +80,7 @@ export function Header({ onNavigateHome, onCategoryOpen, onAddTask, onMusicOpen 
             <ThemeIcon className="h-4 w-4" />
             <span className="hidden text-xs sm:inline">{themeLabel}</span>
           </Button>
+          <AuthButton />
         </div>
       </div>
     </header>

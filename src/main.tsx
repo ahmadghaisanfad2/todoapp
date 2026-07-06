@@ -7,6 +7,7 @@ import { AppPage } from '@/pages/AppPage'
 import { LandingPage } from '@/pages/LandingPage'
 import { useUndoKeyboard } from '@/hooks/useUndoKeyboard'
 import { UndoToast } from '@/components/common/UndoToast'
+import { SyncProvider } from '@/components/sync/SyncProvider'
 
 runMigration()
 migrateTaskStatus()
@@ -30,10 +31,10 @@ export function Router() {
 
   if (path === '/app') {
     return (
-      <>
+      <SyncProvider>
         <AppPage onNavigateHome={() => navigate('/')} />
         <UndoToast />
-      </>
+      </SyncProvider>
     )
   }
 

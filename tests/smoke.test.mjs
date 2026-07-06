@@ -35,6 +35,12 @@ export default async function smokeTest({ page, test, assert, BASE_URL }) {
     assert.ok(await addTaskBtn.isVisible(), 'Add task button should be visible in header')
   })
 
+  test('sign in control is visible for anonymous users', async () => {
+    const signInBtn = page.getByRole('button', { name: /Sign in/i })
+    await signInBtn.waitFor({ state: 'visible', timeout: 5000 })
+    assert.ok(await signInBtn.isVisible(), 'Sign in button should be visible when not authenticated')
+  })
+
   test('clicking Add task opens task dialog', async () => {
     const addTaskBtn = page.getByRole('button', { name: 'Add task', exact: true })
     await addTaskBtn.click()
@@ -42,7 +48,6 @@ export default async function smokeTest({ page, test, assert, BASE_URL }) {
     await dialog.waitFor({ state: 'visible', timeout: 5000 })
     assert.ok(await dialog.isVisible(), 'Task dialog should open after FAB click')
 
-    // Close dialog
     const cancelBtn = dialog.locator('button', { hasText: 'Cancel' })
     if (await cancelBtn.isVisible()) {
       await cancelBtn.click()

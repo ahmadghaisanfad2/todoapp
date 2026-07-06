@@ -1,11 +1,19 @@
 import { Button } from '@/components/ui/button'
 import { Logo } from '@/components/common/Logo'
+import { signIn } from '@/lib/auth-client'
 
 interface LandingNavProps {
   onNavigateApp: () => void
 }
 
 export function LandingNav({ onNavigateApp }: LandingNavProps) {
+  const handleSignIn = () => {
+    void signIn.social({
+      provider: 'google',
+      callbackURL: `${window.location.origin}/app`,
+    })
+  }
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/90 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80 dark:border-border/40 dark:bg-background/70 dark:supports-[backdrop-filter]:bg-background/50">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
@@ -16,13 +24,23 @@ export function LandingNav({ onNavigateApp }: LandingNavProps) {
           <span className="font-brand text-lg tracking-tight text-foreground" style={{ fontWeight: 700 }}>Wazheefa</span>
         </div>
 
-        <Button
-          onClick={onNavigateApp}
-          size="sm"
-          className="rounded-lg bg-primary px-4 text-xs font-semibold font-mono text-primary-foreground shadow-sm transition-all hover:shadow-md hover:shadow-primary/20"
-        >
-          Mulai Sekarang
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleSignIn}
+            className="text-xs font-medium"
+          >
+            Sign in
+          </Button>
+          <Button
+            onClick={onNavigateApp}
+            size="sm"
+            className="rounded-lg bg-primary px-4 text-xs font-semibold font-mono text-primary-foreground shadow-sm transition-all hover:shadow-md hover:shadow-primary/20"
+          >
+            Mulai Sekarang
+          </Button>
+        </div>
       </div>
     </header>
   )
