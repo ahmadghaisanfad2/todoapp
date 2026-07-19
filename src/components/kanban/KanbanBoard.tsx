@@ -48,6 +48,12 @@ export function KanbanBoard({ onEditTask, onAddTask, onStartFocus }: KanbanBoard
 
   const [activeTask, setActiveTask] = useState<Task | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
+  const [scrollEl, setScrollEl] = useState<HTMLDivElement | null>(null)
+
+  const setScrollNode = useCallback((node: HTMLDivElement | null) => {
+    scrollRef.current = node
+    setScrollEl(node)
+  }, [])
 
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
@@ -58,7 +64,7 @@ export function KanbanBoard({ onEditTask, onAddTask, onStartFocus }: KanbanBoard
   )
 
   // Custom axis-locked panning — native overflow alone loses to nested pan-y / touch-action:none.
-  useHorizontalTouchScroll(scrollRef, activeTask === null)
+  useHorizontalTouchScroll(scrollEl, activeTask === null)
 
   const getTasksByColumn = useCallback(
     (columnId: string) =>
@@ -178,7 +184,7 @@ export function KanbanBoard({ onEditTask, onAddTask, onStartFocus }: KanbanBoard
         <KanbanHorizontalScrollbar scrollRef={scrollRef} />
         <div
           id="kanban-board-scroll"
-          ref={scrollRef}
+          ref={setScrollNode}
           className="kanban-scroll-x kanban-scroll-x-content -mx-1 flex snap-x snap-proximity items-start gap-3 overflow-x-auto overscroll-x-contain px-1 pb-4 sm:gap-4"
         >
           {sortedColumns.map((column) => (

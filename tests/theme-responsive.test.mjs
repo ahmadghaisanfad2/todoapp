@@ -213,10 +213,18 @@ export default async function themeResponsiveTests({ page, test, assert, BASE_UR
       const el = document.getElementById('kanban-board-scroll')
       if (!el) return { ok: false, before: 0, after: 0, reason: 'missing scroller' }
 
-      const target = el.querySelector('[data-kanban-column-body]') ?? el
+      el.scrollLeft = 0
+
+      // Prefer a task card (not a button) so the axis-lock handler tracks the gesture.
+      // Fall back to lower column body — the top "Add task" button is skipped by design.
+      const card = el.querySelector('[data-kanban-card]')
+      const columnBody = el.querySelector('[data-kanban-column-body]')
+      const target = card ?? columnBody ?? el
       const rect = target.getBoundingClientRect()
-      const startX = rect.left + rect.width * 0.8
-      const startY = rect.top + Math.min(rect.height * 0.4, 120)
+      const startX = rect.left + Math.min(rect.width * 0.75, rect.width - 8)
+      const startY = card
+        ? rect.top + rect.height / 2
+        : rect.top + Math.min(Math.max(rect.height * 0.65, 90), rect.height - 12)
       const before = el.scrollLeft
 
       const createTouch = (clientX, clientY) =>
@@ -233,7 +241,8 @@ export default async function themeResponsiveTests({ page, test, assert, BASE_UR
 
       const fire = (type, clientX, clientY) => {
         const touch = createTouch(clientX, clientY)
-        target.dispatchEvent(
+        // Dispatch on the board scroller so capture listeners always see the gesture.
+        el.dispatchEvent(
           new TouchEvent(type, {
             bubbles: true,
             cancelable: true,
@@ -251,13 +260,17 @@ export default async function themeResponsiveTests({ page, test, assert, BASE_UR
       fire('touchmove', startX - 220, startY)
       fire('touchend', startX - 220, startY)
 
-      return { ok: true, before, after: el.scrollLeft }
+      return { ok: true, before, after: el.scrollLeft, max: el.scrollWidth - el.clientWidth }
     })
 
     assert.ok(scrolled.ok, 'Touch pan simulation should run against the board scroller')
     assert.ok(
+      scrolled.max > 0,
+      'Board should overflow horizontally at mobile width'
+    )
+    assert.ok(
       scrolled.after > scrolled.before,
-      `Horizontal touch pan should increase scrollLeft (before=${scrolled.before}, after=${scrolled.after})`
+      `Horizontal touch pan should increase scrollLeft (before=${scrolled.before}, after=${scrolled.after}, max=${scrolled.max})`
     )
 
     const snapClass = await scrollEl.getAttribute('class')

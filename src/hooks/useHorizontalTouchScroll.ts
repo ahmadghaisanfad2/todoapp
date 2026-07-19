@@ -1,5 +1,4 @@
 import { useEffect } from 'react'
-import type { RefObject } from 'react'
 
 const AXIS_LOCK_THRESHOLD = 6
 
@@ -14,14 +13,16 @@ interface TouchScrollState {
 /**
  * Enables reliable horizontal board scrolling on touch devices when nested
  * vertical scrollers and drag-and-drop would otherwise steal the gesture.
+ *
+ * Pass the scroll element directly (via callback ref state) so listeners
+ * attach when the board mounts after an empty state / store rehydration.
  */
 export function useHorizontalTouchScroll(
-  scrollRef: RefObject<HTMLElement | null>,
+  scrollEl: HTMLElement | null,
   enabled = true
 ) {
   useEffect(() => {
-    const el = scrollRef.current
-    if (!el || !enabled) return
+    if (!scrollEl || !enabled) return
 
     const state: TouchScrollState = {
       startX: 0,
@@ -56,7 +57,7 @@ export function useHorizontalTouchScroll(
       const touch = event.touches[0]
       state.startX = touch.clientX
       state.startY = touch.clientY
-      state.startScrollLeft = el.scrollLeft
+      state.startScrollLeft = scrollEl.scrollLeft
       state.axis = null
       state.tracking = true
     }
@@ -80,23 +81,23 @@ export function useHorizontalTouchScroll(
       // Own the horizontal gesture so nested column overflow-y and dnd-kit
       // cannot leave the board stuck between columns.
       event.preventDefault()
-      el.scrollLeft = state.startScrollLeft - dx
+      scrollEl.scrollLeft = state.startScrollLeft - dx
     }
 
     function onTouchEnd() {
       reset()
     }
 
-    el.addEventListener('touchstart', onTouchStart, { passive: true, capture: true })
-    el.addEventListener('touchmove', onTouchMove, { passive: false, capture: true })
-    el.addEventListener('touchend', onTouchEnd, { passive: true, capture: true })
-    el.addEventListener('touchcancel', onTouchEnd, { passive: true, capture: true })
+    scrollEl.addEventListener('touchstart', onTouchStart, { passive: true, capture: true })
+    scrollEl.addEventListener('touchmove', onTouchMove, { passive: false, capture: true })
+    scrollEl.addEventListener('touchend', onTouchEnd, { passive: true, capture: true })
+    scrollEl.addEventListener('touchcancel', onTouchEnd, { passive: true, capture: true })
 
     return () => {
-      el.removeEventListener('touchstart', onTouchStart, true)
-      el.removeEventListener('touchmove', onTouchMove, true)
-      el.removeEventListener('touchend', onTouchEnd, true)
-      el.removeEventListener('touchcancel', onTouchEnd, true)
+      scrollEl.removeEventListener('touchstart', onTouchStart, true)
+      scrollEl.removeEventListener('touchmove', onTouchMove, true)
+      scrollEl.removeEventListener('touchend', onTouchEnd, true)
+      scrollEl.removeEventListener('touchcancel', onTouchEnd, true)
     }
-  }, [scrollRef, enabled])
+  }, [scrollEl, enabled])
 }
