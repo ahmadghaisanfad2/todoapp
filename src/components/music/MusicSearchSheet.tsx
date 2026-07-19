@@ -100,12 +100,13 @@ export function MusicSearchSheet({ open, onOpenChange }: MusicSearchSheetProps) 
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="h-[80vh] rounded-t-2xl overflow-y-auto">
-        <SheetHeader>
-          <SheetTitle>Music Search</SheetTitle>
+      <SheetContent side="bottom" className="flex h-[min(88dvh,40rem)] flex-col rounded-t-2xl p-0 pb-safe">
+        <SheetHeader className="shrink-0 border-b border-border/60 px-5 py-4 text-left sm:px-6">
+          <SheetTitle className="text-lg font-semibold tracking-tight">Music Search</SheetTitle>
         </SheetHeader>
 
-        <div className="mt-4">
+        <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-4 sm:px-6">
+        <div>
           <div className="flex gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -114,10 +115,10 @@ export function MusicSearchSheet({ open, onOpenChange }: MusicSearchSheetProps) 
                 value={query}
                 onChange={(e) => { setQuery(e.target.value); setError(''); setSearchResult(null) }}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                className="pl-9"
+                className="h-11 rounded-xl pl-9 text-base sm:h-10 sm:text-sm"
               />
             </div>
-            <Button onClick={handleSearch} disabled={isSearching || !query.trim()}>
+            <Button onClick={handleSearch} disabled={isSearching || !query.trim()} className="h-11 rounded-xl sm:h-10">
               {isSearching ? '...' : 'Load'}
             </Button>
           </div>
@@ -260,6 +261,7 @@ export function MusicSearchSheet({ open, onOpenChange }: MusicSearchSheetProps) 
           {filteredPresets.length === 0 && !searchResult && (
             <p className="text-center text-sm text-muted-foreground py-8">No songs found</p>
           )}
+        </div>
         </div>
       </SheetContent>
     </Sheet>

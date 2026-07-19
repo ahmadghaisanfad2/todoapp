@@ -173,7 +173,7 @@ export function KanbanBoard({ onEditTask, onAddTask, onStartFocus }: KanbanBoard
         <div
           id="kanban-board-scroll"
           ref={scrollRef}
-          className="kanban-scroll-x kanban-scroll-x-content flex items-start gap-4 overflow-x-auto pb-4"
+          className="kanban-scroll-x kanban-scroll-x-content -mx-1 flex snap-x snap-mandatory items-start gap-3 overflow-x-auto px-1 pb-4 scroll-smooth sm:gap-4"
         >
           {sortedColumns.map((column) => (
             <KanbanColumnComponent

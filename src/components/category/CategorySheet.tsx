@@ -47,9 +47,9 @@ export function CategorySheet({ open, onOpenChange }: CategorySheetProps) {
   return (
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent className="w-80 sm:max-w-sm rounded-l-2xl">
-          <SheetHeader className="pb-4">
-            <SheetTitle className="text-lg font-semibold">Categories</SheetTitle>
+        <SheetContent className="w-[min(100%,22rem)] rounded-l-2xl p-5 sm:max-w-sm">
+          <SheetHeader className="pb-4 text-left">
+            <SheetTitle className="text-lg font-semibold tracking-tight">Categories</SheetTitle>
           </SheetHeader>
           <div className="flex flex-col gap-2">
             {categories.length === 0 ? (

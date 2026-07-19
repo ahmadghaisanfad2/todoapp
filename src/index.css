@@ -364,9 +364,20 @@
     padding-bottom: max(1.5rem, calc(var(--safe-bottom) + 1rem));
   }
 
+  .pb-safe-only {
+    padding-bottom: var(--safe-bottom);
+  }
+
   .px-safe {
-    padding-left: max(1.5rem, var(--safe-left));
-    padding-right: max(1.5rem, var(--safe-right));
+    padding-left: max(1.25rem, var(--safe-left));
+    padding-right: max(1.25rem, var(--safe-right));
+  }
+
+  @media (min-width: 640px) {
+    .px-safe {
+      padding-left: max(1.5rem, var(--safe-left));
+      padding-right: max(1.5rem, var(--safe-right));
+    }
   }
 
   .animate-lp-fade-up {

@@ -69,7 +69,7 @@ export function AppPage({ onNavigateHome }: AppPageProps) {
   }
 
   return (
-    <div className="min-h-[100dvh] bg-background pb-16">
+    <div className="min-h-[100dvh] bg-background pb-[calc(4rem+env(safe-area-inset-bottom,0px))]">
       <Header
         onNavigateHome={onNavigateHome}
         onCategoryOpen={() => setCategorySheetOpen(true)}
@@ -78,17 +78,17 @@ export function AppPage({ onNavigateHome }: AppPageProps) {
       />
 
       {showWelcomeBadge && (
-        <div className="mx-auto max-w-5xl px-4 pt-4 sm:px-6 lg:px-8">
-          <div className="inline-flex items-center gap-2.5 rounded-xl border border-primary/20 bg-primary/5 px-4 py-2.5">
+        <div className="mx-auto max-w-5xl px-3 pt-4 sm:px-6 lg:px-8">
+          <div className="inline-flex max-w-full items-center gap-2.5 rounded-2xl border border-primary/20 bg-primary/5 px-3.5 py-2.5 sm:px-4">
             <Logo className="h-4 w-4 shrink-0" />
             <span className="text-[13px] font-medium text-foreground">Welcome.</span>
-            <span className="text-[13px] text-muted-foreground">Let&apos;s tackle what matters today.</span>
+            <span className="truncate text-[13px] text-muted-foreground">Let&apos;s tackle what matters today.</span>
           </div>
         </div>
       )}
 
       <Layout>
-        <main className="pt-6">
+        <main className="pt-4 sm:pt-6">
           <h1 className="sr-only">Tasks</h1>
           <KanbanBoard
             onEditTask={handleEditTask}
@@ -101,7 +101,7 @@ export function AppPage({ onNavigateHome }: AppPageProps) {
       {hasTasks && (
         <Button
           size="icon"
-          className="fixed z-[60] h-12 w-12 rounded-full shadow-lg shadow-black/10 sm:hidden"
+        className="fixed z-40 h-12 w-12 rounded-full shadow-lg shadow-black/10 sm:hidden"
           style={{ ...getMobileFabBottomStyle(hasMusicBar), ...getMobileFabLeftStyle() }}
           onClick={() => handleAddTask()}
           aria-label="Add task"
