@@ -68,7 +68,7 @@ export function TimerWidget({ openRequest = 0 }: TimerWidgetProps) {
     return (
       <div
         ref={widgetRef}
-        className="fixed z-[60] animate-card-in left-3 right-3 sm:left-auto sm:right-[max(1.5rem,env(safe-area-inset-right,0px))] sm:w-auto"
+        className="fixed z-40 animate-card-in left-3 right-3 sm:left-auto sm:right-[max(1.5rem,env(safe-area-inset-right,0px))] sm:w-auto"
         style={getMobileFabBottomStyle(hasMusicBar)}
       >
         <div className="mx-auto max-w-sm rounded-2xl border border-border/70 bg-card shadow-2xl sm:mx-0">
@@ -89,7 +89,7 @@ export function TimerWidget({ openRequest = 0 }: TimerWidgetProps) {
     <div
       ref={widgetRef}
       className={cn(
-        'fixed z-[60]',
+        'fixed z-40',
         isExpanded
           ? 'left-3 right-3 sm:left-auto sm:right-[max(1.5rem,env(safe-area-inset-right,0px))]'
           : undefined

@@ -93,14 +93,14 @@ export function TaskForm({ open, onOpenChange, task, defaultStatus }: TaskFormPr
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex max-h-[min(92dvh,44rem)] w-[calc(100%-1.25rem)] max-w-lg flex-col gap-0 overflow-hidden rounded-2xl p-0 sm:w-full">
+      <DialogContent className="flex max-h-[calc(100dvh-1.5rem)] w-[calc(100%-1.25rem)] max-w-lg flex-col gap-0 overflow-hidden rounded-2xl p-0 sm:max-h-[min(92dvh,44rem)] sm:w-full">
         <DialogHeader className="shrink-0 border-b border-border/60 px-5 pb-4 pt-5 pr-12 text-left sm:px-6">
           <DialogTitle className="text-lg font-semibold tracking-tight sm:text-xl">
             {task ? 'Edit task' : 'Add task'}
           </DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
-          <div className="flex-1 space-y-5 overflow-y-auto overscroll-contain px-5 py-5 sm:px-6">
+        <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col overflow-hidden">
+          <div className="min-h-0 flex-1 space-y-5 overflow-y-auto overscroll-contain px-5 py-5 sm:px-6">
             <div className="flex flex-col gap-2">
               <Label htmlFor="task-title" className="text-sm font-medium text-foreground">Title</Label>
               <Input
@@ -237,19 +237,19 @@ export function TaskForm({ open, onOpenChange, task, defaultStatus }: TaskFormPr
             </div>
           </div>
 
-          <DialogFooter className="shrink-0 gap-2 border-t border-border/60 bg-background px-5 py-4 sm:space-x-0 sm:px-6">
+          <DialogFooter className="shrink-0 flex-col gap-2 border-t border-border/60 bg-background/95 px-5 py-4 backdrop-blur-sm sm:flex-row sm:justify-end sm:space-x-2 sm:px-6">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              className="h-11 rounded-xl sm:h-10"
+              className="h-11 w-full rounded-xl sm:h-10 sm:w-auto"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={!title.trim()}
-              className="h-11 rounded-xl shadow-sm sm:h-10"
+              className="h-11 w-full rounded-xl shadow-sm sm:h-10 sm:w-auto"
             >
               {task ? 'Save changes' : 'Add task'}
             </Button>

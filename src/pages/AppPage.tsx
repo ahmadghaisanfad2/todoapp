@@ -101,7 +101,7 @@ export function AppPage({ onNavigateHome }: AppPageProps) {
       {hasTasks && (
         <Button
           size="icon"
-          className="fixed z-[60] h-12 w-12 rounded-full shadow-lg shadow-black/10 sm:hidden"
+        className="fixed z-40 h-12 w-12 rounded-full shadow-lg shadow-black/10 sm:hidden"
           style={{ ...getMobileFabBottomStyle(hasMusicBar), ...getMobileFabLeftStyle() }}
           onClick={() => handleAddTask()}
           aria-label="Add task"
