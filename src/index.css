@@ -499,6 +499,8 @@
 
 .kanban-scroll-x {
   touch-action: pan-x;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
 }
 
 .kanban-scroll-x-content {
@@ -510,15 +512,20 @@
 }
 
 .kanban-scroll-y {
-  touch-action: pan-y;
+  /* Allow horizontal pans to reach the board scroller; vertical still works in-column. */
+  touch-action: pan-x pan-y;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .kanban-drag-handle {
   touch-action: none;
 }
 
+/* Do not use touch-action: none on idle cards — that made horizontal swipes impossible.
+   Long-press drag still works via TouchSensor; pan gestures scroll the board. */
 [data-kanban-card-touch-drag='true'] {
-  touch-action: none;
+  touch-action: pan-x pan-y;
 }
 
 @keyframes card-in {

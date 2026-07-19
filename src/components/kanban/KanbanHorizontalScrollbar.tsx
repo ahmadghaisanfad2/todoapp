@@ -125,13 +125,13 @@ export function KanbanHorizontalScrollbar({
       <div
         ref={trackRef}
         data-kanban-scrollbar-track
-        className="relative h-2 w-full cursor-pointer rounded-full bg-muted/80 sm:h-2.5"
+        className="relative h-3 w-full cursor-pointer rounded-full bg-muted/80 touch-manipulation sm:h-2.5"
         onPointerDown={handleTrackPointerDown}
       >
         <div
           data-kanban-scrollbar-thumb
           className={cn(
-            'absolute top-0 h-full cursor-grab rounded-full bg-muted-foreground/35',
+            'absolute top-0 h-full min-w-8 cursor-grab rounded-full bg-muted-foreground/35 touch-manipulation',
             'hover:bg-muted-foreground/55 active:cursor-grabbing active:bg-muted-foreground/70'
           )}
           style={{ width: thumbWidth, left: thumbLeft }}
