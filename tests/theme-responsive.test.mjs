@@ -178,4 +178,109 @@ export default async function themeResponsiveTests({ page, test, assert, BASE_UR
     })
     assert.ok(doneReachableAfter, 'Done column should be reachable after horizontal scroll')
   })
+
+  test('kanban board allows horizontal touch panning on mobile', async () => {
+    await page.setViewportSize({ width: 375, height: 812 })
+    await page.waitForTimeout(300)
+    await ensureKanbanVisible()
+
+    const scrollEl = page.locator('#kanban-board-scroll')
+    await scrollEl.waitFor({ state: 'visible', timeout: 3000 })
+
+    const touchAction = await scrollEl.evaluate((el) => getComputedStyle(el).touchAction)
+    assert.ok(
+      touchAction.includes('pan-x'),
+      `Board scroller touch-action should allow pan-x (got "${touchAction}")`
+    )
+
+    const columnBody = page.locator('[data-kanban-column-body]').first()
+    const columnTouchAction = await columnBody.evaluate((el) => getComputedStyle(el).touchAction)
+    assert.ok(
+      columnTouchAction.includes('pan-x'),
+      `Column body should allow pan-x so horizontal swipes are not trapped (got "${columnTouchAction}")`
+    )
+
+    const card = page.locator('[data-kanban-card]').first()
+    if (await card.count()) {
+      const cardTouchAction = await card.evaluate((el) => getComputedStyle(el).touchAction)
+      assert.ok(
+        !cardTouchAction.split(/\s+/).includes('none'),
+        `Idle kanban cards must not use touch-action:none (got "${cardTouchAction}")`
+      )
+    }
+
+    const scrolled = await page.evaluate(() => {
+      const el = document.getElementById('kanban-board-scroll')
+      if (!el) return { ok: false, before: 0, after: 0, reason: 'missing scroller' }
+
+      el.scrollLeft = 0
+
+      // Prefer a task card (not a button) so the axis-lock handler tracks the gesture.
+      // Fall back to lower column body — the top "Add task" button is skipped by design.
+      const card = el.querySelector('[data-kanban-card]')
+      const columnBody = el.querySelector('[data-kanban-column-body]')
+      const target = card ?? columnBody ?? el
+      const rect = target.getBoundingClientRect()
+      const startX = rect.left + Math.min(rect.width * 0.75, rect.width - 8)
+      const startY = card
+        ? rect.top + rect.height / 2
+        : rect.top + Math.min(Math.max(rect.height * 0.65, 90), rect.height - 12)
+      const before = el.scrollLeft
+
+      const createTouch = (clientX, clientY) =>
+        new Touch({
+          identifier: 1,
+          target,
+          clientX,
+          clientY,
+          pageX: clientX,
+          pageY: clientY,
+          screenX: clientX,
+          screenY: clientY,
+        })
+
+      const fire = (type, clientX, clientY) => {
+        const touch = createTouch(clientX, clientY)
+        // Dispatch on the board scroller so capture listeners always see the gesture.
+        el.dispatchEvent(
+          new TouchEvent(type, {
+            bubbles: true,
+            cancelable: true,
+            composed: true,
+            touches: type === 'touchend' || type === 'touchcancel' ? [] : [touch],
+            targetTouches: type === 'touchend' || type === 'touchcancel' ? [] : [touch],
+            changedTouches: [touch],
+          })
+        )
+      }
+
+      fire('touchstart', startX, startY)
+      fire('touchmove', startX - 30, startY)
+      fire('touchmove', startX - 110, startY)
+      fire('touchmove', startX - 220, startY)
+      fire('touchend', startX - 220, startY)
+
+      return { ok: true, before, after: el.scrollLeft, max: el.scrollWidth - el.clientWidth }
+    })
+
+    assert.ok(scrolled.ok, 'Touch pan simulation should run against the board scroller')
+    assert.ok(
+      scrolled.max > 0,
+      'Board should overflow horizontally at mobile width'
+    )
+    assert.ok(
+      scrolled.after > scrolled.before,
+      `Horizontal touch pan should increase scrollLeft (before=${scrolled.before}, after=${scrolled.after}, max=${scrolled.max})`
+    )
+
+    const snapClass = await scrollEl.getAttribute('class')
+    assert.ok(
+      snapClass?.includes('snap-proximity'),
+      'Board should use snap-proximity instead of snap-mandatory for freer mobile swipes'
+    )
+    assert.ok(
+      !snapClass?.includes('scroll-smooth'),
+      'Board should not use scroll-smooth (fights touch inertia)'
+    )
+  })
 }

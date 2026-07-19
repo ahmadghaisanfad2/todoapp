@@ -133,7 +133,9 @@ export function KanbanCard({ task, activeTaskId, onEdit, onDelete, crossTasks }:
         'group flex items-start gap-2 rounded-2xl border border-border/70 bg-card px-3 py-3 shadow-sm transition-all duration-150 select-none animate-card-in hover:border-primary/30 active:scale-[0.99]',
         isBeingDragged && 'pointer-events-none',
         isOverdue && 'border-red-300 dark:border-red-800',
-        dragFromWholeCard ? 'cursor-grab touch-none active:cursor-grabbing' : undefined
+        // Avoid touch-none here — it blocks native/board horizontal scrolling on mobile.
+        // TouchSensor delay + useHorizontalTouchScroll handle scroll vs long-press drag.
+        dragFromWholeCard ? 'cursor-grab active:cursor-grabbing' : undefined
       )}
       {...attributes}
       {...mobileListeners}

@@ -18,6 +18,7 @@ import { KanbanCardOverlay } from './KanbanCard'
 import { ColumnForm } from './ColumnForm'
 import { KanbanHorizontalScrollbar } from './KanbanHorizontalScrollbar'
 import { EmptyState } from '@/components/common/EmptyState'
+import { useHorizontalTouchScroll } from '@/hooks/useHorizontalTouchScroll'
 import { useKanbanStore } from '@/store/kanbanStore'
 import { useTaskStore } from '@/store/taskStore'
 import { useWorkspaceStore } from '@/store/workspaceStore'
@@ -47,12 +48,23 @@ export function KanbanBoard({ onEditTask, onAddTask, onStartFocus }: KanbanBoard
 
   const [activeTask, setActiveTask] = useState<Task | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
+  const [scrollEl, setScrollEl] = useState<HTMLDivElement | null>(null)
+
+  const setScrollNode = useCallback((node: HTMLDivElement | null) => {
+    scrollRef.current = node
+    setScrollEl(node)
+  }, [])
 
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
-    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 12 } }),
+    // Short delay + low tolerance: horizontal swipes cancel before drag starts,
+    // while a still long-press still activates card drag on touch devices.
+    useSensor(TouchSensor, { activationConstraint: { delay: 220, tolerance: 8 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   )
+
+  // Custom axis-locked panning — native overflow alone loses to nested pan-y / touch-action:none.
+  useHorizontalTouchScroll(scrollEl, activeTask === null)
 
   const getTasksByColumn = useCallback(
     (columnId: string) =>
@@ -172,8 +184,8 @@ export function KanbanBoard({ onEditTask, onAddTask, onStartFocus }: KanbanBoard
         <KanbanHorizontalScrollbar scrollRef={scrollRef} />
         <div
           id="kanban-board-scroll"
-          ref={scrollRef}
-          className="kanban-scroll-x kanban-scroll-x-content -mx-1 flex snap-x snap-mandatory items-start gap-3 overflow-x-auto px-1 pb-4 scroll-smooth sm:gap-4"
+          ref={setScrollNode}
+          className="kanban-scroll-x kanban-scroll-x-content -mx-1 flex snap-x snap-proximity items-start gap-3 overflow-x-auto overscroll-x-contain px-1 pb-4 sm:gap-4"
         >
           {sortedColumns.map((column) => (
             <KanbanColumnComponent
