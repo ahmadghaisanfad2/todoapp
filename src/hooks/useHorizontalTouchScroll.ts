@@ -23,6 +23,7 @@ export function useHorizontalTouchScroll(
 ) {
   useEffect(() => {
     if (!scrollEl || !enabled) return
+    const el = scrollEl
 
     const state: TouchScrollState = {
       startX: 0,
@@ -57,7 +58,7 @@ export function useHorizontalTouchScroll(
       const touch = event.touches[0]
       state.startX = touch.clientX
       state.startY = touch.clientY
-      state.startScrollLeft = scrollEl.scrollLeft
+      state.startScrollLeft = el.scrollLeft
       state.axis = null
       state.tracking = true
     }
@@ -81,23 +82,23 @@ export function useHorizontalTouchScroll(
       // Own the horizontal gesture so nested column overflow-y and dnd-kit
       // cannot leave the board stuck between columns.
       event.preventDefault()
-      scrollEl.scrollLeft = state.startScrollLeft - dx
+      el.scrollLeft = state.startScrollLeft - dx
     }
 
     function onTouchEnd() {
       reset()
     }
 
-    scrollEl.addEventListener('touchstart', onTouchStart, { passive: true, capture: true })
-    scrollEl.addEventListener('touchmove', onTouchMove, { passive: false, capture: true })
-    scrollEl.addEventListener('touchend', onTouchEnd, { passive: true, capture: true })
-    scrollEl.addEventListener('touchcancel', onTouchEnd, { passive: true, capture: true })
+    el.addEventListener('touchstart', onTouchStart, { passive: true, capture: true })
+    el.addEventListener('touchmove', onTouchMove, { passive: false, capture: true })
+    el.addEventListener('touchend', onTouchEnd, { passive: true, capture: true })
+    el.addEventListener('touchcancel', onTouchEnd, { passive: true, capture: true })
 
     return () => {
-      scrollEl.removeEventListener('touchstart', onTouchStart, true)
-      scrollEl.removeEventListener('touchmove', onTouchMove, true)
-      scrollEl.removeEventListener('touchend', onTouchEnd, true)
-      scrollEl.removeEventListener('touchcancel', onTouchEnd, true)
+      el.removeEventListener('touchstart', onTouchStart, true)
+      el.removeEventListener('touchmove', onTouchMove, true)
+      el.removeEventListener('touchend', onTouchEnd, true)
+      el.removeEventListener('touchcancel', onTouchEnd, true)
     }
   }, [scrollEl, enabled])
 }
