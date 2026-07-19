@@ -26,9 +26,9 @@ interface KanbanCardContentProps {
 }
 
 const priorityColors: Record<Priority, string> = {
-  high: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-  medium: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
-  low: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400',
+  high: 'bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-400',
+  medium: 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400',
+  low: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400',
 }
 
 function KanbanCardContent({ task, crossTasks, onDelete, onRequestDelete, showDelete = true }: KanbanCardContentProps) {
@@ -36,16 +36,25 @@ function KanbanCardContent({ task, crossTasks, onDelete, onRequestDelete, showDe
 
   return (
     <>
-      <div className="flex-1 min-w-0 pointer-events-none">
-        <p className={cn('text-sm font-medium leading-snug', (task.completed || crossTasks) && 'line-through opacity-60')}>
+      <div className="min-w-0 flex-1 pointer-events-none">
+        <p className={cn(
+          'text-sm font-medium leading-snug tracking-tight',
+          (task.completed || crossTasks) && 'line-through opacity-60'
+        )}>
           {task.title}
         </p>
-        <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-          <span className={cn('inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-medium', priorityColors[task.priority])}>
+        <div className="mt-2 flex flex-wrap items-center gap-1.5">
+          <span className={cn(
+            'inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-medium capitalize',
+            priorityColors[task.priority]
+          )}>
             {task.priority}
           </span>
           {task.dueDate && (
-            <span className={cn('inline-flex items-center gap-1 text-[10px] text-muted-foreground', isOverdue && 'text-red-500')}>
+            <span className={cn(
+              'inline-flex items-center gap-1 text-[10px] text-muted-foreground',
+              isOverdue && 'font-medium text-red-600 dark:text-red-400'
+            )}>
               <Calendar className="h-3 w-3" />
               {format(parseISO(task.dueDate), 'MMM d')}
             </span>
@@ -56,7 +65,7 @@ function KanbanCardContent({ task, crossTasks, onDelete, onRequestDelete, showDe
         <button
           type="button"
           aria-label={`Delete ${task.title}`}
-          className="mt-0.5 text-muted-foreground opacity-100 transition-opacity hover:text-destructive sm:opacity-0 sm:group-hover:opacity-100 pointer-events-auto"
+          className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground opacity-100 transition-colors hover:bg-destructive/10 hover:text-destructive sm:h-7 sm:w-7 sm:opacity-0 sm:group-hover:opacity-100 pointer-events-auto"
           onClick={(e) => {
             e.stopPropagation()
             if (onRequestDelete) {
@@ -121,7 +130,7 @@ export function KanbanCard({ task, activeTaskId, onEdit, onDelete, crossTasks }:
       data-kanban-card
       data-kanban-card-touch-drag={dragFromWholeCard ? 'true' : undefined}
       className={cn(
-        'group flex items-start gap-2 rounded-lg border bg-card px-3 py-2.5 shadow-sm hover:border-primary/30 transition-all duration-150 select-none animate-card-in',
+        'group flex items-start gap-2 rounded-2xl border border-border/70 bg-card px-3 py-3 shadow-sm transition-all duration-150 select-none animate-card-in hover:border-primary/30 active:scale-[0.99]',
         isBeingDragged && 'pointer-events-none',
         isOverdue && 'border-red-300 dark:border-red-800',
         dragFromWholeCard ? 'cursor-grab touch-none active:cursor-grabbing' : undefined
@@ -136,8 +145,8 @@ export function KanbanCard({ task, activeTaskId, onEdit, onDelete, crossTasks }:
         aria-label={`Drag ${task.title}`}
         data-kanban-drag-handle
         className={cn(
-          'kanban-drag-handle -ml-1 shrink-0 rounded p-0.5 text-muted-foreground/50 hover:text-muted-foreground',
-          dragFromWholeCard ? 'pointer-events-none' : 'cursor-grab active:cursor-grabbing touch-none'
+          'kanban-drag-handle -ml-0.5 mt-0.5 shrink-0 rounded-md p-1 text-muted-foreground/50 hover:text-muted-foreground',
+          dragFromWholeCard ? 'pointer-events-none' : 'cursor-grab touch-none active:cursor-grabbing'
         )}
         {...(!dragFromWholeCard ? listeners : {})}
         onClick={(e) => e.stopPropagation()}
@@ -151,7 +160,7 @@ export function KanbanCard({ task, activeTaskId, onEdit, onDelete, crossTasks }:
         onRequestDelete={() => setDeleteOpen(true)}
       />
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-        <DialogContent className="sm:max-w-[380px] rounded-2xl">
+        <DialogContent className="w-[calc(100%-1.5rem)] max-w-[380px] rounded-2xl">
           <DialogHeader>
             <DialogTitle>Delete task</DialogTitle>
             <DialogDescription>
@@ -159,7 +168,7 @@ export function KanbanCard({ task, activeTaskId, onEdit, onDelete, crossTasks }:
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteOpen(false)} className="rounded-xl h-10">
+            <Button variant="outline" onClick={() => setDeleteOpen(false)} className="h-10 rounded-xl">
               Cancel
             </Button>
             <Button
@@ -168,7 +177,7 @@ export function KanbanCard({ task, activeTaskId, onEdit, onDelete, crossTasks }:
                 onDelete(task.id)
                 setDeleteOpen(false)
               }}
-              className="rounded-xl h-10"
+              className="h-10 rounded-xl"
             >
               Delete task
             </Button>
@@ -191,11 +200,11 @@ export function KanbanCardOverlay({ task, crossTasks }: KanbanCardOverlayProps) 
     <div
       data-kanban-card-overlay
       className={cn(
-        'group flex items-start gap-2 rounded-lg border bg-card px-3 py-2.5 shadow-lg cursor-grabbing select-none',
+        'group flex w-[min(18rem,calc(100vw-3rem))] items-start gap-2 rounded-2xl border border-border/70 bg-card px-3 py-3 shadow-lg cursor-grabbing select-none',
         isOverdue && 'border-red-300 dark:border-red-800'
       )}
     >
-      <GripVertical className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground/50" aria-hidden="true" />
+      <GripVertical className="mt-1 h-4 w-4 shrink-0 text-muted-foreground/50" aria-hidden="true" />
       <KanbanCardContent task={task} crossTasks={crossTasks} showDelete={false} />
     </div>
   )

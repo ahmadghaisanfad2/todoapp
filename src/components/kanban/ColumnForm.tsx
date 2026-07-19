@@ -30,17 +30,17 @@ export function ColumnForm({ onAdd }: ColumnFormProps) {
       <Button
         variant="outline"
         size="sm"
-        className="shrink-0 gap-1.5 border-dashed"
+        className="h-11 shrink-0 snap-start gap-1.5 rounded-xl border-dashed px-4 text-muted-foreground hover:text-foreground sm:h-9"
         onClick={() => setIsAdding(true)}
       >
         <Plus className="h-4 w-4" />
-        Add Column
+        Add column
       </Button>
     )
   }
 
   return (
-    <div className="shrink-0 w-64 rounded-lg border bg-card p-3">
+    <div className="w-[min(16rem,calc(100vw-3rem))] shrink-0 snap-start rounded-2xl border border-border/70 bg-card p-3 shadow-sm">
       <input
         ref={inputRef}
         type="text"
@@ -54,15 +54,16 @@ export function ColumnForm({ onAdd }: ColumnFormProps) {
           }
         }}
         placeholder="Column name..."
-        className="w-full rounded border bg-background px-2 py-1.5 text-sm outline-none focus:border-primary"
+        className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-ring/30"
       />
-      <div className="mt-2 flex gap-1.5">
-        <Button size="sm" onClick={handleSubmit} disabled={!name.trim()}>
+      <div className="mt-2.5 flex gap-1.5">
+        <Button size="sm" onClick={handleSubmit} disabled={!name.trim()} className="h-9 rounded-xl">
           Add
         </Button>
         <Button
           size="sm"
           variant="ghost"
+          className="h-9 w-9 rounded-xl px-0"
           onClick={() => {
             setName('')
             setIsAdding(false)

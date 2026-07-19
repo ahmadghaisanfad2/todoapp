@@ -46,11 +46,11 @@ export function KanbanColumnComponent({
       ref={setNodeRef}
       data-kanban-column
       className={cn(
-        'flex w-72 shrink-0 flex-col rounded-lg border bg-muted/50',
-        isOver && 'border-primary/50 bg-primary/5'
+        'flex w-[min(18rem,calc(100vw-3rem))] shrink-0 snap-start flex-col rounded-2xl border border-border/70 bg-muted/40',
+        isOver && 'border-primary/40 bg-primary/5 shadow-sm shadow-primary/5'
       )}
     >
-      <div className="flex items-center justify-between border-b px-3 py-2.5">
+      <div className="flex items-center justify-between gap-2 border-b border-border/60 px-3 py-3">
         {isEditing ? (
           <div className="flex flex-1 items-center gap-1.5">
             <input
@@ -64,16 +64,16 @@ export function KanbanColumnComponent({
                   setIsEditing(false)
                 }
               }}
-              className="flex-1 rounded border bg-background px-2 py-1 text-sm font-semibold outline-none focus:border-primary"
+              className="h-9 flex-1 rounded-xl border border-border bg-background px-2.5 text-sm font-semibold outline-none focus:border-primary focus:ring-2 focus:ring-ring/30"
               autoFocus
             />
-            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={handleSave}>
+            <Button size="icon" variant="ghost" className="h-9 w-9 rounded-xl" onClick={handleSave}>
               <Check className="h-3.5 w-3.5" />
             </Button>
             <Button
               size="icon"
               variant="ghost"
-              className="h-7 w-7"
+              className="h-9 w-9 rounded-xl"
               onClick={() => {
                 setEditName(column.name)
                 setIsEditing(false)
@@ -84,17 +84,17 @@ export function KanbanColumnComponent({
           </div>
         ) : (
           <>
-            <div className="flex items-center gap-2">
-              <h2 className="text-sm font-semibold">{column.name}</h2>
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-muted text-[10px] font-medium text-muted-foreground">
+            <div className="flex min-w-0 items-center gap-2">
+              <h2 className="truncate text-sm font-semibold tracking-tight">{column.name}</h2>
+              <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-md bg-background/80 px-1.5 text-[10px] font-medium text-muted-foreground tabular-nums">
                 {tasks.length}
               </span>
             </div>
-            <div className="flex items-center gap-0.5">
+            <div className="flex shrink-0 items-center gap-0.5">
               <Button
                 size="icon"
                 variant="ghost"
-                className={cn('h-7 w-7', column.crossTasks && 'text-primary bg-primary/10')}
+                className={cn('h-8 w-8 rounded-lg', column.crossTasks && 'bg-primary/10 text-primary')}
                 onClick={() => onToggleCrossTasks(column.id)}
                 title={
                   column.crossTasks
@@ -112,16 +112,18 @@ export function KanbanColumnComponent({
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-7 w-7"
+                className="h-8 w-8 rounded-lg"
                 onClick={() => setIsEditing(true)}
+                aria-label={`Rename ${column.name}`}
               >
                 <Pencil className="h-3.5 w-3.5" />
               </Button>
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-7 w-7 text-destructive"
+                className="h-8 w-8 rounded-lg text-destructive"
                 onClick={() => onDeleteColumn(column.id)}
+                aria-label={`Delete ${column.name} column`}
               >
                 <Trash2 className="h-3.5 w-3.5" />
               </Button>
@@ -132,13 +134,13 @@ export function KanbanColumnComponent({
 
       <div
         data-kanban-column-body
-        className="kanban-scroll-y flex flex-1 flex-col gap-2 overflow-y-auto p-2"
+        className="kanban-scroll-y flex max-h-[min(62dvh,36rem)] flex-1 flex-col gap-2 overflow-y-auto overscroll-contain p-2.5"
         style={{ minHeight: 100 }}
       >
         <Button
           variant="ghost"
           size="sm"
-          className="w-full gap-1.5 text-muted-foreground hover:text-foreground"
+          className="h-10 w-full justify-start gap-1.5 rounded-xl text-muted-foreground hover:bg-background/80 hover:text-foreground"
           onClick={() => onAddTask(column.id)}
           aria-label={`Add task in ${column.name}`}
         >

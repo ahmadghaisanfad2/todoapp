@@ -66,8 +66,12 @@ export function TimerWidget({ openRequest = 0 }: TimerWidgetProps) {
 
   if (timer.state === 'running' || timer.state === 'paused') {
     return (
-      <div ref={widgetRef} className="fixed z-[60] animate-card-in" style={fabPosition}>
-        <div className="rounded-2xl border border-border bg-card shadow-2xl">
+      <div
+        ref={widgetRef}
+        className="fixed z-[60] animate-card-in left-3 right-3 sm:left-auto sm:right-[max(1.5rem,env(safe-area-inset-right,0px))] sm:w-auto"
+        style={getMobileFabBottomStyle(hasMusicBar)}
+      >
+        <div className="mx-auto max-w-sm rounded-2xl border border-border/70 bg-card shadow-2xl sm:mx-0">
           <TimerRunning
             timeRemaining={timer.timeRemaining}
             progress={timer.progress}
@@ -82,9 +86,18 @@ export function TimerWidget({ openRequest = 0 }: TimerWidgetProps) {
   }
 
   return (
-    <div ref={widgetRef} className="fixed z-[60]" style={fabPosition}>
+    <div
+      ref={widgetRef}
+      className={cn(
+        'fixed z-[60]',
+        isExpanded
+          ? 'left-3 right-3 sm:left-auto sm:right-[max(1.5rem,env(safe-area-inset-right,0px))]'
+          : undefined
+      )}
+      style={isExpanded ? getMobileFabBottomStyle(hasMusicBar) : fabPosition}
+    >
       {isExpanded ? (
-        <div className="rounded-2xl border border-border bg-card shadow-2xl animate-card-in">
+        <div className="mx-auto max-w-sm rounded-2xl border border-border/70 bg-card shadow-2xl animate-card-in sm:mx-0 sm:max-w-xs">
           <TimerSetup onStart={(seconds) => {
             timer.start(seconds)
             setIsExpanded(false)
@@ -93,9 +106,9 @@ export function TimerWidget({ openRequest = 0 }: TimerWidgetProps) {
       ) : (
         <div className="relative">
           {showHint && (
-            <div className="absolute bottom-full right-0 mb-3 px-3 py-2 rounded-lg bg-foreground text-background text-xs font-medium shadow-lg whitespace-nowrap animate-hero-fade-1">
+            <div className="absolute bottom-full right-0 mb-3 max-w-[11rem] rounded-xl bg-foreground px-3 py-2 text-xs font-medium text-background shadow-lg animate-hero-fade-1 sm:max-w-none sm:whitespace-nowrap">
               Start a focus session here
-              <div className="absolute top-full right-4 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-foreground" />
+              <div className="absolute top-full right-4 h-0 w-0 border-l-[6px] border-r-[6px] border-t-[6px] border-l-transparent border-r-transparent border-t-foreground" />
             </div>
           )}
           <button

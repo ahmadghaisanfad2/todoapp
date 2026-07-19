@@ -34,27 +34,28 @@ export function TimerSetup({ onStart }: TimerSetupProps) {
   const customTotal = (parseInt(customHours, 10) || 0) * 3600 + (parseInt(customMinutes, 10) || 0) * 60
 
   return (
-    <div className="flex flex-col gap-3 p-4">
-      <p className="text-xs font-mono text-muted-foreground uppercase tracking-wider">
-        Choose duration
-      </p>
-      <div className="flex flex-wrap gap-2">
+    <div className="flex flex-col gap-3.5 p-4">
+      <div>
+        <p className="font-brand text-sm font-semibold tracking-tight text-foreground">Focus timer</p>
+        <p className="mt-0.5 text-xs text-muted-foreground">Pick a length and start.</p>
+      </div>
+      <div className="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap">
         {PRESETS.map((preset) => (
           <button
             key={preset.seconds}
             onClick={() => onStart(preset.seconds)}
             className={cn(
-              'rounded-lg border border-border bg-card px-3 py-2 text-sm font-medium',
+              'rounded-xl border border-border/70 bg-background px-3 py-2.5 text-sm font-medium',
               'transition-all duration-150 hover:border-primary hover:bg-primary/5 hover:text-primary',
-              'active:scale-95'
+              'active:scale-[0.97]'
             )}
           >
             {preset.label}
           </button>
         ))}
       </div>
-      <div className="flex items-center gap-2">
-        <div className="flex items-center gap-1.5 flex-1">
+      <div className="flex items-center gap-2 border-t border-border/50 pt-3">
+        <div className="flex flex-1 items-center gap-1.5">
           <Input
             type="number"
             min={0}
@@ -62,7 +63,8 @@ export function TimerSetup({ onStart }: TimerSetupProps) {
             placeholder="0"
             value={customHours}
             onChange={(e) => setCustomHours(e.target.value)}
-            className="h-9 text-sm w-14 text-center"
+            className="h-10 w-14 rounded-xl text-center text-sm"
+            aria-label="Custom hours"
           />
           <span className="text-xs text-muted-foreground">hrs</span>
           <Input
@@ -73,7 +75,8 @@ export function TimerSetup({ onStart }: TimerSetupProps) {
             value={customMinutes}
             onChange={(e) => setCustomMinutes(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleCustomStart()}
-            className="h-9 text-sm w-14 text-center"
+            className="h-10 w-14 rounded-xl text-center text-sm"
+            aria-label="Custom minutes"
           />
           <span className="text-xs text-muted-foreground">min</span>
         </div>
@@ -81,7 +84,8 @@ export function TimerSetup({ onStart }: TimerSetupProps) {
           size="sm"
           onClick={handleCustomStart}
           disabled={customTotal <= 0}
-          className="h-9 px-3"
+          className="h-10 w-10 rounded-xl px-0"
+          aria-label="Start custom timer"
         >
           <Play className="h-3.5 w-3.5" />
         </Button>
