@@ -30,6 +30,9 @@ export interface Category {
 
 export interface AppSettings {
   theme: 'light' | 'dark' | 'system'
+  colorTheme: string
+  customPrimaryHue: number
+  customAccentHue: number
   sortBy: 'dueDate' | 'priority' | 'createdAt'
   filterStatus: 'all' | 'active' | 'completed'
   filterCategoryId: string | null

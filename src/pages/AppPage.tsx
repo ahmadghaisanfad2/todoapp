@@ -5,6 +5,7 @@ import { Header } from '@/components/layout/Header'
 import { KanbanBoard } from '@/components/kanban/KanbanBoard'
 import { TaskForm } from '@/components/task/TaskForm'
 import { CategorySheet } from '@/components/category/CategorySheet'
+import { ThemeSheet } from '@/components/theme/ThemeSheet'
 import { MusicPlayerBar } from '@/components/music/MusicPlayerBar'
 import { MusicSearchSheet } from '@/components/music/MusicSearchSheet'
 import { TimerWidget } from '@/components/timer/TimerWidget'
@@ -25,6 +26,7 @@ export function AppPage({ onNavigateHome }: AppPageProps) {
   const [editingTask, setEditingTask] = useState<Task | undefined>()
   const [defaultStatus, setDefaultStatus] = useState<string | undefined>()
   const [categorySheetOpen, setCategorySheetOpen] = useState(false)
+  const [themeSheetOpen, setThemeSheetOpen] = useState(false)
   const [showWelcomeBadge, setShowWelcomeBadge] = useState(false)
   const [focusTimerRequest, setFocusTimerRequest] = useState(0)
   const hasShownBadge = useRef(false)
@@ -75,6 +77,7 @@ export function AppPage({ onNavigateHome }: AppPageProps) {
         onCategoryOpen={() => setCategorySheetOpen(true)}
         onAddTask={handleAddTask}
         onMusicOpen={toggleSearch}
+        onThemeOpen={() => setThemeSheetOpen(true)}
       />
 
       {showWelcomeBadge && (
@@ -121,6 +124,11 @@ export function AppPage({ onNavigateHome }: AppPageProps) {
       <CategorySheet
         open={categorySheetOpen}
         onOpenChange={setCategorySheetOpen}
+      />
+
+      <ThemeSheet
+        open={themeSheetOpen}
+        onOpenChange={setThemeSheetOpen}
       />
 
       <MusicPlayerBar onOpenSearch={toggleSearch} />

@@ -6,6 +6,7 @@ import { runMigration, migrateTaskStatus, migrateWorkspaceIds } from '@/lib/migr
 import { AppPage } from '@/pages/AppPage'
 import { LandingPage } from '@/pages/LandingPage'
 import { useUndoKeyboard } from '@/hooks/useUndoKeyboard'
+import { useColorTheme } from '@/hooks/useColorTheme'
 import { UndoToast } from '@/components/common/UndoToast'
 
 runMigration()
@@ -16,6 +17,7 @@ export function Router() {
   const [path, setPath] = useState(window.location.pathname)
 
   useUndoKeyboard()
+  useColorTheme()
 
   useEffect(() => {
     const handlePopState = () => setPath(window.location.pathname)

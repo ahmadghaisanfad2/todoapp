@@ -1,4 +1,4 @@
-import { ArrowLeft, Sun, Moon, Monitor, Tags, Plus, Music } from 'lucide-react'
+import { ArrowLeft, Sun, Moon, Monitor, Tags, Plus, Music, Palette } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { WorkspaceSwitcher } from '@/components/workspace/WorkspaceSwitcher'
 import { useTheme } from '@/hooks/useTheme'
@@ -9,9 +9,10 @@ interface HeaderProps {
   onCategoryOpen: () => void
   onAddTask: () => void
   onMusicOpen: () => void
+  onThemeOpen: () => void
 }
 
-export function Header({ onNavigateHome, onCategoryOpen, onAddTask, onMusicOpen }: HeaderProps) {
+export function Header({ onNavigateHome, onCategoryOpen, onAddTask, onMusicOpen, onThemeOpen }: HeaderProps) {
   const { theme, setTheme } = useTheme()
 
   const cycleTheme = () => {
@@ -68,6 +69,16 @@ export function Header({ onNavigateHome, onCategoryOpen, onAddTask, onMusicOpen 
           >
             <Music className="h-4 w-4" />
             <span className="hidden text-xs sm:inline">Music</span>
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onThemeOpen}
+            aria-label="Customize colors"
+            className="gap-1.5 px-2.5"
+          >
+            <Palette className="h-4 w-4" />
+            <span className="hidden text-xs sm:inline">Colors</span>
           </Button>
           <Button
             variant="ghost"

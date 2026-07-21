@@ -2,10 +2,13 @@ import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import type { AppSettings } from '@/types'
 import { STORAGE_KEYS } from '@/lib/constants'
+import { DEFAULT_COLOR_THEME } from '@/lib/colorThemes'
 import { safeStorage } from '@/lib/safeStorage'
 
 interface SettingsStore extends AppSettings {
   setTheme: (theme: AppSettings['theme']) => void
+  setColorTheme: (colorTheme: AppSettings['colorTheme']) => void
+  setCustomHues: (primaryHue: number, accentHue: number) => void
   setSortBy: (sortBy: AppSettings['sortBy']) => void
   setFilterStatus: (filterStatus: AppSettings['filterStatus']) => void
   setFilterCategoryId: (filterCategoryId: string | null) => void
@@ -15,6 +18,9 @@ interface SettingsStore extends AppSettings {
 
 const defaultSettings: AppSettings = {
   theme: 'system',
+  colorTheme: DEFAULT_COLOR_THEME,
+  customPrimaryHue: 160,
+  customAccentHue: 160,
   sortBy: 'createdAt',
   filterStatus: 'all',
   filterCategoryId: null,
@@ -26,6 +32,9 @@ export const useSettingsStore = create<SettingsStore>()(
     (set) => ({
       ...defaultSettings,
       setTheme: (theme) => set({ theme }),
+      setColorTheme: (colorTheme) => set({ colorTheme }),
+      setCustomHues: (customPrimaryHue, customAccentHue) =>
+        set({ customPrimaryHue, customAccentHue }),
       setSortBy: (sortBy) => set({ sortBy }),
       setFilterStatus: (filterStatus) => set({ filterStatus }),
       setFilterCategoryId: (filterCategoryId) => set({ filterCategoryId }),
