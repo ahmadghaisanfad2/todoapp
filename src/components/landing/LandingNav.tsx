@@ -18,6 +18,15 @@ export function LandingNav({ onNavigateApp }: LandingNavProps) {
           </span>
         </div>
 
+        <nav className="hidden items-center gap-6 md:flex" aria-label="Landing">
+          <a
+            href="#fitur"
+            className="font-mono text-xs font-medium text-foreground/70 transition-colors hover:text-primary"
+          >
+            Fitur
+          </a>
+        </nav>
+
         <Button
           onClick={onNavigateApp}
           size="sm"

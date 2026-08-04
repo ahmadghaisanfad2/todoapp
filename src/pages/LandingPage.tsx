@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { LandingHero } from '@/components/landing/LandingHero'
 import { LandingNav } from '@/components/landing/LandingNav'
+import { LandingFeatures } from '@/components/landing/LandingFeatures'
+import { LandingFooter } from '@/components/landing/LandingFooter'
 import { Logo } from '@/components/common/Logo'
 
 interface LandingPageProps {
@@ -41,7 +43,10 @@ export function LandingPage({ onNavigateApp }: LandingPageProps) {
       <LandingNav onNavigateApp={() => setIsEntering(true)} />
       <main id="main-content">
         <LandingHero onNavigateApp={() => setIsEntering(true)} />
+        <LandingFeatures />
       </main>
+      <LandingFooter onNavigateApp={() => setIsEntering(true)} />
     </div>
   )
 }
+
