@@ -27,5 +27,16 @@ dist-ssr
 qa-screenshots/
 qa-test.mjs
 
+# Local scratch
+tmp/
+mimo-test.txt
+
+# AI agent tooling (local-only, not shared)
+.agents/
+.commandcode/
+.compose/
+.mimocode/
+.playwright-cli/
+
 # Claude Code
 .claude/

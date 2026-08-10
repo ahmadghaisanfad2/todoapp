@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { useDroppable } from '@dnd-kit/core'
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
-import { Plus, Trash2, Pencil, Check, X, Strikethrough } from 'lucide-react'
+import { Plus, Trash2, Pencil, Check, X, Strikethrough, GripVertical } from 'lucide-react'
 import { KanbanCard } from './KanbanCard'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -32,7 +33,21 @@ export function KanbanColumnComponent({
 }: KanbanColumnProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [editName, setEditName] = useState(column.name)
-  const { setNodeRef, isOver } = useDroppable({ id: column.id })
+  const {
+    setNodeRef,
+    isOver,
+    attributes,
+    listeners,
+    setActivatorNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: column.id })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  }
 
   const handleSave = () => {
     if (editName.trim()) {
@@ -44,10 +59,13 @@ export function KanbanColumnComponent({
   return (
     <div
       ref={setNodeRef}
+      style={style}
       data-kanban-column
+      {...attributes}
       className={cn(
         'flex w-[min(18rem,calc(100vw-3rem))] shrink-0 snap-start flex-col rounded-2xl border border-border/70 bg-muted/40',
-        isOver && 'border-primary/40 bg-primary/5 shadow-sm shadow-primary/5'
+        isOver && 'border-primary/40 bg-primary/5 shadow-sm shadow-primary/5',
+        isDragging && 'opacity-60'
       )}
     >
       <div className="flex items-center justify-between gap-2 border-b border-border/60 px-3 py-3">
@@ -85,6 +103,17 @@ export function KanbanColumnComponent({
         ) : (
           <>
             <div className="flex min-w-0 items-center gap-2">
+              <button
+                ref={setActivatorNodeRef}
+                type="button"
+                aria-label={`Drag ${column.name} column`}
+                data-kanban-column-drag-handle
+                className="shrink-0 cursor-grab rounded-md p-1 text-muted-foreground/50 hover:text-muted-foreground touch-none active:cursor-grabbing"
+                {...listeners}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <GripVertical className="h-4 w-4" />
+              </button>
               <h2 className="truncate text-sm font-semibold tracking-tight">{column.name}</h2>
               <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-md bg-background/80 px-1.5 text-[10px] font-medium text-muted-foreground tabular-nums">
                 {tasks.length}
@@ -160,6 +189,28 @@ export function KanbanColumnComponent({
             />
           ))}
         </SortableContext>
+      </div>
+    </div>
+  )
+}
+
+interface KanbanColumnOverlayProps {
+  column: KanbanColumnType
+  taskCount: number
+}
+
+export function KanbanColumnOverlay({ column, taskCount }: KanbanColumnOverlayProps) {
+  return (
+    <div
+      data-kanban-column-overlay
+      className="flex w-[min(18rem,calc(100vw-3rem))] shrink-0 flex-col rounded-2xl border border-primary/30 bg-card px-3 py-3 shadow-lg cursor-grabbing select-none"
+    >
+      <div className="flex items-center gap-2">
+        <GripVertical className="h-4 w-4 shrink-0 text-muted-foreground/50" aria-hidden="true" />
+        <h2 className="truncate text-sm font-semibold tracking-tight">{column.name}</h2>
+        <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-md bg-background/80 px-1.5 text-[10px] font-medium text-muted-foreground tabular-nums">
+          {taskCount}
+        </span>
       </div>
     </div>
   )

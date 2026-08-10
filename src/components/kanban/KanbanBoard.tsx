@@ -8,12 +8,17 @@ import {
   useSensor,
   useSensors,
   rectIntersection,
+  closestCenter,
   type DragStartEvent,
   type DragEndEvent,
   type CollisionDetection,
 } from '@dnd-kit/core'
-import { sortableKeyboardCoordinates } from '@dnd-kit/sortable'
-import { KanbanColumnComponent } from './KanbanColumn'
+import {
+  sortableKeyboardCoordinates,
+  SortableContext,
+  horizontalListSortingStrategy,
+} from '@dnd-kit/sortable'
+import { KanbanColumnComponent, KanbanColumnOverlay } from './KanbanColumn'
 import { KanbanCardOverlay } from './KanbanCard'
 import { ColumnForm } from './ColumnForm'
 import { KanbanHorizontalScrollbar } from './KanbanHorizontalScrollbar'
@@ -22,7 +27,7 @@ import { useHorizontalTouchScroll } from '@/hooks/useHorizontalTouchScroll'
 import { useKanbanStore } from '@/store/kanbanStore'
 import { useTaskStore } from '@/store/taskStore'
 import { useWorkspaceStore } from '@/store/workspaceStore'
-import type { Task } from '@/types'
+import type { Task, KanbanColumn } from '@/types'
 
 interface KanbanBoardProps {
   onEditTask: (task: Task) => void
@@ -35,9 +40,11 @@ export function KanbanBoard({ onEditTask, onAddTask, onStartFocus }: KanbanBoard
   const addColumn = useKanbanStore((s) => s.addColumn)
   const updateColumn = useKanbanStore((s) => s.updateColumn)
   const deleteColumn = useKanbanStore((s) => s.deleteColumn)
+  const reorderColumns = useKanbanStore((s) => s.reorderColumns)
 
   const allTasks = useTaskStore((s) => s.tasks)
   const moveTask = useTaskStore((s) => s.moveTask)
+  const moveTasksToColumn = useTaskStore((s) => s.moveTasksToColumn)
   const deleteTask = useTaskStore((s) => s.deleteTask)
   const activeWorkspaceId = useWorkspaceStore((s) => s.activeWorkspaceId)
 
@@ -47,6 +54,7 @@ export function KanbanBoard({ onEditTask, onAddTask, onStartFocus }: KanbanBoard
   )
 
   const [activeTask, setActiveTask] = useState<Task | null>(null)
+  const [activeColumn, setActiveColumn] = useState<KanbanColumn | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   const [scrollEl, setScrollEl] = useState<HTMLDivElement | null>(null)
 
@@ -64,7 +72,7 @@ export function KanbanBoard({ onEditTask, onAddTask, onStartFocus }: KanbanBoard
   )
 
   // Custom axis-locked panning — native overflow alone loses to nested pan-y / touch-action:none.
-  useHorizontalTouchScroll(scrollEl, activeTask === null)
+  useHorizontalTouchScroll(scrollEl, activeTask === null && activeColumn === null)
 
   const getTasksByColumn = useCallback(
     (columnId: string) =>
@@ -79,6 +87,14 @@ export function KanbanBoard({ onEditTask, onAddTask, onStartFocus }: KanbanBoard
 
   const customCollisionDetection: CollisionDetection = useCallback(
     (args) => {
+      // Column drags only ever land on other columns — never on cards.
+      if (columnIds.has(args.active.id as string)) {
+        const columnCollisions = closestCenter(args).filter(
+          (c) => columnIds.has(c.id as string) && c.id !== args.active.id
+        )
+        return columnCollisions.length > 0 ? [columnCollisions[0]] : []
+      }
+
       const collisions = rectIntersection(args)
       if (collisions.length === 0) return collisions
 
@@ -94,13 +110,20 @@ export function KanbanBoard({ onEditTask, onAddTask, onStartFocus }: KanbanBoard
   )
 
   const handleDragStart = (event: DragStartEvent) => {
-    const task = tasks.find((t) => t.id === event.active.id)
+    const id = event.active.id as string
+    if (columnIds.has(id)) {
+      const column = columns.find((c) => c.id === id)
+      if (column) setActiveColumn(column)
+      return
+    }
+    const task = tasks.find((t) => t.id === id)
     if (task) setActiveTask(task)
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
     setActiveTask(null)
+    setActiveColumn(null)
 
     if (!over) return
 
@@ -109,6 +132,22 @@ export function KanbanBoard({ onEditTask, onAddTask, onStartFocus }: KanbanBoard
 
     if (activeId === overId) return
 
+    // Column reorder path
+    if (columnIds.has(activeId)) {
+      const overColumn = columns.find((col) => col.id === overId)
+      if (!overColumn) return
+      const sorted = [...columns].sort((a, b) => a.order - b.order)
+      const oldIndex = sorted.findIndex((c) => c.id === activeId)
+      const newIndex = sorted.findIndex((c) => c.id === overColumn.id)
+      if (oldIndex === -1 || newIndex === -1 || oldIndex === newIndex) return
+      const reordered = [...sorted]
+      const [moved] = reordered.splice(oldIndex, 1)
+      reordered.splice(newIndex, 0, moved)
+      reorderColumns(reordered.map((c, index) => ({ ...c, order: index })))
+      return
+    }
+
+    // Task move path
     const activeItem = tasks.find((t) => t.id === activeId)
     if (!activeItem) return
 
@@ -146,9 +185,12 @@ export function KanbanBoard({ onEditTask, onAddTask, onStartFocus }: KanbanBoard
     if (remaining.length === 0) return
 
     const fallbackId = remaining[0].id
-    tasks
-      .filter((t) => t.status === columnId)
-      .forEach((t) => moveTask(t.id, fallbackId, getTasksByColumn(fallbackId).length))
+    const columnTaskIds = tasks.filter((t) => t.status === columnId).map((t) => t.id)
+
+    // One atomic batch move (single undo entry) instead of N per-task moves.
+    if (columnTaskIds.length > 0) {
+      moveTasksToColumn(columnTaskIds, fallbackId)
+    }
 
     deleteColumn(columnId)
   }
@@ -178,7 +220,10 @@ export function KanbanBoard({ onEditTask, onAddTask, onStartFocus }: KanbanBoard
       autoScroll={{ threshold: { x: 0.12, y: 0.2 }, acceleration: 12 }}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
-      onDragCancel={() => setActiveTask(null)}
+      onDragCancel={() => {
+        setActiveTask(null)
+        setActiveColumn(null)
+      }}
     >
       <div data-kanban-board className="w-full min-w-0">
         <KanbanHorizontalScrollbar scrollRef={scrollRef} />
@@ -187,26 +232,33 @@ export function KanbanBoard({ onEditTask, onAddTask, onStartFocus }: KanbanBoard
           ref={setScrollNode}
           className="kanban-scroll-x kanban-scroll-x-content -mx-1 flex snap-x snap-proximity items-start gap-3 overflow-x-auto overscroll-x-contain px-1 pb-4 sm:gap-4"
         >
-          {sortedColumns.map((column) => (
-            <KanbanColumnComponent
-              key={column.id}
-              column={column}
-              tasks={getTasksByColumn(column.id)}
-              activeTaskId={activeTask?.id ?? null}
-              onEdit={onEditTask}
-              onDelete={deleteTask}
-              onAddTask={onAddTask}
-              onUpdateColumn={handleUpdateColumn}
-              onDeleteColumn={handleDeleteColumn}
-              onToggleCrossTasks={handleToggleCrossTasks}
-            />
-          ))}
+          <SortableContext items={sortedColumns.map((c) => c.id)} strategy={horizontalListSortingStrategy}>
+            {sortedColumns.map((column) => (
+              <KanbanColumnComponent
+                key={column.id}
+                column={column}
+                tasks={getTasksByColumn(column.id)}
+                activeTaskId={activeTask?.id ?? null}
+                onEdit={onEditTask}
+                onDelete={deleteTask}
+                onAddTask={onAddTask}
+                onUpdateColumn={handleUpdateColumn}
+                onDeleteColumn={handleDeleteColumn}
+                onToggleCrossTasks={handleToggleCrossTasks}
+              />
+            ))}
+          </SortableContext>
           <ColumnForm onAdd={addColumn} />
         </div>
       </div>
 
-      <DragOverlay dropAnimation={null}>
-        {activeTask ? (
+      <DragOverlay dropAnimation={{ duration: 180, easing: 'cubic-bezier(0.2, 0, 0, 1)' }}>
+        {activeColumn ? (
+          <KanbanColumnOverlay
+            column={activeColumn}
+            taskCount={getTasksByColumn(activeColumn.id).length}
+          />
+        ) : activeTask ? (
           <KanbanCardOverlay
             task={activeTask}
             crossTasks={columns.find((c) => c.id === activeTask.status)?.crossTasks}

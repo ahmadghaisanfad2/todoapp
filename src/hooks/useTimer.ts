@@ -24,6 +24,8 @@ export function useTimer(): UseTimerReturn {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const audioContextRef = useRef<AudioContext | null>(null)
   const chimeIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  // Source of truth for the tick; mirrored into state for rendering.
+  const timeRemainingRef = useRef(0)
 
   const progress = totalTime > 0 ? timeRemaining / totalTime : 0
 
@@ -82,22 +84,26 @@ export function useTimer(): UseTimerReturn {
     }
   }, [])
 
+  // Tick: a PURE countdown driven by a ref, plus one-shot completion side
+  // effects in the interval callback — never inside a state updater, and
+  // never a synchronous setState inside an effect.
   useEffect(() => {
     if (state !== 'running') return
 
     intervalRef.current = setInterval(() => {
-      setTimeRemaining((prev) => {
-        if (prev <= 1) {
-          clearInterval(intervalRef.current!)
+      timeRemainingRef.current = Math.max(0, timeRemainingRef.current - 1)
+      setTimeRemaining(timeRemainingRef.current)
+
+      if (timeRemainingRef.current === 0) {
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current)
           intervalRef.current = null
-          setState('complete')
-          playChime()
-          startChimeInterval()
-          showNotification()
-          return 0
         }
-        return prev - 1
-      })
+        setState('complete')
+        playChime()
+        startChimeInterval()
+        showNotification()
+      }
     }, 1000)
 
     return () => {
@@ -110,6 +116,7 @@ export function useTimer(): UseTimerReturn {
 
   const start = useCallback((seconds: number) => {
     requestNotificationPermission()
+    timeRemainingRef.current = seconds
     setTotalTime(seconds)
     setTimeRemaining(seconds)
     setState('running')
@@ -124,6 +131,7 @@ export function useTimer(): UseTimerReturn {
   }, [])
 
   const stop = useCallback(() => {
+    timeRemainingRef.current = 0
     setState('idle')
     setTimeRemaining(0)
     setTotalTime(0)
@@ -131,6 +139,7 @@ export function useTimer(): UseTimerReturn {
   }, [stopChimeInterval])
 
   const dismiss = useCallback(() => {
+    timeRemainingRef.current = 0
     setState('idle')
     setTimeRemaining(0)
     setTotalTime(0)
@@ -140,6 +149,15 @@ export function useTimer(): UseTimerReturn {
   const toggleMute = useCallback(() => {
     setIsMuted((prev) => !prev)
   }, [])
+
+  // Unmount cleanup: stop the repeating chime and release the audio context.
+  useEffect(() => {
+    return () => {
+      stopChimeInterval()
+      audioContextRef.current?.close().catch(() => {})
+      audioContextRef.current = null
+    }
+  }, [stopChimeInterval])
 
   return {
     state,

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useCallback, useState } from 'react'
 import { useMusicStore } from '@/store/musicStore'
+import type { MusicTrack } from '@/store/musicStore'
 
 interface YouTubePlayerInstance {
   playVideo(): void
@@ -9,6 +10,7 @@ interface YouTubePlayerInstance {
   setVolume(volume: number): void
   getCurrentTime(): number
   getDuration(): number
+  destroy(): void
 }
 
 interface YouTubePlayerOptions {
@@ -32,6 +34,8 @@ interface YouTubeWindowAPI {
   PlayerState: { ENDED: 0; PLAYING: 1; PAUSED: 2 }
 }
 
+const YOUTUBE_API_SCRIPT_ID = 'wazheefa-youtube-api'
+
 function getYouTubeAPI(): YouTubeWindowAPI | undefined {
   return (window as unknown as { YT?: YouTubeWindowAPI }).YT
 }
@@ -43,35 +47,58 @@ export function useYouTubePlayer() {
   const isPlaying = useMusicStore((s) => s.isPlaying)
   const volume = useMusicStore((s) => s.volume)
   const setIsPlaying = useMusicStore((s) => s.setIsPlaying)
+
+  // Refs mirror the latest store values so the YouTube callbacks (which are
+  // created once and outlive renders) never capture stale state. Synced in
+  // effects — writing refs during render is flagged by react-hooks/refs.
+  const currentTrackRef = useRef(currentTrack)
+  const volumeRef = useRef(volume)
+  useEffect(() => {
+    currentTrackRef.current = currentTrack
+  }, [currentTrack])
+  useEffect(() => {
+    volumeRef.current = volume
+  }, [volume])
+
   const endedRef = useRef(false)
   const [playerState, setPlayerState] = useState<YouTubePlayerState>({
     currentTime: 0,
     duration: 0,
   })
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  useEffect(() => {
-    if (!currentTrack) return
-    if (!containerRef.current) return
 
-    if (playerRef.current) {
-      endedRef.current = false
-      playerRef.current.loadVideoById(currentTrack.videoId)
-      return
+  const startPolling = useCallback(() => {
+    if (intervalRef.current) clearInterval(intervalRef.current)
+    intervalRef.current = setInterval(() => {
+      const player = playerRef.current
+      if (!player) return
+      const currentTime = player.getCurrentTime()
+      const duration = player.getDuration()
+      if (typeof currentTime === 'number') {
+        setPlayerState((prev) => ({ ...prev, currentTime }))
+      }
+      if (typeof duration === 'number' && duration > 0) {
+        setPlayerState((prev) => ({ ...prev, duration }))
+      }
+    }, 250)
+  }, [])
+
+  const stopPolling = useCallback(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = null
     }
+  }, [])
 
-    const tag = document.createElement('script')
-    tag.src = 'https://www.youtube.com/iframe_api'
-    const firstScriptTag = document.getElementsByTagName('script')[0]
-    firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag)
+  const createPlayer = useCallback(
+    (YT: YouTubeWindowAPI, track: MusicTrack) => {
+      const container = containerRef.current
+      if (!container) return
 
-    ;(window as unknown as { onYouTubeIframeAPIReady?: () => void }).onYouTubeIframeAPIReady = () => {
-      if (!containerRef.current) return
-      const YT = getYouTubeAPI()
-      if (!YT) return
-      playerRef.current = new YT.Player(containerRef.current, {
+      playerRef.current = new YT.Player(container, {
         height: '1',
         width: '1',
-        videoId: currentTrack.videoId,
+        videoId: track.videoId,
         playerVars: {
           autoplay: 0,
           controls: 0,
@@ -83,14 +110,11 @@ export function useYouTubePlayer() {
         },
         events: {
           onReady: () => {
-            if (playerRef.current) {
-              playerRef.current.setVolume(volume)
-              const { isPlaying: storePlaying } = useMusicStore.getState()
-              if (!storePlaying) {
-                setIsPlaying(false)
-              }
-              startPolling()
+            playerRef.current?.setVolume(volumeRef.current)
+            if (!useMusicStore.getState().isPlaying) {
+              setIsPlaying(false)
             }
+            startPolling()
           },
           onStateChange: (event: { data: number }) => {
             if (event.data === 0) {
@@ -110,32 +134,44 @@ export function useYouTubePlayer() {
           },
         },
       })
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTrack])
+    },
+    [setIsPlaying, startPolling, stopPolling]
+  )
 
-  const startPolling = useCallback(() => {
-    if (intervalRef.current) clearInterval(intervalRef.current)
-    intervalRef.current = setInterval(() => {
-      if (playerRef.current) {
-        const currentTime = playerRef.current.getCurrentTime()
-        const duration = playerRef.current.getDuration()
-        if (typeof currentTime === 'number') {
-          setPlayerState((prev) => ({ ...prev, currentTime }))
-        }
-        if (typeof duration === 'number' && duration > 0) {
-          setPlayerState((prev) => ({ ...prev, duration }))
-        }
-      }
-    }, 250)
-  }, [])
+  // Load the current track, creating the player on first use. Handles three
+  // paths: player exists (just switch video), API already loaded (remount),
+  // and API still loading (wire the global callback before injecting script).
+  useEffect(() => {
+    const track = currentTrackRef.current
+    if (!track) return
 
-  const stopPolling = useCallback(() => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current)
-      intervalRef.current = null
+    if (playerRef.current) {
+      endedRef.current = false
+      playerRef.current.loadVideoById(track.videoId)
+      return
     }
-  }, [])
+
+    const YT = getYouTubeAPI()
+    if (YT?.Player) {
+      createPlayer(YT, track)
+      return
+    }
+
+    const windowWithAPI = window as unknown as { onYouTubeIframeAPIReady?: () => void }
+    windowWithAPI.onYouTubeIframeAPIReady = () => {
+      const api = getYouTubeAPI()
+      const nextTrack = currentTrackRef.current
+      if (!api || !nextTrack) return
+      createPlayer(api, nextTrack)
+    }
+
+    if (!document.getElementById(YOUTUBE_API_SCRIPT_ID)) {
+      const tag = document.createElement('script')
+      tag.id = YOUTUBE_API_SCRIPT_ID
+      tag.src = 'https://www.youtube.com/iframe_api'
+      document.head.appendChild(tag)
+    }
+  }, [currentTrack, createPlayer])
 
   useEffect(() => {
     if (!playerRef.current) return
@@ -157,9 +193,14 @@ export function useYouTubePlayer() {
     }
   }, [isPlaying, currentTrack, startPolling, stopPolling])
 
+  // Unmount cleanup: stop polling, destroy the player, drop our global hook.
   useEffect(() => {
     return () => {
       stopPolling()
+      playerRef.current?.destroy()
+      playerRef.current = null
+      const windowWithAPI = window as unknown as { onYouTubeIframeAPIReady?: () => void }
+      windowWithAPI.onYouTubeIframeAPIReady = undefined
     }
   }, [stopPolling])
 

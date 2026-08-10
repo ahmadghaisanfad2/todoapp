@@ -35,12 +35,14 @@ src/
 │   ├── constants.ts               # STORAGE_KEYS, DEFAULT_COLUMNS
 │   ├── migrate.ts                 # One-time localStorage migration (todoflow → wazheefa)
 │   └── musicPresets.ts            # Preset lofi YouTube tracks
-├── store/                         # Zustand stores (5 total, all persisted to localStorage)
+├── store/                         # Zustand stores (7 total; 6 persisted to localStorage)
 │   ├── taskStore.ts               # wazheefa-tasks
 │   ├── categoryStore.ts           # wazheefa-categories
 │   ├── settingsStore.ts           # wazheefa-settings
 │   ├── kanbanStore.ts             # wazheefa-kanban
-│   └── musicStore.ts              # wazheefa-music
+│   ├── musicStore.ts              # wazheefa-music
+│   ├── workspaceStore.ts          # wazheefa-workspaces
+│   └── undoStore.ts               # In-memory undo stack (not persisted)
 ├── hooks/                         # Custom hooks (bridge stores → components)
 │   ├── useTasks.ts
 │   ├── useCategories.ts

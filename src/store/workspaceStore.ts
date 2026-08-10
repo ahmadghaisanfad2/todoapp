@@ -3,32 +3,8 @@ import { persist, createJSONStorage } from 'zustand/middleware'
 import type { Workspace } from '@/types'
 import { generateId } from '@/lib/utils'
 import { STORAGE_KEYS, DEFAULT_WORKSPACE_NAME, DEFAULT_WORKSPACE_COLOR } from '@/lib/constants'
+import { safeStorage } from '@/lib/safeStorage'
 import { useUndoStore } from '@/store/undoStore'
-
-const safeStorage = {
-  getItem: (name: string): string | null => {
-    try {
-      return localStorage.getItem(name)
-    } catch {
-      console.warn(`[workspaceStore] Failed to read from localStorage: ${name}`)
-      return null
-    }
-  },
-  setItem: (name: string, value: string): void => {
-    try {
-      localStorage.setItem(name, value)
-    } catch (e) {
-      console.error(`[workspaceStore] Failed to write to localStorage: ${name}`, e)
-    }
-  },
-  removeItem: (name: string): void => {
-    try {
-      localStorage.removeItem(name)
-    } catch {
-      console.warn(`[workspaceStore] Failed to remove from localStorage: ${name}`)
-    }
-  },
-}
 
 interface WorkspaceStore {
   workspaces: Workspace[]

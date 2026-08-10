@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { generateId } from '@/lib/utils'
 
 const MAX_UNDO_STACK = 10
 const TOAST_MS = 6000
@@ -50,7 +51,7 @@ export const useUndoStore = create<UndoState>()((set, get) => ({
   pushUndo: (description, undo) => {
     set((state) => ({
       stack: [
-        { id: crypto.randomUUID(), description, undo },
+        { id: generateId(), description, undo },
         ...state.stack,
       ].slice(0, MAX_UNDO_STACK),
       lastUndone: null,

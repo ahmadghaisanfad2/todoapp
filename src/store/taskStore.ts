@@ -1,34 +1,15 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
-import type { Task } from '@/types'
 import { generateId } from '@/lib/utils'
 import { STORAGE_KEYS } from '@/lib/constants'
+import { safeStorage } from '@/lib/safeStorage'
+import {
+  reorderWithinColumn,
+  moveBetweenColumns,
+  moveTasksToColumn as applyMoveTasksToColumn,
+} from '@/lib/taskOrdering'
 import { useUndoStore } from '@/store/undoStore'
-
-const safeStorage = {
-  getItem: (name: string): string | null => {
-    try {
-      return localStorage.getItem(name)
-    } catch {
-      console.warn(`[taskStore] Failed to read from localStorage: ${name}`)
-      return null
-    }
-  },
-  setItem: (name: string, value: string): void => {
-    try {
-      localStorage.setItem(name, value)
-    } catch (e) {
-      console.error(`[taskStore] Failed to write to localStorage: ${name}`, e)
-    }
-  },
-  removeItem: (name: string): void => {
-    try {
-      localStorage.removeItem(name)
-    } catch {
-      console.warn(`[taskStore] Failed to remove from localStorage: ${name}`)
-    }
-  },
-}
+import type { Task } from '@/types'
 
 interface TaskStore {
   tasks: Task[]
@@ -37,6 +18,8 @@ interface TaskStore {
   deleteTask: (id: string) => void
   toggleTask: (id: string) => void
   moveTask: (id: string, status: string, order: number) => void
+  /** Batch-moves tasks into a column as ONE atomic state change + ONE undo entry. */
+  moveTasksToColumn: (taskIds: string[], status: string) => void
   deleteTasksByWorkspace: (workspaceId: string) => void
 }
 
@@ -107,71 +90,36 @@ export const useTaskStore = create<TaskStore>()(
         const task = prevTasks.find((t) => t.id === id)
         if (!task) return
 
-        const sourceStatus = task.status
-        const destStatus = status
-        const targetIndex = order
         const now = new Date().toISOString()
+        const nextTasks =
+          task.status === status
+            ? reorderWithinColumn(prevTasks, id, order, now)
+            : moveBetweenColumns(prevTasks, id, status, order, now)
 
-        const sortByOrder = (items: Task[]) => [...items].sort((a, b) => a.order - b.order)
-
-        let nextTasks: Task[]
-
-        if (sourceStatus === destStatus) {
-          const columnTasks = sortByOrder(prevTasks.filter((t) => t.status === sourceStatus))
-          const fromIndex = columnTasks.findIndex((t) => t.id === id)
-          if (fromIndex === -1 || fromIndex === targetIndex) return
-
-          const reordered = [...columnTasks]
-          const [removed] = reordered.splice(fromIndex, 1)
-          reordered.splice(targetIndex, 0, removed)
-
-          const orderById = new Map(reordered.map((t, index) => [t.id, index]))
-          nextTasks = prevTasks.map((t) => {
-            const newOrder = orderById.get(t.id)
-            if (newOrder === undefined) return t
-            return {
-              ...t,
-              order: newOrder,
-              completed: destStatus === 'done',
-              updatedAt: now,
-            }
-          })
-        } else {
-          const sourceTasks = sortByOrder(prevTasks.filter((t) => t.status === sourceStatus && t.id !== id))
-          const destTasks = sortByOrder(prevTasks.filter((t) => t.status === destStatus && t.id !== id))
-          const clampedIndex = Math.min(Math.max(0, targetIndex), destTasks.length)
-          destTasks.splice(clampedIndex, 0, { ...task, status: destStatus })
-
-          const sourceOrderById = new Map(sourceTasks.map((t, index) => [t.id, index]))
-          const destOrderById = new Map(destTasks.map((t, index) => [t.id, index]))
-
-          nextTasks = prevTasks.map((t) => {
-            if (t.id === id) {
-              return {
-                ...t,
-                status: destStatus,
-                order: clampedIndex,
-                completed: destStatus === 'done',
-                updatedAt: now,
-              }
-            }
-            if (t.status === sourceStatus) {
-              const newOrder = sourceOrderById.get(t.id)
-              if (newOrder === undefined) return t
-              return { ...t, order: newOrder, updatedAt: now }
-            }
-            if (t.status === destStatus) {
-              const newOrder = destOrderById.get(t.id)
-              if (newOrder === undefined) return t
-              return { ...t, order: newOrder, updatedAt: now }
-            }
-            return t
-          })
-        }
+        // Helpers return the same reference when nothing would change.
+        if (nextTasks === prevTasks) return
 
         useUndoStore.getState().pushUndo('Task moved', () => {
           useTaskStore.setState({ tasks: prevTasks })
         })
+        set({ tasks: nextTasks })
+      },
+      moveTasksToColumn: (taskIds, status) => {
+        const prevTasks = get().tasks
+        const nextTasks = applyMoveTasksToColumn(
+          prevTasks,
+          taskIds,
+          status,
+          new Date().toISOString()
+        )
+        if (nextTasks === prevTasks) return
+
+        useUndoStore.getState().pushUndo(
+          `${taskIds.length} task${taskIds.length > 1 ? 's' : ''} moved`,
+          () => {
+            useTaskStore.setState({ tasks: prevTasks })
+          }
+        )
         set({ tasks: nextTasks })
       },
       deleteTasksByWorkspace: (workspaceId) => {

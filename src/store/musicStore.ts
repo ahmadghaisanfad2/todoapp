@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import { LOFI_PRESETS } from '@/lib/musicPresets'
 import { STORAGE_KEYS } from '@/lib/constants'
+import { generateId } from '@/lib/utils'
 import { safeStorage } from '@/lib/safeStorage'
 import { useUndoStore } from '@/store/undoStore'
 
@@ -146,7 +147,7 @@ export const useMusicStore = create<MusicStore>()(
       },
       createPlaylist: (name) => {
         const { playlists } = get()
-        set({ playlists: [...playlists, { id: crypto.randomUUID(), name, tracks: [] }] })
+        set({ playlists: [...playlists, { id: generateId(), name, tracks: [] }] })
       },
       deletePlaylist: (id) => {
         const playlist = get().playlists.find((p) => p.id === id)
