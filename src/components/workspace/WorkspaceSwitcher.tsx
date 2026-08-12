@@ -16,9 +16,9 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog'
+import { useTaskMutations } from '@/hooks/useTaskQuery'
+import { useCategories } from '@/hooks/useCategories'
 import { useWorkspaceStore } from '@/store/workspaceStore'
-import { useTaskStore } from '@/store/taskStore'
-import { useCategoryStore } from '@/store/categoryStore'
 import { WorkspaceDialog } from './WorkspaceDialog'
 import { cn } from '@/lib/utils'
 import type { Workspace } from '@/types'
@@ -30,8 +30,8 @@ export function WorkspaceSwitcher() {
   const addWorkspace = useWorkspaceStore((s) => s.addWorkspace)
   const updateWorkspace = useWorkspaceStore((s) => s.updateWorkspace)
   const deleteWorkspace = useWorkspaceStore((s) => s.deleteWorkspace)
-  const deleteTasksByWorkspace = useTaskStore((s) => s.deleteTasksByWorkspace)
-  const deleteCategoriesByWorkspace = useCategoryStore((s) => s.deleteCategoriesByWorkspace)
+  const { deleteTasksByWorkspace } = useTaskMutations()
+  const { deleteCategoriesByWorkspace } = useCategories()
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingWorkspace, setEditingWorkspace] = useState<Workspace | undefined>()

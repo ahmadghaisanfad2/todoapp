@@ -8,6 +8,7 @@ import { LandingPage } from '@/pages/LandingPage'
 import { useUndoKeyboard } from '@/hooks/useUndoKeyboard'
 import { useColorTheme } from '@/hooks/useColorTheme'
 import { UndoToast } from '@/components/common/UndoToast'
+import { AppQueryProvider } from '@/components/providers/AppQueryProvider'
 
 runMigration()
 migrateTaskStatus()
@@ -44,6 +45,8 @@ export function Router() {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <Router />
+    <AppQueryProvider>
+      <Router />
+    </AppQueryProvider>
   </StrictMode>,
 )
