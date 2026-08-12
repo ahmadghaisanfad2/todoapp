@@ -10,10 +10,10 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar'
 import { cn } from '@/lib/utils'
 import { NotesEditor } from '@/components/task/NotesEditor'
-import { useTaskStore } from '@/store/taskStore'
+import { useTaskMutations } from '@/hooks/useTaskQuery'
+import { useCategories } from '@/hooks/useCategories'
 import { useKanbanStore } from '@/store/kanbanStore'
 import { useWorkspaceStore } from '@/store/workspaceStore'
-import { useCategories } from '@/hooks/useCategories'
 import type { Task, Priority } from '@/types'
 
 interface TaskFormProps {
@@ -30,8 +30,7 @@ const PRIORITIES: { value: Priority; label: string; className: string }[] = [
 ]
 
 export function TaskForm({ open, onOpenChange, task, defaultStatus }: TaskFormProps) {
-  const addTask = useTaskStore((s) => s.addTask)
-  const updateTask = useTaskStore((s) => s.updateTask)
+  const { addTask, updateTask } = useTaskMutations()
   const columns = useKanbanStore((s) => s.columns)
   const activeWorkspaceId = useWorkspaceStore((s) => s.activeWorkspaceId)
   const { categories } = useCategories()

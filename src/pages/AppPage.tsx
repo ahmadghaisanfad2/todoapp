@@ -11,9 +11,9 @@ import { MusicSearchSheet } from '@/components/music/MusicSearchSheet'
 import { TimerWidget } from '@/components/timer/TimerWidget'
 import { Button } from '@/components/ui/button'
 import { Logo } from '@/components/common/Logo'
+import { useTaskQuery } from '@/hooks/useTaskQuery'
 import { useMusicStore } from '@/store/musicStore'
 import { ensureDefaultWorkspace, useWorkspaceStore } from '@/store/workspaceStore'
-import { useTaskStore } from '@/store/taskStore'
 import { getMobileFabBottomStyle, getMobileFabLeftStyle } from '@/lib/fabPosition'
 import type { Task } from '@/types'
 
@@ -36,10 +36,10 @@ export function AppPage({ onNavigateHome }: AppPageProps) {
   const closeSearch = useMusicStore((s) => s.closeSearch)
   const hasMusicBar = useMusicStore((s) => s.currentTrack !== null)
   const activeWorkspaceId = useWorkspaceStore((s) => s.activeWorkspaceId)
-  const allTasks = useTaskStore((s) => s.tasks)
+  const tasksQuery = useTaskQuery()
   const hasTasks = useMemo(
-    () => allTasks.some((t) => t.workspaceId === activeWorkspaceId),
-    [allTasks, activeWorkspaceId]
+    () => (tasksQuery.data ?? []).some((t) => t.workspaceId === activeWorkspaceId),
+    [tasksQuery.data, activeWorkspaceId]
   )
 
   useEffect(() => {

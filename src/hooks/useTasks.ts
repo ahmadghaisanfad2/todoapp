@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { isBefore, parseISO } from 'date-fns'
-import { useTaskStore } from '@/store/taskStore'
+import { useTaskMutations, useTaskQuery } from '@/hooks/useTaskQuery'
 import type { Task } from '@/types'
 
 export function isTaskOverdue(task: Task): boolean {
@@ -9,16 +9,16 @@ export function isTaskOverdue(task: Task): boolean {
 }
 
 export function useTasks() {
-  const tasks = useTaskStore((s) => s.tasks)
-  const deleteTask = useTaskStore((s) => s.deleteTask)
-  const toggleTask = useTaskStore((s) => s.toggleTask)
+  const tasksQuery = useTaskQuery()
+  const { deleteTask, toggleTask } = useTaskMutations()
   const [searchQuery, setSearchQuery] = useState('')
 
   const filteredTasks = useMemo(() => {
-    if (!searchQuery.trim()) return tasks
+    const allTasks = tasksQuery.data ?? []
+    if (!searchQuery.trim()) return allTasks
     const query = searchQuery.toLowerCase()
-    return tasks.filter((t) => t.title.toLowerCase().includes(query))
-  }, [tasks, searchQuery])
+    return allTasks.filter((t) => t.title.toLowerCase().includes(query))
+  }, [tasksQuery.data, searchQuery])
 
   return {
     tasks: filteredTasks,

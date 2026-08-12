@@ -24,8 +24,8 @@ import { ColumnForm } from './ColumnForm'
 import { KanbanHorizontalScrollbar } from './KanbanHorizontalScrollbar'
 import { EmptyState } from '@/components/common/EmptyState'
 import { useHorizontalTouchScroll } from '@/hooks/useHorizontalTouchScroll'
+import { useTaskMutations, useTaskQuery } from '@/hooks/useTaskQuery'
 import { useKanbanStore } from '@/store/kanbanStore'
-import { useTaskStore } from '@/store/taskStore'
 import { useWorkspaceStore } from '@/store/workspaceStore'
 import type { Task, KanbanColumn } from '@/types'
 
@@ -42,15 +42,13 @@ export function KanbanBoard({ onEditTask, onAddTask, onStartFocus }: KanbanBoard
   const deleteColumn = useKanbanStore((s) => s.deleteColumn)
   const reorderColumns = useKanbanStore((s) => s.reorderColumns)
 
-  const allTasks = useTaskStore((s) => s.tasks)
-  const moveTask = useTaskStore((s) => s.moveTask)
-  const moveTasksToColumn = useTaskStore((s) => s.moveTasksToColumn)
-  const deleteTask = useTaskStore((s) => s.deleteTask)
+  const tasksQuery = useTaskQuery()
+  const { moveTask, moveTasksToColumn, deleteTask } = useTaskMutations()
   const activeWorkspaceId = useWorkspaceStore((s) => s.activeWorkspaceId)
 
   const tasks = useMemo(
-    () => allTasks.filter((t) => t.workspaceId === activeWorkspaceId),
-    [allTasks, activeWorkspaceId]
+    () => (tasksQuery.data ?? []).filter((t) => t.workspaceId === activeWorkspaceId),
+    [tasksQuery.data, activeWorkspaceId]
   )
 
   const [activeTask, setActiveTask] = useState<Task | null>(null)
